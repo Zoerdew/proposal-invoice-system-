@@ -23,6 +23,7 @@ interface InitialProposal {
   status: string;
   proposalLink: string | null;
   offerId: string | null;
+  depositAmount: number | null;
 }
 
 const LOCKED_STATUSES = ["Signed", "Invoiced", "Paid"];
@@ -45,6 +46,9 @@ export default function ProposalForm({
   const [contractTerms, setContractTerms] = useState(initial?.contractTerms ?? "");
   const [rows, setRows] = useState<LineItemRow[]>(initial?.rows ?? [emptyRow()]);
   const [selectedOfferId, setSelectedOfferId] = useState(initial?.offerId ?? "");
+  const [depositAmount, setDepositAmount] = useState(
+    initial?.depositAmount ? String(initial.depositAmount) : ""
+  );
   const [loadingOffer, setLoadingOffer] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -63,11 +67,11 @@ export default function ProposalForm({
     );
   }
 
-  async function loadOffer() {
-    if (!selectedOfferId) return;
+  async function loadOffer(offerId: string) {
+    if (!offerId) return;
     setLoadingOffer(true);
     try {
-      const res = await fetch(`/api/admin/offers/${selectedOfferId}`);
+      const res = await fetch(`/api/admin/offers/${offerId}`);
       if (!res.ok) return;
       const data = await res.json();
       setContractTerms(data.contractTerms ?? "");
@@ -81,6 +85,15 @@ export default function ProposalForm({
     }
   }
 
+  function handleOfferSelect(offerId: string) {
+    setSelectedOfferId(offerId);
+    // Linking an offer without pulling in its content is what left Eloise's
+    // proposal with no contract terms at all — picking one now loads it
+    // immediately, no separate click required. "Load" stays below as an
+    // explicit way to reset back to the offer's defaults after editing.
+    if (offerId) loadOffer(offerId);
+  }
+
   async function handleSave(markSent?: boolean) {
     setSaving(true);
     setError(null);
@@ -90,6 +103,7 @@ export default function ProposalForm({
       company,
       contractTerms,
       offerId: selectedOfferId || null,
+      depositAmount: depositAmount.trim() ? Number(depositAmount) : null,
       lineItems: rows.map(({ description, kind, quantity, unitPrice }) => ({
         description,
         kind,
@@ -188,7 +202,7 @@ export default function ProposalForm({
             </label>
             <select
               value={selectedOfferId}
-              onChange={(e) => setSelectedOfferId(e.target.value)}
+              onChange={(e) => handleOfferSelect(e.target.value)}
               className="w-full rounded-md border border-gray-300 px-3 py-2"
             >
               <option value="">— choose an offer —</option>
@@ -201,11 +215,12 @@ export default function ProposalForm({
           </div>
           <button
             type="button"
-            onClick={loadOffer}
+            onClick={() => loadOffer(selectedOfferId)}
             disabled={!selectedOfferId || loadingOffer}
             className="rounded-md border border-gray-300 px-3 py-2 text-sm font-medium disabled:opacity-40"
+            title="Reset contract terms and line items back to this offer's defaults"
           >
-            {loadingOffer ? "Loading…" : "Load"}
+            {loadingOffer ? "Loading…" : "Reload defaults"}
           </button>
         </div>
       )}
@@ -213,6 +228,29 @@ export default function ProposalForm({
       <div className="mb-6">
         <label className="mb-2 block text-sm font-medium text-gray-700">Line items</label>
         <LineItemRows rows={rows} onChange={setRows} disabled={locked} />
+      </div>
+
+      <div className="mb-6 sm:w-1/3">
+        <label className="mb-1 block text-sm font-medium text-gray-700">
+          Deposit amount (optional)
+        </label>
+        <input
+          type="number"
+          step="0.01"
+          min="0"
+          value={depositAmount}
+          onChange={(e) => setDepositAmount(e.target.value)}
+          disabled={locked}
+          placeholder="e.g. 500"
+          className="w-full rounded-md border border-gray-300 px-3 py-2"
+        />
+        {!locked && (
+          <p className="mt-1 text-xs text-gray-500">
+            One-off exception for this client only. If set, whatever payment plan they choose
+            becomes: this amount now, then the rest split evenly across that plan&apos;s months
+            (e.g. Pay in 3 becomes deposit + 3 more payments).
+          </p>
+        )}
       </div>
 
       <div className="mb-6">
@@ -262,13 +300,19 @@ export default function ProposalForm({
             <button
               type="button"
               onClick={() => handleSave(true)}
-              disabled={saving || !clientName.trim()}
+              disabled={saving || !clientName.trim() || !contractTerms.trim()}
               className="rounded-md border border-gray-300 px-4 py-2 font-medium disabled:opacity-40"
             >
               Save & mark as sent
             </button>
           )}
         </div>
+      )}
+      {!locked && mode === "edit" && initial?.status === "Draft" && !contractTerms.trim() && (
+        <p className="mt-2 text-sm text-red-600">
+          Contract terms are empty — add them (or click &quot;Load&quot; above) before you can
+          mark this as sent.
+        </p>
       )}
     </div>
   );

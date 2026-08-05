@@ -88,7 +88,12 @@ export async function POST(request: NextRequest) {
   // Pin the schedule down once, here — never recomputed later, so the
   // contract text and the actual Xero invoices (one now, the rest via the
   // cron job) can never drift apart.
-  const installments = computeInstallments(total, plan, getFirstDueDate());
+  const installments = computeInstallments(
+    total,
+    plan,
+    getFirstDueDate(),
+    proposal.fields["Deposit Amount"]
+  );
 
   const proposalUpdate: { Status?: "Viewed"; "Payment Plan"?: PaymentPlan; "Contract Terms"?: string } = {
     "Payment Plan": plan,

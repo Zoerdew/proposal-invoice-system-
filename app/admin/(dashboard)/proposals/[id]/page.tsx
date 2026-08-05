@@ -44,6 +44,7 @@ export default async function EditProposalPage({
           status: proposal.fields.Status ?? "Draft",
           proposalLink: proposal.fields["Proposal Link"] ?? null,
           offerId: proposal.fields.Offer?.[0] ?? null,
+          depositAmount: proposal.fields["Deposit Amount"] ?? null,
           rows: lineItems.map((item) => ({
             key: item.id,
             description: item.fields.Description ?? "",

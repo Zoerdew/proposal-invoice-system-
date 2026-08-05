@@ -41,6 +41,16 @@ export async function PATCH(
   if (!clientName) {
     return NextResponse.json({ error: "Client name is required." }, { status: 400 });
   }
+  const contractTerms = typeof body.contractTerms === "string" ? body.contractTerms : "";
+  // A client picking an offer from the dropdown doesn't pull in its contract
+  // terms — that only happens via the separate "Load" button. Without this
+  // check it's possible to send a client a proposal with no terms at all.
+  if (body.markSent && !contractTerms.trim()) {
+    return NextResponse.json(
+      { error: "Contract terms can't be empty before sending." },
+      { status: 400 }
+    );
+  }
   const lineItems: LineItemInput[] = Array.isArray(body.lineItems) ? body.lineItems : [];
 
   const updateFields: Partial<ProposalFields> = {
@@ -49,6 +59,9 @@ export async function PATCH(
     Company: body.company || undefined,
     "Contract Terms": body.contractTerms || undefined,
     Offer: body.offerId ? [body.offerId] : undefined,
+    // null (not undefined) so clearing the field in the form actually clears
+    // it in Airtable, rather than leaving a stale deposit amount in place.
+    "Deposit Amount": typeof body.depositAmount === "number" ? body.depositAmount : null,
   };
   if (body.markSent && proposal.fields.Status === "Draft") {
     updateFields.Status = "Sent";

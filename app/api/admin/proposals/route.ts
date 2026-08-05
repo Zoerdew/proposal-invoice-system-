@@ -26,6 +26,7 @@ export async function POST(request: NextRequest) {
     "Contract Terms": body.contractTerms || undefined,
     "Proposal Page Slug": slug,
     Offer: body.offerId ? [body.offerId] : undefined,
+    "Deposit Amount": typeof body.depositAmount === "number" ? body.depositAmount : undefined,
     Status: "Draft",
   });
 

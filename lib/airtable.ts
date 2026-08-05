@@ -46,6 +46,7 @@ export interface ProposalFields {
   "Proposal Link"?: string;
   "Payment Plan"?: PaymentPlan;
   "Proposal Invoices"?: string[];
+  "Deposit Amount"?: number;
 }
 
 export type LineItemKind = "Fixed" | "Package Option" | "Add-on";
