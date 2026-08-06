@@ -1,12 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import {
-  ProposalFields,
-  ProposalInvoiceFields,
-  TABLES,
-  getRecord,
-  listAll,
-  updateRecord,
-} from "@/lib/airtable";
+import { getProposal } from "@/lib/db/proposals";
+import { listPendingInvoices, updateProposalInvoiceXero } from "@/lib/db/proposalInvoices";
 import { currency } from "@/lib/currency";
 import { createXeroInvoice, getSalesAccountCode } from "@/lib/xero";
 import { sendSlackAlert } from "@/lib/slack";
@@ -30,46 +24,35 @@ export async function GET(request: NextRequest) {
   const leadDays = Number(process.env.XERO_INVOICE_LEAD_DAYS) || 3;
   const cutoff = new Date(Date.now() + leadDays * 24 * 60 * 60 * 1000);
 
-  const pending = await listAll<ProposalInvoiceFields>(
-    TABLES.proposalInvoices,
-    `{Xero Invoice ID} = ''`
-  );
-  const due = pending.filter((invoice) => {
-    const dueDate = invoice.fields["Due Date"];
-    return dueDate ? new Date(dueDate).getTime() <= cutoff.getTime() : false;
-  });
+  const pending = await listPendingInvoices();
+  const due = pending.filter((invoice) => new Date(invoice.dueDate).getTime() <= cutoff.getTime());
 
   const accountCode = getSalesAccountCode();
   let processed = 0;
   const errors: string[] = [];
 
   for (const invoice of due) {
-    const proposalId = invoice.fields.Proposal?.[0];
-    if (!proposalId) continue;
-
-    const amount = currency.format(invoice.fields.Amount ?? 0);
-    const dueDateLabel = invoice.fields["Due Date"]
-      ? dateFormat.format(new Date(invoice.fields["Due Date"]))
-      : "unknown date";
-    const label = invoice.fields.Description || `installment ${invoice.id}`;
+    const amount = currency.format(invoice.amount);
+    const dueDateLabel = dateFormat.format(new Date(invoice.dueDate));
+    const label = invoice.description || `installment ${invoice.id}`;
 
     try {
-      const proposal = await getRecord<ProposalFields>(TABLES.proposals, proposalId);
+      const proposal = await getProposal(invoice.proposalId);
       const { invoiceId, onlineInvoiceUrl } = await createXeroInvoice(
         proposal,
         [
           {
-            Description: invoice.fields.Description || proposal.fields["Client Name"],
+            Description: invoice.description || proposal.clientName,
             Quantity: 1,
-            UnitAmount: invoice.fields.Amount ?? 0,
+            UnitAmount: invoice.amount,
             AccountCode: accountCode,
           },
         ],
-        invoice.fields["Due Date"] ?? new Date().toISOString().slice(0, 10)
+        invoice.dueDate
       );
-      await updateRecord<ProposalInvoiceFields>(TABLES.proposalInvoices, invoice.id, {
-        "Xero Invoice ID": invoiceId,
-        "Xero Online Invoice URL": onlineInvoiceUrl,
+      await updateProposalInvoiceXero(invoice.id, {
+        xeroInvoiceId: invoiceId,
+        xeroOnlineInvoiceUrl: onlineInvoiceUrl,
       });
       processed++;
       await sendSlackAlert(
@@ -79,7 +62,7 @@ export async function GET(request: NextRequest) {
       console.error(`Failed to send installment invoice ${invoice.id}:`, err);
       errors.push(invoice.id);
       await sendSlackAlert(
-        `⚠️ Instalment invoice *FAILED* to send — *${label}*, ${amount}, due ${dueDateLabel}. Check Xero and the Proposal Invoices table (row ${invoice.id}). Error: ${
+        `⚠️ Instalment invoice *FAILED* to send — *${label}*, ${amount}, due ${dueDateLabel}. Check Xero and the proposal_invoices table (row ${invoice.id}). Error: ${
           err instanceof Error ? err.message : String(err)
         }`
       );

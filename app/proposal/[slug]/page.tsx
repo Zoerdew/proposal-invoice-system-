@@ -1,11 +1,8 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import {
-  getAvailablePaymentPlans,
-  getLineItemsForProposal,
-  getOfferForProposal,
-  getProposalBySlug,
-} from "@/lib/airtable";
+import { getProposalBySlug } from "@/lib/db/proposals";
+import { getLineItemsForProposal } from "@/lib/db/lineItems";
+import { getAvailablePaymentPlans, getOfferForProposal } from "@/lib/db/offers";
 import { currency } from "@/lib/currency";
 import OptionsForm from "./OptionsForm";
 import StepNav from "./StepNav";
@@ -21,7 +18,7 @@ export default async function ProposalPage({
   const proposal = await getProposalBySlug(slug);
   if (!proposal) notFound();
 
-  const status = proposal.fields.Status ?? "Draft";
+  const status = proposal.status;
 
   if (status === "Draft") {
     return (
@@ -35,38 +32,31 @@ export default async function ProposalPage({
   }
 
   const [lineItems, offer] = await Promise.all([
-    getLineItemsForProposal(proposal),
-    getOfferForProposal(proposal),
+    getLineItemsForProposal(proposal.id),
+    getOfferForProposal(proposal.offerId),
   ]);
-  const fixedItems = lineItems.filter((item) => (item.fields.Kind ?? "Fixed") === "Fixed");
-  const packageOptions = lineItems.filter((item) => item.fields.Kind === "Package Option");
-  const addons = lineItems.filter((item) => item.fields.Kind === "Add-on");
-  const fixedTotal = fixedItems.reduce(
-    (sum, item) => sum + (item.fields["Line Total"] ?? 0),
-    0
-  );
+  const fixedItems = lineItems.filter((item) => item.kind === "Fixed");
+  const packageOptions = lineItems.filter((item) => item.kind === "Package Option");
+  const addons = lineItems.filter((item) => item.kind === "Add-on");
+  const fixedTotal = fixedItems.reduce((sum, item) => sum + item.lineTotal, 0);
   const availablePlans = getAvailablePaymentPlans(offer);
 
   const header = (
     <header className="mb-8">
       <p className="text-sm font-medium uppercase tracking-wide text-brand-pink">Proposal</p>
       <h1 className="text-2xl font-extrabold text-brand-ink">
-        {proposal.fields["Client Name"]}
-        {proposal.fields.Company ? ` · ${proposal.fields.Company}` : ""}
+        {proposal.clientName}
+        {proposal.company ? ` · ${proposal.company}` : ""}
       </h1>
     </header>
   );
 
-  const offerContent = offer && (offer.fields.Tagline || offer.fields.Description) && (
+  const offerContent = offer && (offer.tagline || offer.description) && (
     <section className="mb-8 rounded-2xl border border-brand-ink/10 bg-white p-6">
-      <h2 className="text-xl font-extrabold text-brand-ink">{offer.fields["Offer Name"]}</h2>
-      {offer.fields.Tagline && (
-        <p className="mt-1 font-medium text-brand-pink">{offer.fields.Tagline}</p>
-      )}
-      {offer.fields.Description && (
-        <p className="mt-4 whitespace-pre-wrap text-sm text-brand-ink/80">
-          {offer.fields.Description}
-        </p>
+      <h2 className="text-xl font-extrabold text-brand-ink">{offer.name}</h2>
+      {offer.tagline && <p className="mt-1 font-medium text-brand-pink">{offer.tagline}</p>}
+      {offer.description && (
+        <p className="mt-4 whitespace-pre-wrap text-sm text-brand-ink/80">{offer.description}</p>
       )}
     </section>
   );
@@ -75,10 +65,8 @@ export default async function ProposalPage({
     <ul className="mb-6 divide-y divide-brand-ink/10 rounded-2xl border border-brand-ink/10 bg-white">
       {fixedItems.map((item) => (
         <li key={item.id} className="flex items-center justify-between px-4 py-3 text-sm">
-          <span>{item.fields.Description}</span>
-          <span className="font-extrabold">
-            {currency.format(item.fields["Line Total"] ?? 0)}
-          </span>
+          <span>{item.description}</span>
+          <span className="font-extrabold">{currency.format(item.lineTotal)}</span>
         </li>
       ))}
     </ul>
@@ -113,13 +101,13 @@ export default async function ProposalPage({
         fixedTotal={fixedTotal}
         packageOptions={packageOptions.map((o) => ({
           id: o.id,
-          description: o.fields.Description ?? "",
-          lineTotal: o.fields["Line Total"] ?? 0,
+          description: o.description,
+          lineTotal: o.lineTotal,
         }))}
         addons={addons.map((a) => ({
           id: a.id,
-          description: a.fields.Description ?? "",
-          lineTotal: a.fields["Line Total"] ?? 0,
+          description: a.description,
+          lineTotal: a.lineTotal,
         }))}
         paymentPlans={availablePlans}
       />

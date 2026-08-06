@@ -1,16 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getProposalBySlug, updateProposal } from "@/lib/db/proposals";
+import { getLineItemsForProposal, setLineItemSelected } from "@/lib/db/lineItems";
+import { getAvailablePaymentPlans, getOfferForProposal } from "@/lib/db/offers";
 import {
-  ProposalInvoiceFields,
-  TABLES,
-  createRecord,
-  deleteRecords,
-  getAvailablePaymentPlans,
-  getLineItemsForProposal,
-  getOfferForProposal,
-  getProposalBySlug,
+  createProposalInvoice,
+  deleteProposalInvoicesForProposal,
   getProposalInvoices,
-  updateRecord,
-} from "@/lib/airtable";
+} from "@/lib/db/proposalInvoices";
 import {
   Installment,
   PaymentPlan,
@@ -40,15 +36,15 @@ export async function POST(request: NextRequest) {
   if (!proposal) {
     return NextResponse.json({ error: "Proposal not found." }, { status: 404 });
   }
-  if (proposal.fields.Status !== "Sent" && proposal.fields.Status !== "Viewed") {
+  if (proposal.status !== "Sent" && proposal.status !== "Viewed") {
     return NextResponse.json(
       { error: "This proposal has already been signed." },
       { status: 409 }
     );
   }
 
-  const lineItems = await getLineItemsForProposal(proposal);
-  const options = lineItems.filter((item) => item.fields.Kind === "Package Option");
+  const lineItems = await getLineItemsForProposal(proposal.id);
+  const options = lineItems.filter((item) => item.kind === "Package Option");
 
   if (options.length > 0 && !options.some((o) => o.id === selectedOptionId)) {
     return NextResponse.json(
@@ -57,7 +53,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const offer = await getOfferForProposal(proposal);
+  const offer = await getOfferForProposal(proposal.offerId);
   const availablePlans = getAvailablePaymentPlans(offer);
   const plan: PaymentPlan =
     availablePlans.length > 1 && availablePlans.includes(submittedPlan as PaymentPlan)
@@ -66,24 +62,23 @@ export async function POST(request: NextRequest) {
 
   await Promise.all(
     lineItems
-      .filter((item) => item.fields.Kind === "Package Option" || item.fields.Kind === "Add-on")
+      .filter((item) => item.kind === "Package Option" || item.kind === "Add-on")
       .map((item) => {
         const selected =
-          item.fields.Kind === "Package Option"
+          item.kind === "Package Option"
             ? item.id === selectedOptionId
             : selectedAddonIds.includes(item.id);
-        return updateRecord(TABLES.lineItems, item.id, { Selected: selected });
+        return setLineItemSelected(item.id, selected);
       })
   );
 
   const total = lineItems
     .filter((item) => {
-      const kind = item.fields.Kind ?? "Fixed";
-      if (kind === "Fixed") return true;
-      if (kind === "Package Option") return item.id === selectedOptionId;
+      if (item.kind === "Fixed") return true;
+      if (item.kind === "Package Option") return item.id === selectedOptionId;
       return selectedAddonIds.includes(item.id);
     })
-    .reduce((sum, item) => sum + (item.fields["Line Total"] ?? 0), 0);
+    .reduce((sum, item) => sum + item.lineTotal, 0);
 
   // Pin the schedule down once, here — never recomputed later, so the
   // contract text and the actual Xero invoices (one now, the rest via the
@@ -92,14 +87,14 @@ export async function POST(request: NextRequest) {
     total,
     plan,
     getFirstDueDate(),
-    proposal.fields["Deposit Amount"]
+    proposal.depositAmount ?? undefined
   );
 
-  const proposalUpdate: { Status?: "Viewed"; "Payment Plan"?: PaymentPlan; "Contract Terms"?: string } = {
-    "Payment Plan": plan,
+  const proposalUpdate: { status?: "Viewed"; paymentPlan?: PaymentPlan; contractTerms?: string } = {
+    paymentPlan: plan,
   };
-  if (proposal.fields.Status === "Sent") {
-    proposalUpdate.Status = "Viewed";
+  if (proposal.status === "Sent") {
+    proposalUpdate.status = "Viewed";
   }
 
   // The client can revisit page 1 and pick a different plan before signing,
@@ -109,46 +104,43 @@ export async function POST(request: NextRequest) {
   // the text, and replace those — no guessing, since both are read from
   // what's actually stored rather than recomputed from (possibly since-
   // mutated) line item state.
-  const existingInvoices = await getProposalInvoices(proposal);
+  const existingInvoices = await getProposalInvoices(proposal.id);
 
-  if (proposal.fields["Contract Terms"]) {
-    let terms = proposal.fields["Contract Terms"];
+  if (proposal.contractTerms) {
+    let terms = proposal.contractTerms;
     if (existingInvoices.length > 0) {
       const oldInstallments: Installment[] = existingInvoices.map((inv) => ({
-        sequence: inv.fields.Sequence ?? 0,
-        amount: inv.fields.Amount ?? 0,
-        dueDate: inv.fields["Due Date"] ?? "",
+        sequence: inv.sequence,
+        amount: inv.amount,
+        dueDate: inv.dueDate,
       }));
       terms = terms.split(describePaymentPlan(oldInstallments)).join("{{Payment Plan}}");
 
-      const oldTotal = existingInvoices.reduce((sum, inv) => sum + (inv.fields.Amount ?? 0), 0);
+      const oldTotal = existingInvoices.reduce((sum, inv) => sum + inv.amount, 0);
       terms = terms.split(currency.format(oldTotal)).join("{{Total}}");
     }
     terms = resolveTotalPlaceholder(terms, currency.format(total));
-    proposalUpdate["Contract Terms"] = resolvePaymentPlanPlaceholder(
+    proposalUpdate.contractTerms = resolvePaymentPlanPlaceholder(
       terms,
       describePaymentPlan(installments)
     );
   }
 
   // Replace any previously-scheduled installments with the fresh set.
-  await deleteRecords(
-    TABLES.proposalInvoices,
-    existingInvoices.map((inv) => inv.id)
-  );
+  await deleteProposalInvoicesForProposal(proposal.id);
   await Promise.all(
     installments.map((installment) =>
-      createRecord<ProposalInvoiceFields>(TABLES.proposalInvoices, {
-        Proposal: [proposal.id],
-        Sequence: installment.sequence,
-        Amount: installment.amount,
-        "Due Date": installment.dueDate,
-        Description: `${proposal.fields["Client Name"]} — Payment ${installment.sequence} of ${installments.length}`,
+      createProposalInvoice({
+        proposalId: proposal.id,
+        sequence: installment.sequence,
+        amount: installment.amount,
+        dueDate: installment.dueDate,
+        description: `${proposal.clientName} — Payment ${installment.sequence} of ${installments.length}`,
       })
     )
   );
 
-  await updateRecord(TABLES.proposals, proposal.id, proposalUpdate);
+  await updateProposal(proposal.id, proposalUpdate);
 
   return NextResponse.json({ ok: true });
 }

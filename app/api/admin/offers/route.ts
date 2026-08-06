@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { LineItemKind, OfferFields, TABLES, createRecord } from "@/lib/airtable";
+import { LineItemKind } from "@/lib/db/shared";
+import { createOffer, replaceOfferLineItems } from "@/lib/db/offers";
+import type { PaymentPlan } from "@/lib/paymentPlans";
 
 interface LineItemInput {
   description: string;
@@ -16,26 +18,19 @@ export async function POST(request: NextRequest) {
   }
   const lineItems: LineItemInput[] = Array.isArray(body.lineItems) ? body.lineItems : [];
 
-  const offer = await createRecord<OfferFields>(TABLES.offers, {
-    "Offer Name": name,
-    Tagline: body.tagline || undefined,
-    Description: body.description || undefined,
-    "Default Contract Terms": body.contractTerms || undefined,
-    "Payment Plan Options": Array.isArray(body.paymentPlans) ? body.paymentPlans : undefined,
+  const offer = await createOffer({
+    name,
+    tagline: body.tagline || null,
+    description: body.description || null,
+    contractTerms: body.contractTerms || null,
+    paymentPlanOptions: Array.isArray(body.paymentPlans)
+      ? (body.paymentPlans as PaymentPlan[])
+      : undefined,
   });
 
-  await Promise.all(
-    lineItems
-      .filter((item) => item.description?.trim())
-      .map((item) =>
-        createRecord(TABLES.offerLineItems, {
-          Offer: [offer.id],
-          Description: item.description,
-          Kind: item.kind,
-          Quantity: item.quantity,
-          "Unit Price": item.unitPrice,
-        })
-      )
+  await replaceOfferLineItems(
+    offer.id,
+    lineItems.filter((item) => item.description?.trim())
   );
 
   return NextResponse.json({ id: offer.id });

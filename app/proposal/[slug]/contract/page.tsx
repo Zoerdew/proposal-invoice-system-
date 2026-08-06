@@ -1,11 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
-import {
-  computeTotal,
-  getIncludedLineItems,
-  getLineItemsForProposal,
-  getProposalBySlug,
-} from "@/lib/airtable";
+import { getProposalBySlug } from "@/lib/db/proposals";
+import { computeTotal, getIncludedLineItems, getLineItemsForProposal } from "@/lib/db/lineItems";
 import { currency } from "@/lib/currency";
 import StepNav from "../StepNav";
 import SignatureForm from "./SignatureForm";
@@ -21,7 +17,7 @@ export default async function ContractPage({
   const proposal = await getProposalBySlug(slug);
   if (!proposal) notFound();
 
-  const status = proposal.fields.Status ?? "Draft";
+  const status = proposal.status;
 
   if (status === "Draft") {
     return (
@@ -34,10 +30,10 @@ export default async function ContractPage({
     );
   }
 
-  const lineItems = await getLineItemsForProposal(proposal);
-  const hasOptions = lineItems.some((item) => item.fields.Kind === "Package Option");
+  const lineItems = await getLineItemsForProposal(proposal.id);
+  const hasOptions = lineItems.some((item) => item.kind === "Package Option");
   const hasChosenOption = lineItems.some(
-    (item) => item.fields.Kind === "Package Option" && item.fields.Selected
+    (item) => item.kind === "Package Option" && item.selected
   );
 
   if ((status === "Sent" || status === "Viewed") && hasOptions && !hasChosenOption) {
@@ -68,9 +64,7 @@ export default async function ContractPage({
       <StepNav current="contract" />
       <header className="mb-8">
         <p className="text-sm font-medium uppercase tracking-wide text-brand-pink">Contract</p>
-        <h1 className="text-2xl font-extrabold text-brand-ink">
-          {proposal.fields["Client Name"]}
-        </h1>
+        <h1 className="text-2xl font-extrabold text-brand-ink">{proposal.clientName}</h1>
       </header>
 
       <section className="mb-8 overflow-hidden rounded-2xl border border-brand-ink/10 bg-white">
@@ -78,9 +72,9 @@ export default async function ContractPage({
           <tbody>
             {included.map((item) => (
               <tr key={item.id} className="border-b border-brand-ink/10 last:border-0">
-                <td className="px-4 py-3">{item.fields.Description}</td>
+                <td className="px-4 py-3">{item.description}</td>
                 <td className="px-4 py-3 text-right font-medium">
-                  {currency.format(item.fields["Line Total"] ?? 0)}
+                  {currency.format(item.lineTotal)}
                 </td>
               </tr>
             ))}
@@ -96,11 +90,11 @@ export default async function ContractPage({
         </table>
       </section>
 
-      {proposal.fields["Contract Terms"] && (
+      {proposal.contractTerms && (
         <section className="mb-8">
           <h2 className="mb-2 text-lg font-extrabold text-brand-ink">Terms</h2>
           <p className="whitespace-pre-wrap text-sm text-brand-ink/70">
-            {proposal.fields["Contract Terms"]}
+            {proposal.contractTerms}
           </p>
         </section>
       )}

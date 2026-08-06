@@ -1,12 +1,5 @@
-import {
-  TABLES,
-  XeroConnectionFields,
-  createRecord,
-  listAll,
-  updateRecord,
-  ProposalFields,
-  AirtableRecord,
-} from "./airtable";
+import { getXeroConnection, upsertXeroConnection, XeroConnection } from "./db/xeroConnection";
+import { Proposal } from "./db/proposals";
 
 const XERO_AUTH_URL = "https://login.xero.com/identity/connect/authorize";
 const XERO_TOKEN_URL = "https://identity.xero.com/connect/token";
@@ -37,14 +30,6 @@ export function getXeroAuthorizeUrl(state: string): string {
     state,
   });
   return `${XERO_AUTH_URL}?${params.toString()}`;
-}
-
-async function getXeroConnectionRecord(): Promise<AirtableRecord<XeroConnectionFields> | null> {
-  const records = await listAll<XeroConnectionFields>(
-    TABLES.xeroConnection,
-    `{Label} = 'default'`
-  );
-  return records[0] ?? null;
 }
 
 async function basicAuthHeader(): Promise<string> {
@@ -92,25 +77,15 @@ export async function exchangeCodeForTokens(code: string): Promise<void> {
   if (!tenantId) throw new Error("No Xero organisation connected to this app");
 
   await upsertXeroConnection({
-    Label: "default",
-    "Tenant ID": tenantId,
-    "Access Token": tokens.access_token,
-    "Refresh Token": tokens.refresh_token,
-    "Expires At": new Date(Date.now() + tokens.expires_in * 1000).toISOString(),
+    tenantId,
+    accessToken: tokens.access_token,
+    refreshToken: tokens.refresh_token,
+    expiresAt: new Date(Date.now() + tokens.expires_in * 1000).toISOString(),
   });
 }
 
-async function upsertXeroConnection(fields: XeroConnectionFields): Promise<void> {
-  const existing = await getXeroConnectionRecord();
-  if (existing) {
-    await updateRecord(TABLES.xeroConnection, existing.id, fields);
-  } else {
-    await createRecord(TABLES.xeroConnection, fields);
-  }
-}
-
 async function refreshTokens(
-  record: AirtableRecord<XeroConnectionFields>
+  connection: XeroConnection
 ): Promise<{ accessToken: string; tenantId: string }> {
   const res = await fetch(XERO_TOKEN_URL, {
     method: "POST",
@@ -120,7 +95,7 @@ async function refreshTokens(
     },
     body: new URLSearchParams({
       grant_type: "refresh_token",
-      refresh_token: record.fields["Refresh Token"] ?? "",
+      refresh_token: connection.refreshToken,
     }),
     cache: "no-store",
   });
@@ -128,34 +103,33 @@ async function refreshTokens(
     throw new Error(`Xero token refresh failed: ${res.status} ${await res.text()}`);
   }
   const tokens = (await res.json()) as XeroTokenResponse;
-  await updateRecord(TABLES.xeroConnection, record.id, {
-    "Access Token": tokens.access_token,
-    "Refresh Token": tokens.refresh_token,
-    "Expires At": new Date(Date.now() + tokens.expires_in * 1000).toISOString(),
+  await upsertXeroConnection({
+    tenantId: connection.tenantId,
+    accessToken: tokens.access_token,
+    refreshToken: tokens.refresh_token,
+    expiresAt: new Date(Date.now() + tokens.expires_in * 1000).toISOString(),
   });
   return {
     accessToken: tokens.access_token,
-    tenantId: record.fields["Tenant ID"] ?? "",
+    tenantId: connection.tenantId,
   };
 }
 
 async function getValidAccessToken(): Promise<{ accessToken: string; tenantId: string }> {
-  const record = await getXeroConnectionRecord();
-  if (!record) {
+  const connection = await getXeroConnection();
+  if (!connection) {
     throw new Error(
       "Xero is not connected yet — visit /api/xero/connect once to authorize this app against Zoë's Xero org."
     );
   }
-  const expiresAt = record.fields["Expires At"]
-    ? new Date(record.fields["Expires At"]).getTime()
-    : 0;
+  const expiresAt = connection.expiresAt ? new Date(connection.expiresAt).getTime() : 0;
   // Refresh a minute early to avoid racing the expiry.
   if (expiresAt - Date.now() < 60_000) {
-    return refreshTokens(record);
+    return refreshTokens(connection);
   }
   return {
-    accessToken: record.fields["Access Token"] ?? "",
-    tenantId: record.fields["Tenant ID"] ?? "",
+    accessToken: connection.accessToken,
+    tenantId: connection.tenantId,
   };
 }
 
@@ -202,11 +176,11 @@ export function getSalesAccountCode(): string {
 // each call is a single, immediate create-and-send with no internal
 // scheduling of its own.
 export async function createXeroInvoice(
-  proposal: AirtableRecord<ProposalFields>,
+  proposal: Proposal,
   invoiceLineItems: XeroLineItem[],
   dueDate: string
 ): Promise<{ invoiceId: string; onlineInvoiceUrl: string }> {
-  const contactName = proposal.fields.Company || proposal.fields["Client Name"] || "Client";
+  const contactName = proposal.company || proposal.clientName || "Client";
 
   const created = await xeroApiRequest<XeroInvoiceResponse>("Invoices", {
     method: "POST",
@@ -214,9 +188,9 @@ export async function createXeroInvoice(
       Invoices: [
         {
           Type: "ACCREC",
-          Contact: { Name: contactName, EmailAddress: proposal.fields["Client Email"] },
+          Contact: { Name: contactName, EmailAddress: proposal.clientEmail },
           LineItems: invoiceLineItems,
-          Reference: proposal.fields["Client Name"] ?? "",
+          Reference: proposal.clientName ?? "",
           Status: "AUTHORISED",
           DueDate: dueDate,
         },
