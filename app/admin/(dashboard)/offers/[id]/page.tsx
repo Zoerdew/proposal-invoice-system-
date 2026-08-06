@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getOffer, getOfferLineItems } from "@/lib/airtable";
+import { getOffer, getOfferLineItems } from "@/lib/db/offers";
 import OfferForm from "../OfferForm";
 
 export const dynamic = "force-dynamic";
@@ -18,7 +18,7 @@ export default async function EditOfferPage({
     notFound();
   }
 
-  const lineItems = await getOfferLineItems(offer);
+  const lineItems = await getOfferLineItems(id);
 
   return (
     <div>
@@ -27,17 +27,17 @@ export default async function EditOfferPage({
         mode="edit"
         offerId={id}
         initial={{
-          name: offer.fields["Offer Name"] ?? "",
-          tagline: offer.fields.Tagline ?? "",
-          description: offer.fields.Description ?? "",
-          contractTerms: offer.fields["Default Contract Terms"] ?? "",
-          paymentPlans: offer.fields["Payment Plan Options"] ?? [],
+          name: offer.name,
+          tagline: offer.tagline,
+          description: offer.description,
+          contractTerms: offer.contractTerms,
+          paymentPlans: offer.paymentPlanOptions,
           rows: lineItems.map((item) => ({
             key: item.id,
-            description: item.fields.Description ?? "",
-            kind: item.fields.Kind ?? "Fixed",
-            quantity: item.fields.Quantity ?? 1,
-            unitPrice: item.fields["Unit Price"] ?? 0,
+            description: item.description,
+            kind: item.kind,
+            quantity: item.quantity,
+            unitPrice: item.unitPrice,
           })),
         }}
       />

@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { LineItemKind, ProposalFields, TABLES, createRecord } from "@/lib/airtable";
+import { LineItemKind } from "@/lib/db/shared";
+import { createProposal } from "@/lib/db/proposals";
+import { replaceLineItems } from "@/lib/db/lineItems";
 import { ensureUniqueSlug, slugify } from "@/lib/slug";
 
 interface LineItemInput {
@@ -19,34 +21,24 @@ export async function POST(request: NextRequest) {
 
   const slug = await ensureUniqueSlug(slugify(clientName));
 
-  const proposal = await createRecord<ProposalFields>(TABLES.proposals, {
-    "Client Name": clientName,
-    "Client Email": body.clientEmail || undefined,
-    Company: body.company || undefined,
-    "Contract Terms": body.contractTerms || undefined,
-    "Proposal Page Slug": slug,
-    Offer: body.offerId ? [body.offerId] : undefined,
-    "Deposit Amount": typeof body.depositAmount === "number" ? body.depositAmount : undefined,
-    Status: "Draft",
+  const proposal = await createProposal({
+    clientName,
+    clientEmail: body.clientEmail || null,
+    company: body.company || null,
+    contractTerms: body.contractTerms || null,
+    offerId: body.offerId || null,
+    depositAmount: typeof body.depositAmount === "number" ? body.depositAmount : null,
+    slug,
   });
 
-  await Promise.all(
-    lineItems
-      .filter((item) => item.description?.trim())
-      .map((item) =>
-        createRecord(TABLES.lineItems, {
-          Proposal: [proposal.id],
-          Description: item.description,
-          Kind: item.kind,
-          Quantity: item.quantity,
-          "Unit Price": item.unitPrice,
-        })
-      )
+  await replaceLineItems(
+    proposal.id,
+    lineItems.filter((item) => item.description?.trim())
   );
 
   return NextResponse.json({
     id: proposal.id,
     slug,
-    proposalLink: proposal.fields["Proposal Link"] ?? null,
+    proposalLink: proposal.proposalLink,
   });
 }

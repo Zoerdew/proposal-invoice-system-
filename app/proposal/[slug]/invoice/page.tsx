@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getProposalBySlug, getProposalInvoices } from "@/lib/airtable";
+import { getProposalBySlug } from "@/lib/db/proposals";
+import { getProposalInvoices } from "@/lib/db/proposalInvoices";
 import StepNav from "../StepNav";
 import InvoiceStatus from "./InvoiceStatus";
 
@@ -15,7 +16,7 @@ export default async function InvoicePage({
   const proposal = await getProposalBySlug(slug);
   if (!proposal) notFound();
 
-  const status = proposal.fields.Status ?? "Draft";
+  const status = proposal.status;
 
   if (status !== "Signed" && status !== "Invoiced" && status !== "Paid") {
     return (
@@ -34,26 +35,24 @@ export default async function InvoicePage({
     );
   }
 
-  const invoices = await getProposalInvoices(proposal);
+  const invoices = await getProposalInvoices(proposal.id);
 
   return (
     <main className="mx-auto max-w-2xl px-6 py-16">
       <StepNav current="invoice" />
       <header className="mb-8">
         <p className="text-sm font-medium uppercase tracking-wide text-brand-pink">Invoice</p>
-        <h1 className="text-2xl font-extrabold text-brand-ink">
-          {proposal.fields["Client Name"]}
-        </h1>
+        <h1 className="text-2xl font-extrabold text-brand-ink">{proposal.clientName}</h1>
       </header>
 
       <InvoiceStatus
         slug={slug}
         initialStatus={status}
         initialInvoices={invoices.map((invoice) => ({
-          sequence: invoice.fields.Sequence ?? 0,
-          amount: invoice.fields.Amount ?? 0,
-          dueDate: invoice.fields["Due Date"] ?? "",
-          url: invoice.fields["Xero Online Invoice URL"] ?? null,
+          sequence: invoice.sequence,
+          amount: invoice.amount,
+          dueDate: invoice.dueDate,
+          url: invoice.xeroOnlineInvoiceUrl,
         }))}
       />
     </main>

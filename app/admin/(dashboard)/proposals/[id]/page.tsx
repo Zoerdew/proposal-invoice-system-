@@ -1,11 +1,7 @@
 import { notFound } from "next/navigation";
-import {
-  ProposalFields,
-  getLineItemsForProposal,
-  getRecord,
-  listOffers,
-  TABLES,
-} from "@/lib/airtable";
+import { getProposal } from "@/lib/db/proposals";
+import { getLineItemsForProposal } from "@/lib/db/lineItems";
+import { listOffers } from "@/lib/db/offers";
 import ProposalForm from "../ProposalForm";
 
 export const dynamic = "force-dynamic";
@@ -19,13 +15,13 @@ export default async function EditProposalPage({
 
   let proposal;
   try {
-    proposal = await getRecord<ProposalFields>(TABLES.proposals, id);
+    proposal = await getProposal(id);
   } catch {
     notFound();
   }
 
   const [lineItems, offers] = await Promise.all([
-    getLineItemsForProposal(proposal),
+    getLineItemsForProposal(id),
     listOffers(),
   ]);
 
@@ -35,22 +31,22 @@ export default async function EditProposalPage({
       <ProposalForm
         mode="edit"
         proposalId={id}
-        offers={offers.map((o) => ({ id: o.id, name: o.fields["Offer Name"] ?? "Untitled" }))}
+        offers={offers.map((o) => ({ id: o.id, name: o.name || "Untitled" }))}
         initial={{
-          clientName: proposal.fields["Client Name"] ?? "",
-          clientEmail: proposal.fields["Client Email"] ?? "",
-          company: proposal.fields.Company ?? "",
-          contractTerms: proposal.fields["Contract Terms"] ?? "",
-          status: proposal.fields.Status ?? "Draft",
-          proposalLink: proposal.fields["Proposal Link"] ?? null,
-          offerId: proposal.fields.Offer?.[0] ?? null,
-          depositAmount: proposal.fields["Deposit Amount"] ?? null,
+          clientName: proposal.clientName,
+          clientEmail: proposal.clientEmail,
+          company: proposal.company,
+          contractTerms: proposal.contractTerms,
+          status: proposal.status,
+          proposalLink: proposal.proposalLink,
+          offerId: proposal.offerId,
+          depositAmount: proposal.depositAmount,
           rows: lineItems.map((item) => ({
             key: item.id,
-            description: item.fields.Description ?? "",
-            kind: item.fields.Kind ?? "Fixed",
-            quantity: item.fields.Quantity ?? 1,
-            unitPrice: item.fields["Unit Price"] ?? 0,
+            description: item.description,
+            kind: item.kind,
+            quantity: item.quantity,
+            unitPrice: item.unitPrice,
           })),
         }}
       />

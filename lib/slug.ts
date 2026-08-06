@@ -1,4 +1,4 @@
-import { getProposalBySlug } from "./airtable";
+import { getProposalBySlug } from "./db/proposals";
 
 const COMBINING_MARKS = new RegExp("[\\u0300-\\u036f]", "g");
 

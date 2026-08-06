@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { listOffers } from "@/lib/airtable";
+import { listOffers } from "@/lib/db/offers";
 
 export const dynamic = "force-dynamic";
 
@@ -29,7 +29,7 @@ export default async function AdminOffersPage() {
           <tbody>
             {offers.map((o) => (
               <tr key={o.id} className="border-t border-gray-100">
-                <td className="px-4 py-2">{o.fields["Offer Name"]}</td>
+                <td className="px-4 py-2">{o.name}</td>
                 <td className="px-4 py-2 text-right">
                   <Link href={`/admin/offers/${o.id}`} className="text-gray-700 underline">
                     Edit

@@ -1,14 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import {
-  LineItemKind,
-  OfferFields,
-  TABLES,
-  createRecord,
-  deleteRecords,
-  getOffer,
-  getOfferLineItems,
-  updateRecord,
-} from "@/lib/airtable";
+import { LineItemKind } from "@/lib/db/shared";
+import { getOffer, getOfferLineItems, updateOffer, replaceOfferLineItems } from "@/lib/db/offers";
+import type { PaymentPlan } from "@/lib/paymentPlans";
 
 interface LineItemInput {
   description: string;
@@ -26,15 +19,15 @@ export async function GET(
   if (!offer) {
     return NextResponse.json({ error: "Offer not found." }, { status: 404 });
   }
-  const lineItems = await getOfferLineItems(offer);
+  const lineItems = await getOfferLineItems(id);
 
   return NextResponse.json({
-    contractTerms: offer.fields["Default Contract Terms"] ?? "",
+    contractTerms: offer.contractTerms,
     rows: lineItems.map((item) => ({
-      description: item.fields.Description ?? "",
-      kind: item.fields.Kind ?? "Fixed",
-      quantity: item.fields.Quantity ?? 1,
-      unitPrice: item.fields["Unit Price"] ?? 0,
+      description: item.description,
+      kind: item.kind,
+      quantity: item.quantity,
+      unitPrice: item.unitPrice,
     })),
   });
 }
@@ -56,31 +49,19 @@ export async function PATCH(
     return NextResponse.json({ error: "Offer not found." }, { status: 404 });
   }
 
-  await updateRecord<OfferFields>(TABLES.offers, id, {
-    "Offer Name": name,
-    Tagline: body.tagline || undefined,
-    Description: body.description || undefined,
-    "Default Contract Terms": body.contractTerms || undefined,
-    "Payment Plan Options": Array.isArray(body.paymentPlans) ? body.paymentPlans : undefined,
+  await updateOffer(id, {
+    name,
+    tagline: body.tagline || null,
+    description: body.description || null,
+    contractTerms: body.contractTerms || null,
+    paymentPlanOptions: Array.isArray(body.paymentPlans)
+      ? (body.paymentPlans as PaymentPlan[])
+      : undefined,
   });
 
-  const existing = await getOfferLineItems(offer);
-  await deleteRecords(
-    TABLES.offerLineItems,
-    existing.map((item) => item.id)
-  );
-  await Promise.all(
-    lineItems
-      .filter((item) => item.description?.trim())
-      .map((item) =>
-        createRecord(TABLES.offerLineItems, {
-          Offer: [id],
-          Description: item.description,
-          Kind: item.kind,
-          Quantity: item.quantity,
-          "Unit Price": item.unitPrice,
-        })
-      )
+  await replaceOfferLineItems(
+    id,
+    lineItems.filter((item) => item.description?.trim())
   );
 
   return NextResponse.json({ ok: true });

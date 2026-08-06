@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getProposalBySlug, getProposalInvoices } from "@/lib/airtable";
+import { getProposalBySlug } from "@/lib/db/proposals";
+import { getProposalInvoices } from "@/lib/db/proposalInvoices";
 
 export async function GET(request: NextRequest) {
   const slug = request.nextUrl.searchParams.get("slug") ?? "";
@@ -12,15 +13,15 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Proposal not found." }, { status: 404 });
   }
 
-  const invoices = await getProposalInvoices(proposal);
+  const invoices = await getProposalInvoices(proposal.id);
 
   return NextResponse.json({
-    status: proposal.fields.Status,
+    status: proposal.status,
     invoices: invoices.map((invoice) => ({
-      sequence: invoice.fields.Sequence,
-      amount: invoice.fields.Amount,
-      dueDate: invoice.fields["Due Date"],
-      url: invoice.fields["Xero Online Invoice URL"] ?? null,
+      sequence: invoice.sequence,
+      amount: invoice.amount,
+      dueDate: invoice.dueDate,
+      url: invoice.xeroOnlineInvoiceUrl ?? null,
     })),
   });
 }

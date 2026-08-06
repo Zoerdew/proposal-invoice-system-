@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { listProposals } from "@/lib/airtable";
+import { listProposals } from "@/lib/db/proposals";
 
 export const dynamic = "force-dynamic";
 
@@ -32,23 +32,19 @@ export default async function AdminProposalsPage() {
             {proposals.map((p) => (
               <tr key={p.id} className="border-t border-gray-100">
                 <td className="px-4 py-2">
-                  {p.fields["Client Name"]}
-                  {p.fields.Company ? ` · ${p.fields.Company}` : ""}
+                  {p.clientName}
+                  {p.company ? ` · ${p.company}` : ""}
                 </td>
-                <td className="px-4 py-2">{p.fields.Status ?? "Draft"}</td>
+                <td className="px-4 py-2">{p.status}</td>
                 <td className="px-4 py-2">
-                  {p.fields["Proposal Link"] ? (
-                    <a
-                      href={p.fields["Proposal Link"]}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-blue-700 underline"
-                    >
-                      view
-                    </a>
-                  ) : (
-                    "—"
-                  )}
+                  <a
+                    href={p.proposalLink}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-blue-700 underline"
+                  >
+                    view
+                  </a>
                 </td>
                 <td className="px-4 py-2 text-right">
                   <Link href={`/admin/proposals/${p.id}`} className="text-gray-700 underline">
