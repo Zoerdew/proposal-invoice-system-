@@ -13,6 +13,14 @@
   --color-brand-pink: #f11787;
   --color-brand-cream: #fff4fa;
   --color-brand-ink: #0a0608;
+
+  /* Portal tokens (Phase 3) — additive, matches In Control portal's
+     tailwind.config.ts naming so ported components' utility classes
+     (bg-cream, text-ink, text-accent, font-heading) work unchanged. */
+  --color-cream: #faf3e9;
+  --color-ink: #0a0608;
+  --color-accent: #f11787;
+  --font-heading: var(--font-bricolage), sans-serif;
 }
 
 body {

@@ -54,3 +54,28 @@ export function statusToDb(status: ProposalStatus): DbProposalStatus {
 export function statusFromDb(status: string): ProposalStatus {
   return STATUS_FROM_DB[status as DbProposalStatus] ?? "Draft";
 }
+
+export type FindingType = "Gain" | "Opportunity" | "Leak" | "Driver";
+type DbFindingType = "gain" | "opportunity" | "leak" | "driver";
+
+const FINDING_TYPE_TO_DB: Record<FindingType, DbFindingType> = {
+  Gain: "gain",
+  Opportunity: "opportunity",
+  Leak: "leak",
+  Driver: "driver",
+};
+
+const FINDING_TYPE_FROM_DB: Record<DbFindingType, FindingType> = {
+  gain: "Gain",
+  opportunity: "Opportunity",
+  leak: "Leak",
+  driver: "Driver",
+};
+
+export function findingTypeToDb(type: FindingType): DbFindingType {
+  return FINDING_TYPE_TO_DB[type];
+}
+
+export function findingTypeFromDb(type: string): FindingType {
+  return FINDING_TYPE_FROM_DB[type as DbFindingType] ?? "Opportunity";
+}
