@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-// Requires BLOB_READ_WRITE_TOKEN — provisioned in Vercel after this route
-// was first written (Phase 7), hence this comment forcing a rebuild.
+// access: "public" requires the connected Blob store to be a public store
+// (set at store creation, not changeable after) — a private store rejects
+// this call outright.
 import { put } from "@vercel/blob";
 import { getClientByToken } from "@/lib/db/clients";
 import { createDataSource } from "@/lib/db/dataSources";
