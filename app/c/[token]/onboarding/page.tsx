@@ -25,17 +25,17 @@ export default async function OnboardingPage({
 
   return (
     <div className="max-w-2xl mx-auto w-full px-8 py-12">
-      <p className="text-sm tracking-wide uppercase text-[#0a0608]/50 mb-2">
+      <p className="text-sm tracking-wide uppercase text-[#F11787] font-heading font-[800] mb-2">
         {client.name} — Welcome
       </p>
-      <h1 className="font-heading font-[800] text-4xl mb-3">
+      <h1 className="font-heading font-[800] text-4xl mb-3 tracking-[-0.03em]">
         Let&apos;s get you set up
       </h1>
       <p className="text-[#0a0608]/60 mb-10 max-w-sm">
         Ten minutes now saves a lot of guessing later.
       </p>
 
-      <div className="mb-14 p-6 bg-[#0a0608]/[0.03] rounded-md">
+      <div className="card-brutal mb-14 p-6">
         <p className="text-sm tracking-wide uppercase text-[#0a0608]/50 mb-6">
           Here&apos;s what I have — let me know if anything&apos;s changed
         </p>

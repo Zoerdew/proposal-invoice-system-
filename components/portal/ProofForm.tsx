@@ -45,20 +45,14 @@ export default function ProofForm({ token }: { token: string }) {
 
   if (!open) {
     return (
-      <button
-        onClick={() => setOpen(true)}
-        className="text-sm tracking-wide uppercase text-[#0a0608]/60 hover:text-[#0a0608] border border-[#0a0608]/20 rounded-full px-4 py-2"
-      >
+      <button onClick={() => setOpen(true)} className="btn-pill px-5 py-2.5 text-xs">
         + Add proof
       </button>
     );
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="border border-[#0a0608]/10 rounded-md p-6 max-w-md"
-    >
+    <form onSubmit={handleSubmit} className="card-brutal p-6 max-w-md">
       <div className="mb-4">
         <p className="block text-sm text-[#0a0608]/60 mb-2">Type</p>
         <div className="flex gap-2 flex-wrap">
@@ -66,12 +60,9 @@ export default function ProofForm({ token }: { token: string }) {
             <button
               key={option}
               type="button"
+              data-active={type === option}
               onClick={() => setType(option)}
-              className={`px-3 py-1.5 rounded-full text-xs border transition-colors ${
-                type === option
-                  ? "border-[#F11787] text-[#F11787]"
-                  : "border-[#0a0608]/20 text-[#0a0608]/60"
-              }`}
+              className="pill-toggle px-3 py-1.5 text-xs font-heading font-[800] data-[active=false]:border-[#0a0608]/25 data-[active=false]:text-[#0a0608]/60"
             >
               {option}
             </button>
@@ -89,7 +80,7 @@ export default function ProofForm({ token }: { token: string }) {
           rows={3}
           value={text}
           onChange={(e) => setText(e.target.value)}
-          className="w-full border border-[#0a0608]/20 rounded-md p-3 text-sm outline-none focus:border-[#0a0608] bg-transparent"
+          className="input-brutal w-full p-3 text-sm outline-none focus:shadow-[3px_3px_0_#F11787] transition-shadow bg-[#FFFEFB]"
         />
       </div>
 
@@ -103,7 +94,7 @@ export default function ProofForm({ token }: { token: string }) {
           value={source}
           onChange={(e) => setSource(e.target.value)}
           placeholder="e.g. Slack DM, Email"
-          className="w-full border-b border-[#0a0608]/20 py-2 text-sm outline-none focus:border-[#0a0608] bg-transparent placeholder:text-[#0a0608]/30"
+          className="input-brutal w-full p-3 text-sm outline-none focus:shadow-[3px_3px_0_#F11787] transition-shadow bg-[#FFFEFB] placeholder:text-[#0a0608]/30"
         />
       </div>
 
@@ -129,18 +120,18 @@ export default function ProofForm({ token }: { token: string }) {
         </p>
       )}
 
-      <div className="flex gap-3">
+      <div className="flex gap-4 items-center">
         <button
           type="submit"
           disabled={status === "submitting"}
-          className="bg-[#0a0608] text-[#FAF3E9] text-sm tracking-wide uppercase px-5 py-2.5 rounded-md disabled:opacity-40"
+          className="btn-pill px-5 py-2.5 text-xs"
         >
           {status === "submitting" ? "Saving..." : "Save proof"}
         </button>
         <button
           type="button"
           onClick={() => setOpen(false)}
-          className="text-sm text-[#0a0608]/50 hover:text-[#0a0608]"
+          className="text-sm text-[#0a0608]/50 hover:text-[#F11787]"
         >
           Cancel
         </button>

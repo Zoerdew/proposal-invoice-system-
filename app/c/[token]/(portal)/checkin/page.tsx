@@ -13,7 +13,7 @@ export default async function CheckinPage({
 
   return (
     <div>
-      <p className="text-sm tracking-wide uppercase text-[#0a0608]/50 mb-10">
+      <p className="text-sm tracking-wide uppercase text-[#F11787] font-heading font-[800] mb-10">
         Weekly Check-in
       </p>
       <CheckinForm token={token} />

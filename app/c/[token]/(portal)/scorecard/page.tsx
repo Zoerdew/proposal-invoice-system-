@@ -30,7 +30,7 @@ export default async function ScorecardPage({
 
   return (
     <div>
-      <p className="text-sm tracking-wide uppercase text-[#0a0608]/50 mb-10">
+      <p className="text-sm tracking-wide uppercase text-[#F11787] font-heading font-[800] mb-10">
         Commercial Scorecard
       </p>
 
@@ -38,14 +38,17 @@ export default async function ScorecardPage({
         <p className="text-sm text-[#0a0608]/50">No metrics set up yet.</p>
       )}
 
-      <ul>
-        {metrics.map((metric: Metric) => {
+      <ul className="flex flex-col gap-6">
+        {metrics.map((metric: Metric, i) => {
           const readings = readingsByMetric.get(metric.id) ?? [];
           const latest = readings[readings.length - 1];
           return (
-            <li key={metric.id} className="py-8 border-t border-[#0a0608]/10">
+            <li
+              key={metric.id}
+              className={`p-6 ${i % 2 === 0 ? "card-brutal" : "card-brutal-blush"}`}
+            >
               <div className="flex justify-between items-baseline mb-1 gap-4">
-                <h2 className="font-heading font-[800] text-xl">{metric.name}</h2>
+                <h2 className="font-heading font-[800] text-xl tracking-[-0.03em]">{metric.name}</h2>
                 {latest && (
                   <p className="font-heading font-[800] text-2xl shrink-0">
                     {formatNumber(latest.value ?? 0)}
@@ -60,9 +63,12 @@ export default async function ScorecardPage({
                 {metric.target !== null && <span>Target: {formatNumber(metric.target)}</span>}
               </div>
               {readings.length > 0 && (
-                <ul className="flex flex-wrap gap-x-4 gap-y-1">
+                <ul className="flex flex-wrap gap-2">
                   {readings.map((r) => (
-                    <li key={r.id} className="text-xs text-[#0a0608]/40">
+                    <li
+                      key={r.id}
+                      className="text-xs text-[#0a0608]/60 bg-[#FFFEFB] border-2 border-[#0a0608] rounded-full px-3 py-1"
+                    >
                       {formatDate(r.readAt)}: {formatNumber(r.value ?? 0)}
                     </li>
                   ))}

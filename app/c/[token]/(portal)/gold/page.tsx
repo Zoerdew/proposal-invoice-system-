@@ -40,7 +40,7 @@ export default async function GoldPage({
 
   return (
     <div>
-      <p className="text-sm tracking-wide uppercase text-[#0a0608]/50 mb-10">
+      <p className="text-sm tracking-wide uppercase text-[#F11787] font-heading font-[800] mb-10">
         GOLD Report
       </p>
 
@@ -50,16 +50,21 @@ export default async function GoldPage({
         </p>
       )}
 
-      {groups.map((group) => (
-        <section key={group.type} className="mb-14 last:mb-0">
-          <h2 className="font-heading font-[800] text-2xl mb-4">
+      {groups.map((group, i) => (
+        <section
+          key={group.type}
+          className={`mb-8 last:mb-0 p-6 ${i % 2 === 0 ? "card-brutal" : "card-brutal-blush"}`}
+        >
+          <h2 className="font-heading font-[800] text-2xl mb-4 tracking-[-0.03em]">
             {group.type}
           </h2>
           <ul>
-            {group.findings.map((finding: Finding) => (
+            {group.findings.map((finding: Finding, j) => (
               <li
                 key={finding.id}
-                className="py-6 border-t border-[#0a0608]/10 flex justify-between gap-8"
+                className={`py-6 flex justify-between gap-8 ${
+                  j > 0 ? "border-t-2 border-[#0a0608]/15" : ""
+                }`}
               >
                 <div>
                   <p className="font-heading font-[800] text-lg mb-1">

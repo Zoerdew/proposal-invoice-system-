@@ -35,40 +35,42 @@ export default async function SnapshotPage({
 
   return (
     <div>
-      <p className="text-sm tracking-wide uppercase text-[#0a0608]/50 mb-2">
+      <p className="text-sm tracking-wide uppercase text-[#F11787] font-heading font-[800] mb-2">
         Commercial Snapshot
       </p>
 
-      <div className="grid grid-cols-2 gap-x-8 gap-y-10 mt-10">
-        <div>
+      <div className="grid grid-cols-2 gap-6 mt-10">
+        <div className="card-brutal p-6">
           <p className="text-sm text-[#0a0608]/60 mb-1">Identified</p>
-          <p className="font-heading font-[800] text-5xl leading-none">
+          <p className="font-heading font-[800] text-4xl leading-none tracking-[-0.03em]">
             {formatCurrency(client.totalIdentified)}
           </p>
         </div>
-        <div>
+        <div className="card-brutal-pink p-6">
           <p className="text-sm text-[#0a0608]/60 mb-1">Banked</p>
-          <p className="font-heading font-[800] text-5xl leading-none">
+          <p className="font-heading font-[800] text-4xl leading-none tracking-[-0.03em]">
             {formatCurrency(client.totalBanked)}
           </p>
         </div>
       </div>
 
-      <div className="mt-12">
-        <div className="flex justify-between text-sm text-[#0a0608]/60 mb-2">
+      <div className="card-brutal-blush mt-8 p-6">
+        <div className="flex justify-between text-sm text-[#0a0608]/60 mb-3">
           <span>Progress against target</span>
-          <span>{formatCurrency(client.targetFigure)}</span>
+          <span className="font-heading font-[800] text-[#0a0608]">
+            {formatCurrency(client.targetFigure)}
+          </span>
         </div>
-        <div className="h-2 w-full bg-[#0a0608]/10 rounded-full overflow-hidden">
+        <div className="h-4 w-full bg-[#FFFEFB] rounded-full border-2 border-[#0a0608] overflow-hidden">
           <div
-            className="h-full bg-[#F11787] rounded-full"
+            className="h-full bg-[#F11787]"
             style={{ width: `${progressPct}%` }}
           />
         </div>
         <p className="text-sm text-[#0a0608]/60 mt-2">{progressPct}%</p>
       </div>
 
-      <div className="mt-12 pt-6 border-t border-[#0a0608]/10 flex justify-between items-baseline">
+      <div className="card-brutal mt-8 p-6 flex justify-between items-baseline">
         <p className="text-sm text-[#0a0608]/60">Days remaining</p>
         <p className="font-heading font-[800] text-2xl">{daysLeft}</p>
       </div>

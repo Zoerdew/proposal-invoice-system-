@@ -28,9 +28,11 @@ function SectionHeading({
 }) {
   return (
     <div className="mb-8">
-      <div className="flex items-baseline gap-3 mb-2">
-        <span className="font-heading font-[800] text-sm text-[#F11787]">{number}</span>
-        <h2 className="font-heading font-[800] text-2xl">{children}</h2>
+      <div className="flex items-center gap-3 mb-3">
+        <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-[#0a0608] text-[#FDE047] font-heading font-[800] text-sm shrink-0">
+          {number}
+        </span>
+        <h2 className="font-heading font-[800] text-2xl tracking-[-0.03em]">{children}</h2>
       </div>
       <p className="text-sm text-[#0a0608]/50 max-w-sm">{subhead}</p>
     </div>
@@ -75,12 +77,9 @@ function PillGroup<T extends string>({
         <button
           key={option}
           type="button"
+          data-active={value === option}
           onClick={() => onChange(option)}
-          className={`px-3.5 py-1.5 rounded-full text-xs border transition-colors ${
-            value === option
-              ? "border-[#F11787] bg-[#F11787]/10 text-[#F11787]"
-              : "border-[#0a0608]/20 text-[#0a0608]/60 hover:border-[#0a0608]/40"
-          }`}
+          className="pill-toggle px-4 py-2 text-xs font-heading font-[800] data-[active=false]:border-[#0a0608]/25 data-[active=false]:text-[#0a0608]/60 data-[active=false]:hover:border-[#0a0608]"
         >
           {option}
         </button>
@@ -89,10 +88,9 @@ function PillGroup<T extends string>({
   );
 }
 
-const textareaClass =
-  "w-full border border-[#0a0608]/20 rounded-md p-4 text-sm leading-relaxed outline-none focus:border-[#0a0608] bg-transparent placeholder:text-[#0a0608]/30";
-const inputClass =
-  "w-full border border-[#0a0608]/20 rounded-md p-3 text-sm outline-none focus:border-[#0a0608] bg-transparent placeholder:text-[#0a0608]/30";
+const textareaClass = "input-brutal w-full p-4 text-sm leading-relaxed outline-none focus:shadow-[3px_3px_0_#F11787] transition-shadow bg-[#FFFEFB] placeholder:text-[#0a0608]/30";
+const inputClass = "input-brutal w-full p-3 text-sm outline-none focus:shadow-[3px_3px_0_#F11787] transition-shadow bg-[#FFFEFB] placeholder:text-[#0a0608]/30";
+const nestedCardClass = "border-2 border-[#0a0608] rounded-[14px] p-4 bg-[#FFFEFB]";
 
 interface OfferRow {
   key: string;
@@ -221,14 +219,14 @@ export default function OnboardingForm({ token }: { token: string }) {
 
   return (
     <form onSubmit={handleSubmit} className="max-w-lg">
-      <section className="mb-16">
+      <section className="card-brutal mb-10 p-8">
         <SectionHeading number="01" subhead="The honest baseline — no polish needed.">
           Where you are
         </SectionHeading>
 
         <div className="mb-10">
           <FieldLabel htmlFor="annualTurnover">Annual turnover</FieldLabel>
-          <div className="flex items-center border-b border-[#0a0608]/20 focus-within:border-[#0a0608] max-w-xs">
+          <div className="input-brutal flex items-center px-4 focus-within:shadow-[3px_3px_0_#F11787] transition-shadow max-w-xs">
             <span className="text-2xl font-heading font-[800] mr-1">£</span>
             <input
               id="annualTurnover"
@@ -240,7 +238,7 @@ export default function OnboardingForm({ token }: { token: string }) {
               value={annualTurnover}
               onChange={(e) => setAnnualTurnover(e.target.value)}
               placeholder="0"
-              className="w-full bg-transparent py-2 text-2xl font-heading font-[800] outline-none placeholder:text-[#0a0608]/20"
+              className="w-full bg-transparent py-3 text-2xl font-heading font-[800] outline-none placeholder:text-[#0a0608]/20"
             />
           </div>
         </div>
@@ -287,7 +285,7 @@ export default function OnboardingForm({ token }: { token: string }) {
         </div>
       </section>
 
-      <section className="mb-16 pt-16 border-t border-[#0a0608]/10">
+      <section className="card-brutal-blush mb-10 p-8">
         <SectionHeading
           number="02"
           subhead="What needs to be true for this to have been worth it."
@@ -303,7 +301,7 @@ export default function OnboardingForm({ token }: { token: string }) {
             required
             value={programmeStartDate}
             onChange={(e) => setProgrammeStartDate(e.target.value)}
-            className="border-b border-[#0a0608]/20 py-2 text-sm outline-none focus:border-[#0a0608] bg-transparent max-w-xs"
+            className="input-brutal py-3 px-4 text-sm outline-none focus:shadow-[3px_3px_0_#F11787] transition-shadow bg-[#FFFEFB] max-w-xs"
           />
         </div>
 
@@ -334,20 +332,22 @@ export default function OnboardingForm({ token }: { token: string }) {
         </div>
       </section>
 
-      <section className="mb-16 pt-16 border-t border-[#0a0608]/10">
+      <section className="card-brutal mb-10 p-8">
         <SectionHeading number="03" subhead="Every offer, even the ones you don't push anymore.">
           Your offers
         </SectionHeading>
 
         {offers.map((row, i) => (
-          <div key={row.key} className="mb-6 rounded-md border border-[#0a0608]/10 p-4">
+          <div key={row.key} className={`mb-6 ${nestedCardClass}`}>
             <div className="mb-3 flex items-center justify-between">
-              <p className="text-xs uppercase tracking-wide text-[#0a0608]/40">Offer {i + 1}</p>
+              <p className="text-xs uppercase tracking-wide text-[#0a0608]/40 font-heading font-[800]">
+                Offer {i + 1}
+              </p>
               {offers.length > 1 && (
                 <button
                   type="button"
                   onClick={() => setOffers((current) => current.filter((r) => r.key !== row.key))}
-                  className="text-xs text-[#0a0608]/40 hover:text-[#0a0608]"
+                  className="text-xs text-[#0a0608]/40 hover:text-[#F11787]"
                 >
                   Remove
                 </button>
@@ -391,6 +391,7 @@ export default function OnboardingForm({ token }: { token: string }) {
                 type="checkbox"
                 checked={row.stillLive}
                 onChange={(e) => updateOffer(row.key, { stillLive: e.target.checked })}
+                className="w-4 h-4 accent-[#F11787]"
               />
               Still live
             </label>
@@ -399,13 +400,13 @@ export default function OnboardingForm({ token }: { token: string }) {
         <button
           type="button"
           onClick={() => setOffers((current) => [...current, emptyOfferRow()])}
-          className="text-sm font-medium text-[#0a0608]/70 hover:text-[#0a0608]"
+          className="text-sm font-heading font-[800] text-[#0a0608] hover:text-[#F11787]"
         >
           + Add another offer
         </button>
       </section>
 
-      <section className="mb-16 pt-16 border-t border-[#0a0608]/10">
+      <section className="card-brutal-blush mb-10 p-8">
         <SectionHeading
           number="04"
           subhead="Launches, ads on and off, price changes, a podcast, a holiday, a slow spell — anything that moved the needle."
@@ -421,7 +422,7 @@ export default function OnboardingForm({ token }: { token: string }) {
               onChange={(e) =>
                 updateTimelineRow(row.key, { month: e.target.value ? `${e.target.value}-01` : "" })
               }
-              className="w-36 shrink-0 rounded-md border border-[#0a0608]/20 p-2 text-sm outline-none focus:border-[#0a0608] bg-transparent"
+              className="input-brutal w-40 shrink-0 p-2 text-sm outline-none focus:shadow-[3px_3px_0_#F11787] transition-shadow bg-[#FFFEFB]"
             />
             <input
               value={row.whatHappened}
@@ -433,7 +434,7 @@ export default function OnboardingForm({ token }: { token: string }) {
               <button
                 type="button"
                 onClick={() => setTimeline((current) => current.filter((r) => r.key !== row.key))}
-                className="shrink-0 text-[#0a0608]/40 hover:text-[#0a0608]"
+                className="shrink-0 text-[#0a0608]/40 hover:text-[#F11787]"
                 aria-label={`Remove month ${i + 1}`}
               >
                 ✕
@@ -444,13 +445,13 @@ export default function OnboardingForm({ token }: { token: string }) {
         <button
           type="button"
           onClick={() => setTimeline((current) => [...current, emptyTimelineRow()])}
-          className="text-sm font-medium text-[#0a0608]/70 hover:text-[#0a0608]"
+          className="text-sm font-heading font-[800] text-[#0a0608] hover:text-[#F11787]"
         >
           + Add a month
         </button>
       </section>
 
-      <section className="mb-16 pt-16 border-t border-[#0a0608]/10">
+      <section className="card-brutal mb-10 p-8">
         <SectionHeading number="05" subhead="So there's no back-and-forth chasing access later.">
           Where things live
         </SectionHeading>
@@ -521,7 +522,7 @@ export default function OnboardingForm({ token }: { token: string }) {
         </div>
       </section>
 
-      <section className="mb-16 pt-16 border-t border-[#0a0608]/10">
+      <section className="card-brutal-blush mb-10 p-8">
         <SectionHeading number="06" subhead="So the plan works around real constraints, not guessed ones.">
           What&apos;s off the table
         </SectionHeading>
@@ -567,7 +568,7 @@ export default function OnboardingForm({ token }: { token: string }) {
         </div>
       </section>
 
-      <section className="mb-12 pt-16 border-t border-[#0a0608]/10">
+      <section className="card-brutal mb-10 p-8">
         <SectionHeading
           number="07"
           subhead="The practical bits, so nothing falls through the cracks."
@@ -613,7 +614,7 @@ export default function OnboardingForm({ token }: { token: string }) {
       <button
         type="submit"
         disabled={status === "submitting" || !canSubmit}
-        className="bg-[#0a0608] text-[#FAF3E9] text-sm tracking-wide uppercase px-6 py-3 rounded-md disabled:opacity-40 transition-opacity"
+        className="btn-pill px-8 py-4 text-sm"
       >
         {status === "submitting" ? "Submitting..." : "Complete onboarding"}
       </button>
