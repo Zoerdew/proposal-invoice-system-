@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { getApplication } from "@/lib/db/applications";
 import ApplicationReviewForm from "./ApplicationReviewForm";
+import ConvertToProposal from "./ConvertToProposal";
 
 export const dynamic = "force-dynamic";
 
@@ -61,12 +62,13 @@ export default async function ApplicationDetailPage({
           </dl>
         </div>
 
-        <div>
+        <div className="flex flex-col gap-6">
           <ApplicationReviewForm
             applicationId={application.id}
             initialStatus={application.status}
             initialFitNotes={application.fitNotesPrivate}
           />
+          <ConvertToProposal applicationId={application.id} />
         </div>
       </div>
     </div>
