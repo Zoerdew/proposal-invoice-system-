@@ -12,6 +12,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <Link href="/admin/offers" className="text-gray-700 hover:text-gray-900">
             Offers
           </Link>
+          <Link href="/admin/applications" className="text-gray-700 hover:text-gray-900">
+            Applications
+          </Link>
         </div>
         <LogoutButton />
       </nav>
