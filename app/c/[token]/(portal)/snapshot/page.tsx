@@ -70,8 +70,8 @@ export default async function SnapshotPage({
         <p className="text-sm text-[#0a0608]/60 mt-2">{progressPct}%</p>
       </div>
 
-      <div className="card-brutal mt-8 p-6 flex justify-between items-baseline">
-        <p className="text-sm text-[#0a0608]/60">Days remaining</p>
+      <div className="card-brutal-yellow mt-8 p-6 flex justify-between items-baseline">
+        <p className="text-sm text-[#0a0608]/70">Days remaining</p>
         <p className="font-heading font-[800] text-2xl">{daysLeft}</p>
       </div>
     </div>

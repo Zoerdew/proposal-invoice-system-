@@ -58,6 +58,22 @@ body {
   box-shadow: 6px 6px 0 var(--color-ink);
 }
 
+.card-brutal-yellow {
+  background: var(--color-yellow);
+  border: 3px solid var(--color-ink);
+  border-radius: 20px;
+  box-shadow: 6px 6px 0 var(--color-ink);
+}
+
+/* Dark hero band — the one place ink goes big instead of just borders,
+   so the brand's loudest colour actually shows up somewhere. */
+.hero-ink {
+  background: var(--color-ink);
+  color: var(--color-cream);
+  border-radius: 20px;
+  box-shadow: 6px 6px 0 var(--color-accent);
+}
+
 .input-brutal {
   background: var(--color-paper);
   border: 3px solid var(--color-ink);
