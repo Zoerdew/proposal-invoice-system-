@@ -40,14 +40,14 @@ export default function CheckinForm({ token }: { token: string }) {
 
   if (status === "done") {
     return (
-      <div className="py-16 text-center">
+      <div className="card-brutal py-16 text-center px-8">
         <p className="font-heading font-[800] text-2xl mb-2">Check-in logged</p>
         <p className="text-sm text-[#0a0608]/60 mb-8">
           Thanks — this week is in. You&apos;ll see it show up on the Evidence page.
         </p>
         <button
           onClick={() => setStatus("idle")}
-          className="text-sm tracking-wide uppercase text-[#0a0608]/60 hover:text-[#0a0608] underline"
+          className="text-sm tracking-wide uppercase text-[#0a0608]/60 hover:text-[#F11787] underline"
         >
           Log another
         </button>
@@ -56,12 +56,12 @@ export default function CheckinForm({ token }: { token: string }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-md">
+    <form onSubmit={handleSubmit} className="card-brutal max-w-md p-8">
       <div className="mb-8">
         <label className="block text-sm text-[#0a0608]/60 mb-2" htmlFor="revenue">
           Revenue this week
         </label>
-        <div className="flex items-center border-b border-[#0a0608]/20 focus-within:border-[#0a0608]">
+        <div className="input-brutal flex items-center px-4 focus-within:shadow-[3px_3px_0_#F11787] transition-shadow bg-[#FFFEFB]">
           <span className="text-2xl font-heading font-[800] mr-2">£</span>
           <input
             id="revenue"
@@ -73,7 +73,7 @@ export default function CheckinForm({ token }: { token: string }) {
             value={revenueThisWeek}
             onChange={(e) => setRevenueThisWeek(e.target.value)}
             placeholder="0"
-            className="w-full bg-transparent py-2 text-2xl font-heading font-[800] outline-none placeholder:text-[#0a0608]/20"
+            className="w-full bg-transparent py-3 text-2xl font-heading font-[800] outline-none placeholder:text-[#0a0608]/20"
           />
         </div>
       </div>
@@ -89,7 +89,7 @@ export default function CheckinForm({ token }: { token: string }) {
           value={qualitativeNotes}
           onChange={(e) => setQualitativeNotes(e.target.value)}
           placeholder="Wins, blockers, anything worth flagging..."
-          className="w-full border border-[#0a0608]/20 rounded-md p-3 text-sm outline-none focus:border-[#0a0608] bg-transparent placeholder:text-[#0a0608]/30"
+          className="input-brutal w-full p-4 text-sm outline-none focus:shadow-[3px_3px_0_#F11787] transition-shadow bg-[#FFFEFB] placeholder:text-[#0a0608]/30"
         />
       </div>
 
@@ -100,12 +100,9 @@ export default function CheckinForm({ token }: { token: string }) {
             <button
               key={option}
               type="button"
+              data-active={feltLike === option}
               onClick={() => setFeltLike(option)}
-              className={`px-4 py-2 rounded-full text-sm border transition-colors ${
-                feltLike === option
-                  ? "border-[#F11787] text-[#F11787]"
-                  : "border-[#0a0608]/20 text-[#0a0608]/60 hover:border-[#0a0608]/40"
-              }`}
+              className="pill-toggle px-4 py-2 text-xs font-heading font-[800] data-[active=false]:border-[#0a0608]/25 data-[active=false]:text-[#0a0608]/60 data-[active=false]:hover:border-[#0a0608]"
             >
               {option}
             </button>
@@ -122,7 +119,7 @@ export default function CheckinForm({ token }: { token: string }) {
       <button
         type="submit"
         disabled={status === "submitting" || !feltLike}
-        className="bg-[#0a0608] text-[#FAF3E9] text-sm tracking-wide uppercase px-6 py-3 rounded-md disabled:opacity-40 transition-opacity"
+        className="btn-pill px-6 py-3 text-sm"
       >
         {status === "submitting" ? "Submitting..." : "Submit check-in"}
       </button>

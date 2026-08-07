@@ -5,6 +5,8 @@ import {
   getClientByToken,
   updateClientOnboarding,
 } from "@/lib/db/clients";
+import { replaceClientOffers, ClientOfferInput } from "@/lib/db/clientOffers";
+import { replaceTimelineEvents, TimelineEventInput } from "@/lib/db/timelineEvents";
 
 const CHECKIN_DAYS: CheckinDay[] = [
   "Monday",
@@ -18,6 +20,37 @@ const REVENUE_SOURCES: RevenueDataSource[] = [
   "Other platform",
   "They'll send me reports",
 ];
+
+function isValidOffers(value: unknown): value is ClientOfferInput[] {
+  return (
+    Array.isArray(value) &&
+    value.every(
+      (item) =>
+        item &&
+        typeof item === "object" &&
+        typeof item.name === "string" &&
+        item.name.trim() &&
+        (item.price === undefined || typeof item.price === "number") &&
+        (item.stillLive === undefined || typeof item.stillLive === "boolean") &&
+        (item.deliveryHours === undefined || typeof item.deliveryHours === "number")
+    )
+  );
+}
+
+function isValidTimeline(value: unknown): value is TimelineEventInput[] {
+  return (
+    Array.isArray(value) &&
+    value.every(
+      (item) =>
+        item &&
+        typeof item === "object" &&
+        typeof item.month === "string" &&
+        item.month.trim() &&
+        typeof item.whatHappened === "string" &&
+        item.whatHappened.trim()
+    )
+  );
+}
 
 export async function POST(
   req: NextRequest,
@@ -35,7 +68,6 @@ export async function POST(
   const bestDayForCheckin = body?.bestDayForCheckin;
   const whereRevenueDataLives = body?.whereRevenueDataLives;
   const programmeStartDate = body?.programmeStartDate;
-  const baselineMonthlyRevenue = Number(body?.baselineMonthlyRevenue);
   const annualTurnover = Number(body?.annualTurnover);
   const biggestChallengeRightNow = body?.biggestChallengeRightNow;
   const whatsGeneratingLeadsNow = body?.whatsGeneratingLeadsNow;
@@ -44,12 +76,23 @@ export async function POST(
   const definitionOfSuccess = body?.definitionOfSuccess;
   const anythingElse = body?.anythingElse;
 
+  const paymentProcessors = body?.paymentProcessors;
+  const emailPlatform = body?.emailPlatform;
+  const subscriberCount = body?.subscriberCount;
+  const whereEnquiriesLive = body?.whereEnquiriesLive;
+  const analyticsAccess = body?.analyticsAccess;
+  const offTheTable = body?.offTheTable;
+  const whatTheyveTriedAndRuledOut = body?.whatTheyveTriedAndRuledOut;
+  const ownTheory = body?.ownTheory;
+
+  const offers = body?.offers ?? [];
+  const timeline = body?.timeline ?? [];
+
   if (
     !CHECKIN_DAYS.includes(bestDayForCheckin) ||
     !REVENUE_SOURCES.includes(whereRevenueDataLives) ||
     typeof programmeStartDate !== "string" ||
     !programmeStartDate.trim() ||
-    !Number.isFinite(baselineMonthlyRevenue) ||
     !Number.isFinite(annualTurnover) ||
     typeof biggestChallengeRightNow !== "string" ||
     !biggestChallengeRightNow.trim() ||
@@ -60,7 +103,17 @@ export async function POST(
     typeof whyNow !== "string" ||
     !whyNow.trim() ||
     (definitionOfSuccess !== undefined && typeof definitionOfSuccess !== "string") ||
-    (anythingElse !== undefined && typeof anythingElse !== "string")
+    (anythingElse !== undefined && typeof anythingElse !== "string") ||
+    (paymentProcessors !== undefined && typeof paymentProcessors !== "string") ||
+    (emailPlatform !== undefined && typeof emailPlatform !== "string") ||
+    (subscriberCount !== undefined && typeof subscriberCount !== "number") ||
+    (whereEnquiriesLive !== undefined && typeof whereEnquiriesLive !== "string") ||
+    (analyticsAccess !== undefined && typeof analyticsAccess !== "string") ||
+    (offTheTable !== undefined && typeof offTheTable !== "string") ||
+    (whatTheyveTriedAndRuledOut !== undefined && typeof whatTheyveTriedAndRuledOut !== "string") ||
+    (ownTheory !== undefined && typeof ownTheory !== "string") ||
+    !isValidOffers(offers) ||
+    !isValidTimeline(timeline)
   ) {
     return NextResponse.json({ error: "Invalid onboarding data" }, { status: 400 });
   }
@@ -69,7 +122,6 @@ export async function POST(
     bestDayForCheckin,
     whereRevenueDataLives,
     programmeStartDate,
-    baselineMonthlyRevenue,
     annualTurnover,
     biggestChallengeRightNow,
     whatsGeneratingLeadsNow,
@@ -77,7 +129,18 @@ export async function POST(
     whyNow,
     definitionOfSuccess: definitionOfSuccess?.trim() || undefined,
     anythingElse: anythingElse?.trim() || undefined,
+    paymentProcessors: paymentProcessors?.trim() || undefined,
+    emailPlatform: emailPlatform?.trim() || undefined,
+    subscriberCount: subscriberCount ?? undefined,
+    whereEnquiriesLive: whereEnquiriesLive?.trim() || undefined,
+    analyticsAccess: analyticsAccess?.trim() || undefined,
+    offTheTable: offTheTable?.trim() || undefined,
+    whatTheyveTriedAndRuledOut: whatTheyveTriedAndRuledOut?.trim() || undefined,
+    ownTheory: ownTheory?.trim() || undefined,
   });
+
+  await replaceClientOffers(client.id, offers);
+  await replaceTimelineEvents(client.id, timeline);
 
   return NextResponse.json({ ok: true });
 }

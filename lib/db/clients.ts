@@ -112,7 +112,6 @@ export interface OnboardingData {
   bestDayForCheckin: CheckinDay;
   whereRevenueDataLives: RevenueDataSource;
   programmeStartDate: string;
-  baselineMonthlyRevenue: number;
   annualTurnover: number;
   biggestChallengeRightNow: string;
   whatsGeneratingLeadsNow: string;
@@ -120,6 +119,15 @@ export interface OnboardingData {
   whyNow: string;
   definitionOfSuccess?: string;
   anythingElse?: string;
+  // Phase 7 additions
+  paymentProcessors?: string;
+  emailPlatform?: string;
+  subscriberCount?: number;
+  whereEnquiriesLive?: string;
+  analyticsAccess?: string;
+  offTheTable?: string;
+  whatTheyveTriedAndRuledOut?: string;
+  ownTheory?: string;
 }
 
 // Findings has no stored "identified/banked" total — every row is itself an
@@ -179,12 +187,15 @@ export async function getClientByToken(token: string): Promise<Client | null> {
 // onboarding (kept separate so the intake record and working record don't
 // fight, per BUILD-SPEC.md). Upserts onboarding since this is the first
 // write to that table for a given client.
+// baseline_monthly_revenue and baseline_repeat_buyer_pct are deliberately
+// not written here (BUILD-SPEC.md, Phase 7): clients don't know the second
+// one and will guess, and that guess becomes their baseline. Both are
+// calculated from the data and filled in via admin instead (Phase 6).
 export async function updateClientOnboarding(clientId: string, data: OnboardingData): Promise<void> {
   const { error: clientError } = await db()
     .from("clients")
     .update({
       start_date: data.programmeStartDate,
-      baseline_monthly_revenue: data.baselineMonthlyRevenue,
       annual_turnover: data.annualTurnover,
       onboarding_complete: true,
     })
@@ -202,6 +213,16 @@ export async function updateClientOnboarding(clientId: string, data: OnboardingD
       why_now: data.whyNow,
       ...(data.definitionOfSuccess ? { definition_of_success: data.definitionOfSuccess } : {}),
       ...(data.anythingElse ? { anything_else: data.anythingElse } : {}),
+      ...(data.paymentProcessors ? { payment_processors: data.paymentProcessors } : {}),
+      ...(data.emailPlatform ? { email_platform: data.emailPlatform } : {}),
+      ...(data.subscriberCount !== undefined ? { subscriber_count: data.subscriberCount } : {}),
+      ...(data.whereEnquiriesLive ? { where_enquiries_live: data.whereEnquiriesLive } : {}),
+      ...(data.analyticsAccess ? { analytics_access: data.analyticsAccess } : {}),
+      ...(data.offTheTable ? { off_the_table: data.offTheTable } : {}),
+      ...(data.whatTheyveTriedAndRuledOut
+        ? { what_theyve_tried_and_ruled_out: data.whatTheyveTriedAndRuledOut }
+        : {}),
+      ...(data.ownTheory ? { own_theory: data.ownTheory } : {}),
     },
     { onConflict: "client_id" }
   );
@@ -217,6 +238,14 @@ export interface OnboardingResponses {
   whyNow: string;
   definitionOfSuccess: string;
   anythingElse: string;
+  paymentProcessors: string;
+  emailPlatform: string;
+  subscriberCount: number | null;
+  whereEnquiriesLive: string;
+  analyticsAccess: string;
+  offTheTable: string;
+  whatTheyveTriedAndRuledOut: string;
+  ownTheory: string;
 }
 
 export async function getOnboardingByClientId(clientId: string): Promise<OnboardingResponses | null> {
@@ -236,6 +265,14 @@ export async function getOnboardingByClientId(clientId: string): Promise<Onboard
     whyNow: data.why_now ?? "",
     definitionOfSuccess: data.definition_of_success ?? "",
     anythingElse: data.anything_else ?? "",
+    paymentProcessors: data.payment_processors ?? "",
+    emailPlatform: data.email_platform ?? "",
+    subscriberCount: data.subscriber_count,
+    whereEnquiriesLive: data.where_enquiries_live ?? "",
+    analyticsAccess: data.analytics_access ?? "",
+    offTheTable: data.off_the_table ?? "",
+    whatTheyveTriedAndRuledOut: data.what_theyve_tried_and_ruled_out ?? "",
+    ownTheory: data.own_theory ?? "",
   };
 }
 

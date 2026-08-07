@@ -90,6 +90,20 @@ export default async function ClientDetailPage({
                 <Field label="Six month risk" value={onboarding.sixMonthRisk} />
                 <Field label="Why now" value={onboarding.whyNow} />
                 <Field label="Definition of success" value={onboarding.definitionOfSuccess} />
+                <Field label="Payment processors" value={onboarding.paymentProcessors} />
+                <Field label="Email platform" value={onboarding.emailPlatform} />
+                <Field
+                  label="Subscriber count"
+                  value={onboarding.subscriberCount != null ? String(onboarding.subscriberCount) : null}
+                />
+                <Field label="Where enquiries live" value={onboarding.whereEnquiriesLive} />
+                <Field label="Analytics access" value={onboarding.analyticsAccess} />
+                <Field label="What's off the table" value={onboarding.offTheTable} />
+                <Field
+                  label="What they've tried and ruled out"
+                  value={onboarding.whatTheyveTriedAndRuledOut}
+                />
+                <Field label="Their own theory" value={onboarding.ownTheory} />
                 <Field label="Anything else" value={onboarding.anythingElse} />
               </dl>
             )}

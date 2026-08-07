@@ -21,9 +21,98 @@
   --color-ink: #0a0608;
   --color-accent: #f11787;
   --font-heading: var(--font-bricolage), sans-serif;
+
+  /* Full brand palette (Phase 7) — the portal is the first surface built
+     to the letter of CLAUDE.md's brand spec: chunky cards, hard offset
+     shadows, pill buttons. Proposal/invoice pages predate this and use a
+     softer style; not retrofitted here since that wasn't asked for. */
+  --color-paper: #fffefb;
+  --color-blush: #ffe2f4;
+  --color-yellow: #fde047;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
+}
+
+/* Brutalist card/button primitives for the client portal. */
+.card-brutal {
+  background: var(--color-paper);
+  border: 3px solid var(--color-ink);
+  border-radius: 20px;
+  box-shadow: 6px 6px 0 var(--color-ink);
+}
+
+.card-brutal-pink {
+  background: var(--color-paper);
+  border: 3px solid var(--color-ink);
+  border-radius: 20px;
+  box-shadow: 6px 6px 0 var(--color-accent);
+}
+
+.card-brutal-blush {
+  background: var(--color-blush);
+  border: 3px solid var(--color-ink);
+  border-radius: 20px;
+  box-shadow: 6px 6px 0 var(--color-ink);
+}
+
+.card-brutal-yellow {
+  background: var(--color-yellow);
+  border: 3px solid var(--color-ink);
+  border-radius: 20px;
+  box-shadow: 6px 6px 0 var(--color-ink);
+}
+
+/* Dark hero band — the one place ink goes big instead of just borders,
+   so the brand's loudest colour actually shows up somewhere. */
+.hero-ink {
+  background: var(--color-ink);
+  color: var(--color-cream);
+  border-radius: 20px;
+  box-shadow: 6px 6px 0 var(--color-accent);
+}
+
+.input-brutal {
+  background: var(--color-paper);
+  border: 3px solid var(--color-ink);
+  border-radius: 14px;
+}
+
+.btn-pill {
+  display: inline-block;
+  border-radius: 9999px;
+  background: var(--color-ink);
+  color: var(--color-cream);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  box-shadow: 4px 4px 0 var(--color-accent);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn-pill:hover:not(:disabled) {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--color-accent);
+}
+
+.btn-pill:disabled {
+  opacity: 0.4;
+  box-shadow: none;
+  transform: none;
+}
+
+.pill-toggle {
+  border-radius: 9999px;
+  border: 2px solid var(--color-ink);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.pill-toggle[data-active="true"] {
+  background: var(--color-ink);
+  color: var(--color-cream);
+  box-shadow: 3px 3px 0 var(--color-accent);
 }
