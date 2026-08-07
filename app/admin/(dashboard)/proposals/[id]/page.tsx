@@ -2,9 +2,13 @@ import { notFound } from "next/navigation";
 import { getProposal } from "@/lib/db/proposals";
 import { getLineItemsForProposal } from "@/lib/db/lineItems";
 import { listOffers } from "@/lib/db/offers";
+import { getClientByProposalId } from "@/lib/db/clients";
 import ProposalForm from "../ProposalForm";
+import ClientProvisioning from "./ClientProvisioning";
 
 export const dynamic = "force-dynamic";
+
+const SIGNED_STATUSES = ["Signed", "Invoiced", "Paid"];
 
 export default async function EditProposalPage({
   params,
@@ -20,9 +24,10 @@ export default async function EditProposalPage({
     notFound();
   }
 
-  const [lineItems, offers] = await Promise.all([
+  const [lineItems, offers, client] = await Promise.all([
     getLineItemsForProposal(id),
     listOffers(),
+    getClientByProposalId(id),
   ]);
 
   return (
@@ -50,6 +55,11 @@ export default async function EditProposalPage({
           })),
         }}
       />
+      {SIGNED_STATUSES.includes(proposal.status) && (
+        <div className="mt-6">
+          <ClientProvisioning proposalId={id} existingPortalToken={client?.portalToken ?? null} />
+        </div>
+      )}
     </div>
   );
 }

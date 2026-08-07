@@ -245,7 +245,9 @@ export type Database = {
           created_at: string
           email: string | null
           end_date: string | null
+          first_name: string | null
           id: string
+          last_name: string | null
           name: string
           notes: string | null
           onboarding_complete: boolean
@@ -268,7 +270,9 @@ export type Database = {
           created_at?: string
           email?: string | null
           end_date?: string | null
+          first_name?: string | null
           id?: string
+          last_name?: string | null
           name: string
           notes?: string | null
           onboarding_complete?: boolean
@@ -291,7 +295,9 @@ export type Database = {
           created_at?: string
           email?: string | null
           end_date?: string | null
+          first_name?: string | null
           id?: string
+          last_name?: string | null
           name?: string
           notes?: string | null
           onboarding_complete?: boolean
