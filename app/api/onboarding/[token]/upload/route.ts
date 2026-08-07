@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+// Requires BLOB_READ_WRITE_TOKEN — provisioned in Vercel after this route
+// was first written (Phase 7), hence this comment forcing a rebuild.
 import { put } from "@vercel/blob";
 import { getClientByToken } from "@/lib/db/clients";
 import { createDataSource } from "@/lib/db/dataSources";
