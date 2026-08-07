@@ -1,6 +1,12 @@
 import { randomBytes } from "crypto";
 import { db } from "./client";
+import type { Database } from "./types";
 import type { PaymentPlan } from "../paymentPlans";
+import type { CheckinDay, ClientStatus, RevenueDataSource } from "./clientChoices";
+
+export type { CheckinDay, ClientStatus, RevenueDataSource } from "./clientChoices";
+
+type ClientUpdatePatch = Database["public"]["Tables"]["clients"]["Update"];
 
 export interface Client {
   id: string;
@@ -92,16 +98,15 @@ export async function createClientFromProposal(
       payment_plan: input.paymentPlan ?? null,
       portal_token: portalToken,
       proposal_id: input.proposalId,
-      status: "Active",
+      // Real choice set is Onboarding/Active/Wrapping up/Complete/Paused —
+      // a freshly-signed client hasn't done onboarding yet.
+      status: "Onboarding",
     })
     .select()
     .single();
   if (error) throw error;
   return toClientWithContact(data);
 }
-
-export type CheckinDay = "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday";
-export type RevenueDataSource = "Stripe" | "Other platform" | "They'll send me reports";
 
 export interface OnboardingData {
   bestDayForCheckin: CheckinDay;
@@ -201,4 +206,171 @@ export async function updateClientOnboarding(clientId: string, data: OnboardingD
     { onConflict: "client_id" }
   );
   if (onboardingError) throw onboardingError;
+}
+
+export interface OnboardingResponses {
+  bestDayForCheckin: string;
+  whereRevenueDataLives: string;
+  biggestChallengeRightNow: string;
+  whatsGeneratingLeadsNow: string;
+  sixMonthRisk: string;
+  whyNow: string;
+  definitionOfSuccess: string;
+  anythingElse: string;
+}
+
+export async function getOnboardingByClientId(clientId: string): Promise<OnboardingResponses | null> {
+  const { data, error } = await db()
+    .from("onboarding")
+    .select("*")
+    .eq("client_id", clientId)
+    .maybeSingle();
+  if (error) throw error;
+  if (!data) return null;
+  return {
+    bestDayForCheckin: data.best_day_for_checkin ?? "",
+    whereRevenueDataLives: data.where_revenue_data_lives ?? "",
+    biggestChallengeRightNow: data.biggest_challenge_right_now ?? "",
+    whatsGeneratingLeadsNow: data.whats_generating_leads_now ?? "",
+    sixMonthRisk: data.six_month_risk ?? "",
+    whyNow: data.why_now ?? "",
+    definitionOfSuccess: data.definition_of_success ?? "",
+    anythingElse: data.anything_else ?? "",
+  };
+}
+
+// The full admin-facing record — every field Zoë can edit directly,
+// distinct from the stripped-down portal Client type above.
+export interface AdminClient {
+  id: string;
+  name: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  businessName: string;
+  status: ClientStatus | null;
+  startDate: string | null;
+  endDate: string | null;
+  packagePrice: number | null;
+  paymentPlan: PaymentPlan | null;
+  commercialObjectives: string;
+  notes: string;
+  portalToken: string;
+  targetFigure: number | null;
+  baselineMonthlyRevenue: number | null;
+  baselineRepeatBuyerPct: number | null;
+  annualTurnover: number | null;
+  baselineDate: string | null;
+  onboardingComplete: boolean;
+  proposalId: string | null;
+}
+
+type AdminClientRow = {
+  id: string;
+  name: string;
+  first_name: string | null;
+  last_name: string | null;
+  email: string | null;
+  business_name: string | null;
+  status: string | null;
+  start_date: string | null;
+  end_date: string | null;
+  package_price: number | null;
+  payment_plan: string | null;
+  commercial_objectives: string | null;
+  notes: string | null;
+  portal_token: string;
+  target_figure: number | null;
+  baseline_monthly_revenue: number | null;
+  baseline_repeat_buyer_pct: number | null;
+  annual_turnover: number | null;
+  baseline_date: string | null;
+  onboarding_complete: boolean;
+  proposal_id: string | null;
+};
+
+function toAdminClient(row: AdminClientRow): AdminClient {
+  return {
+    id: row.id,
+    name: row.name,
+    firstName: row.first_name ?? "",
+    lastName: row.last_name ?? "",
+    email: row.email ?? "",
+    businessName: row.business_name ?? "",
+    status: row.status as ClientStatus | null,
+    startDate: row.start_date,
+    endDate: row.end_date,
+    packagePrice: row.package_price,
+    paymentPlan: row.payment_plan as PaymentPlan | null,
+    commercialObjectives: row.commercial_objectives ?? "",
+    notes: row.notes ?? "",
+    portalToken: row.portal_token,
+    targetFigure: row.target_figure,
+    baselineMonthlyRevenue: row.baseline_monthly_revenue,
+    baselineRepeatBuyerPct: row.baseline_repeat_buyer_pct,
+    annualTurnover: row.annual_turnover,
+    baselineDate: row.baseline_date,
+    onboardingComplete: row.onboarding_complete,
+    proposalId: row.proposal_id,
+  };
+}
+
+export async function listClientsAdmin(): Promise<AdminClient[]> {
+  const { data, error } = await db()
+    .from("clients")
+    .select("*")
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return data.map(toAdminClient);
+}
+
+export async function getClientAdmin(id: string): Promise<AdminClient> {
+  const { data, error } = await db().from("clients").select("*").eq("id", id).single();
+  if (error) throw error;
+  return toAdminClient(data);
+}
+
+export interface AdminClientInput {
+  name?: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  businessName?: string | null;
+  status?: ClientStatus | null;
+  startDate?: string | null;
+  endDate?: string | null;
+  packagePrice?: number | null;
+  paymentPlan?: PaymentPlan | null;
+  commercialObjectives?: string | null;
+  notes?: string | null;
+  targetFigure?: number | null;
+  baselineMonthlyRevenue?: number | null;
+  baselineRepeatBuyerPct?: number | null;
+  annualTurnover?: number | null;
+  baselineDate?: string | null;
+}
+
+export async function updateClientAdmin(id: string, input: AdminClientInput): Promise<AdminClient> {
+  const patch: ClientUpdatePatch = {};
+  if (input.name !== undefined) patch.name = input.name;
+  if (input.firstName !== undefined) patch.first_name = input.firstName;
+  if (input.lastName !== undefined) patch.last_name = input.lastName;
+  if (input.email !== undefined) patch.email = input.email;
+  if (input.businessName !== undefined) patch.business_name = input.businessName;
+  if (input.status !== undefined) patch.status = input.status;
+  if (input.startDate !== undefined) patch.start_date = input.startDate;
+  if (input.endDate !== undefined) patch.end_date = input.endDate;
+  if (input.packagePrice !== undefined) patch.package_price = input.packagePrice;
+  if (input.paymentPlan !== undefined) patch.payment_plan = input.paymentPlan;
+  if (input.commercialObjectives !== undefined) patch.commercial_objectives = input.commercialObjectives;
+  if (input.notes !== undefined) patch.notes = input.notes;
+  if (input.targetFigure !== undefined) patch.target_figure = input.targetFigure;
+  if (input.baselineMonthlyRevenue !== undefined) patch.baseline_monthly_revenue = input.baselineMonthlyRevenue;
+  if (input.baselineRepeatBuyerPct !== undefined) patch.baseline_repeat_buyer_pct = input.baselineRepeatBuyerPct;
+  if (input.annualTurnover !== undefined) patch.annual_turnover = input.annualTurnover;
+  if (input.baselineDate !== undefined) patch.baseline_date = input.baselineDate;
+
+  const { data, error } = await db().from("clients").update(patch).eq("id", id).select().single();
+  if (error) throw error;
+  return toAdminClient(data);
 }

@@ -15,10 +15,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <Link href="/admin/applications" className="text-gray-700 hover:text-gray-900">
             Applications
           </Link>
+          <Link href="/admin/clients" className="text-gray-700 hover:text-gray-900">
+            Clients
+          </Link>
         </div>
         <LogoutButton />
       </nav>
-      <main className="mx-auto max-w-4xl px-6 py-8">{children}</main>
+      <main className="mx-auto max-w-6xl px-6 py-8">{children}</main>
     </div>
   );
 }

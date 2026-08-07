@@ -1,4 +1,6 @@
 import { db } from "./client";
+import { createProposal } from "./proposals";
+import { ensureUniqueSlug, slugify } from "../slug";
 import type { Database } from "./types";
 import type {
   AnnualTurnover,
@@ -179,6 +181,30 @@ export async function createApplication(input: ApplicationInput): Promise<Applic
     .single();
   if (error) throw error;
   return toApplication(data);
+}
+
+// Creates a draft proposal pre-filled from the application (Phase 6, per
+// BUILD-SPEC.md's /admin/applications "convert to proposal"). Leaves offer,
+// line items, and contract terms for the admin to fill in via the normal
+// proposal builder — this only saves re-typing the applicant's contact info.
+export async function convertApplicationToProposal(applicationId: string): Promise<{ proposalId: string }> {
+  const application = await getApplication(applicationId);
+  const slug = await ensureUniqueSlug(slugify(application.applicantName));
+
+  const proposal = await createProposal({
+    clientName: application.applicantName,
+    clientEmail: application.email,
+    company: application.businessName || null,
+    slug,
+  });
+
+  const { error } = await db()
+    .from("proposals")
+    .update({ application_id: applicationId })
+    .eq("id", proposal.id);
+  if (error) throw error;
+
+  return { proposalId: proposal.id };
 }
 
 export async function updateApplicationStatus(
