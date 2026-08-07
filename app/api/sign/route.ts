@@ -9,6 +9,8 @@ import {
 import { createSignature } from "@/lib/db/signatures";
 import { computeInstallments, getFirstDueDate } from "@/lib/paymentPlans";
 import { XeroLineItem, createXeroInvoice, getSalesAccountCode } from "@/lib/xero";
+import { createClientFromProposal, getClientByProposalId } from "@/lib/db/clients";
+import { sendOnboardingEmail } from "@/lib/email";
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
@@ -64,11 +66,13 @@ export async function POST(request: NextRequest) {
     dateSigned: now,
   });
 
+  const invoiceLineItems = getIncludedLineItems(lineItemsBeforeSign);
+  const total = invoiceLineItems.reduce((sum, item) => sum + item.lineTotal, 0);
+
   // Best-effort: the client polls /api/proposal-status regardless of whether
   // this succeeds immediately, so a slow or not-yet-connected Xero doesn't
   // block confirming the signature itself.
   try {
-    const invoiceLineItems = getIncludedLineItems(lineItemsBeforeSign);
     const accountCode = getSalesAccountCode();
     const proposalForXero = { ...proposal, status: "Signed" as const };
 
@@ -79,7 +83,6 @@ export async function POST(request: NextRequest) {
       // Edge case: select-options never ran (e.g. a direct link straight to
       // the contract page on a proposal with no options to force page 1).
       // Fall back to a fresh single Pay-in-Full installment.
-      const total = invoiceLineItems.reduce((sum, item) => sum + item.lineTotal, 0);
       const [only] = computeInstallments(total, "Pay in Full", getFirstDueDate());
       const created = await createProposalInvoice({
         proposalId: proposal.id,
@@ -122,6 +125,34 @@ export async function POST(request: NextRequest) {
     await updateProposal(proposal.id, { status: "Invoiced" });
   } catch (err) {
     console.error("Xero invoice creation failed after signing:", err);
+  }
+
+  // Best-effort, independent of the Xero outcome above: someone who has
+  // signed is committed (BUILD-SPEC.md), so client creation and the
+  // onboarding email must never roll back the signature or invoice. Checked
+  // first so a retry from admin after a failure never creates a duplicate
+  // client or re-sends against a client that already exists.
+  try {
+    let client = await getClientByProposalId(proposal.id);
+    if (!client) {
+      client = await createClientFromProposal({
+        proposalId: proposal.id,
+        clientName: proposal.clientName,
+        clientEmail: proposal.clientEmail,
+        businessName: proposal.company,
+        packagePrice: total,
+        paymentPlan: proposal.paymentPlan,
+      });
+    }
+
+    const onboardingUrl = new URL(`/c/${client.portalToken}/onboarding`, request.nextUrl.origin).toString();
+    await sendOnboardingEmail({
+      to: client.email,
+      firstName: client.firstName,
+      onboardingUrl,
+    });
+  } catch (err) {
+    console.error("Client creation or onboarding email failed after signing:", err);
   }
 
   return NextResponse.json({ ok: true });

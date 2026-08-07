@@ -1,4 +1,6 @@
+import { randomBytes } from "crypto";
 import { db } from "./client";
+import type { PaymentPlan } from "../paymentPlans";
 
 export interface Client {
   id: string;
@@ -11,6 +13,91 @@ export interface Client {
   onboardingComplete: boolean;
   businessName: string;
   bestEmail: string;
+}
+
+// First word / rest split — a heuristic, not a real first/last name input.
+// Correctable later in admin (Phase 6) once that exists.
+export function splitFullName(fullName: string): { firstName: string; lastName: string } {
+  const trimmed = fullName.trim();
+  const spaceIndex = trimmed.indexOf(" ");
+  if (spaceIndex === -1) return { firstName: trimmed, lastName: "" };
+  return { firstName: trimmed.slice(0, spaceIndex), lastName: trimmed.slice(spaceIndex + 1) };
+}
+
+export interface CreateClientFromProposalInput {
+  proposalId: string;
+  clientName: string;
+  clientEmail: string;
+  businessName?: string | null;
+  packagePrice: number;
+  paymentPlan?: PaymentPlan | null;
+}
+
+export interface ClientWithContact extends Client {
+  email: string;
+  firstName: string;
+}
+
+function toClientWithContact(row: {
+  id: string;
+  name: string;
+  portal_token: string;
+  business_name: string | null;
+  email: string | null;
+  first_name: string | null;
+}): ClientWithContact {
+  return {
+    id: row.id,
+    name: row.name,
+    portalToken: row.portal_token,
+    programmeStartDate: null,
+    targetFigure: 0,
+    totalIdentified: 0,
+    totalBanked: 0,
+    onboardingComplete: false,
+    businessName: row.business_name ?? "",
+    bestEmail: row.email ?? "",
+    email: row.email ?? "",
+    firstName: row.first_name ?? splitFullName(row.name).firstName,
+  };
+}
+
+// One client per proposal — checked first so a retry (after e.g. the email
+// failed the first time) never creates a duplicate.
+export async function getClientByProposalId(proposalId: string): Promise<ClientWithContact | null> {
+  const { data, error } = await db()
+    .from("clients")
+    .select("*")
+    .eq("proposal_id", proposalId)
+    .maybeSingle();
+  if (error) throw error;
+  return data ? toClientWithContact(data) : null;
+}
+
+export async function createClientFromProposal(
+  input: CreateClientFromProposalInput
+): Promise<ClientWithContact> {
+  const { firstName, lastName } = splitFullName(input.clientName);
+  const portalToken = randomBytes(16).toString("hex");
+
+  const { data, error } = await db()
+    .from("clients")
+    .insert({
+      name: input.clientName,
+      first_name: firstName,
+      last_name: lastName,
+      email: input.clientEmail,
+      business_name: input.businessName ?? null,
+      package_price: input.packagePrice,
+      payment_plan: input.paymentPlan ?? null,
+      portal_token: portalToken,
+      proposal_id: input.proposalId,
+      status: "Active",
+    })
+    .select()
+    .single();
+  if (error) throw error;
+  return toClientWithContact(data);
 }
 
 export type CheckinDay = "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday";
