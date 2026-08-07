@@ -91,6 +91,30 @@ function PillGroup<T extends string>({
 
 const textareaClass =
   "w-full border border-[#0a0608]/20 rounded-md p-4 text-sm leading-relaxed outline-none focus:border-[#0a0608] bg-transparent placeholder:text-[#0a0608]/30";
+const inputClass =
+  "w-full border border-[#0a0608]/20 rounded-md p-3 text-sm outline-none focus:border-[#0a0608] bg-transparent placeholder:text-[#0a0608]/30";
+
+interface OfferRow {
+  key: string;
+  name: string;
+  price: string;
+  stillLive: boolean;
+  deliveryHours: string;
+}
+
+function emptyOfferRow(): OfferRow {
+  return { key: crypto.randomUUID(), name: "", price: "", stillLive: true, deliveryHours: "" };
+}
+
+interface TimelineRow {
+  key: string;
+  month: string;
+  whatHappened: string;
+}
+
+function emptyTimelineRow(): TimelineRow {
+  return { key: crypto.randomUUID(), month: "", whatHappened: "" };
+}
 
 export default function OnboardingForm({ token }: { token: string }) {
   const router = useRouter();
@@ -98,7 +122,6 @@ export default function OnboardingForm({ token }: { token: string }) {
   const [bestDayForCheckin, setBestDayForCheckin] = useState<CheckinDay | "">("");
   const [whereRevenueDataLives, setWhereRevenueDataLives] = useState<RevenueDataSource | "">("");
   const [programmeStartDate, setProgrammeStartDate] = useState("");
-  const [baselineMonthlyRevenue, setBaselineMonthlyRevenue] = useState("");
   const [annualTurnover, setAnnualTurnover] = useState("");
   const [biggestChallengeRightNow, setBiggestChallengeRightNow] = useState("");
   const [whatsGeneratingLeadsNow, setWhatsGeneratingLeadsNow] = useState("");
@@ -107,9 +130,32 @@ export default function OnboardingForm({ token }: { token: string }) {
   const [definitionOfSuccess, setDefinitionOfSuccess] = useState("");
   const [anythingElse, setAnythingElse] = useState("");
 
+  const [offers, setOffers] = useState<OfferRow[]>([emptyOfferRow()]);
+  const [timeline, setTimeline] = useState<TimelineRow[]>([emptyTimelineRow()]);
+
+  const [paymentProcessors, setPaymentProcessors] = useState("");
+  const [emailPlatform, setEmailPlatform] = useState("");
+  const [subscriberCount, setSubscriberCount] = useState("");
+  const [whereEnquiriesLive, setWhereEnquiriesLive] = useState("");
+  const [analyticsAccess, setAnalyticsAccess] = useState("");
+
+  const [offTheTable, setOffTheTable] = useState("");
+  const [whatTheyveTriedAndRuledOut, setWhatTheyveTriedAndRuledOut] = useState("");
+  const [ownTheory, setOwnTheory] = useState("");
+
+  const [files, setFiles] = useState<File[]>([]);
+
   const [status, setStatus] = useState<"idle" | "submitting" | "error">("idle");
 
   const canSubmit = Boolean(bestDayForCheckin && whereRevenueDataLives);
+
+  function updateOffer(key: string, patch: Partial<OfferRow>) {
+    setOffers((current) => current.map((r) => (r.key === key ? { ...r, ...patch } : r)));
+  }
+
+  function updateTimelineRow(key: string, patch: Partial<TimelineRow>) {
+    setTimeline((current) => current.map((r) => (r.key === key ? { ...r, ...patch } : r)));
+  }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -124,7 +170,6 @@ export default function OnboardingForm({ token }: { token: string }) {
         bestDayForCheckin,
         whereRevenueDataLives,
         programmeStartDate,
-        baselineMonthlyRevenue: Number(baselineMonthlyRevenue),
         annualTurnover: Number(annualTurnover),
         biggestChallengeRightNow,
         whatsGeneratingLeadsNow,
@@ -132,14 +177,46 @@ export default function OnboardingForm({ token }: { token: string }) {
         whyNow,
         definitionOfSuccess,
         anythingElse,
+        paymentProcessors,
+        emailPlatform,
+        subscriberCount: subscriberCount.trim() ? Number(subscriberCount) : undefined,
+        whereEnquiriesLive,
+        analyticsAccess,
+        offTheTable,
+        whatTheyveTriedAndRuledOut,
+        ownTheory,
+        offers: offers
+          .filter((o) => o.name.trim())
+          .map((o) => ({
+            name: o.name,
+            price: o.price.trim() ? Number(o.price) : undefined,
+            stillLive: o.stillLive,
+            deliveryHours: o.deliveryHours.trim() ? Number(o.deliveryHours) : undefined,
+          })),
+        timeline: timeline
+          .filter((t) => t.month && t.whatHappened.trim())
+          .map((t) => ({ month: t.month, whatHappened: t.whatHappened })),
       }),
     });
 
-    if (res.ok) {
-      router.push(`/c/${token}/snapshot`);
-    } else {
+    if (!res.ok) {
       setStatus("error");
+      return;
     }
+
+    if (files.length > 0) {
+      for (const file of files) {
+        const formData = new FormData();
+        formData.set("file", file);
+        // Best-effort: onboarding itself is already saved by this point, a
+        // failed upload shouldn't block completing onboarding.
+        await fetch(`/api/onboarding/${token}/upload`, { method: "POST", body: formData }).catch(
+          () => undefined
+        );
+      }
+    }
+
+    router.push(`/c/${token}/snapshot`);
   }
 
   return (
@@ -149,43 +226,22 @@ export default function OnboardingForm({ token }: { token: string }) {
           Where you are
         </SectionHeading>
 
-        <div className="grid grid-cols-2 gap-8 mb-10">
-          <div>
-            <FieldLabel htmlFor="baselineMonthlyRevenue">Baseline monthly revenue</FieldLabel>
-            <div className="flex items-center border-b border-[#0a0608]/20 focus-within:border-[#0a0608]">
-              <span className="text-2xl font-heading font-[800] mr-1">£</span>
-              <input
-                id="baselineMonthlyRevenue"
-                type="number"
-                inputMode="decimal"
-                min={0}
-                step="0.01"
-                required
-                value={baselineMonthlyRevenue}
-                onChange={(e) => setBaselineMonthlyRevenue(e.target.value)}
-                placeholder="0"
-                className="w-full bg-transparent py-2 text-2xl font-heading font-[800] outline-none placeholder:text-[#0a0608]/20"
-              />
-            </div>
-          </div>
-
-          <div>
-            <FieldLabel htmlFor="annualTurnover">Annual turnover</FieldLabel>
-            <div className="flex items-center border-b border-[#0a0608]/20 focus-within:border-[#0a0608]">
-              <span className="text-2xl font-heading font-[800] mr-1">£</span>
-              <input
-                id="annualTurnover"
-                type="number"
-                inputMode="decimal"
-                min={0}
-                step="0.01"
-                required
-                value={annualTurnover}
-                onChange={(e) => setAnnualTurnover(e.target.value)}
-                placeholder="0"
-                className="w-full bg-transparent py-2 text-2xl font-heading font-[800] outline-none placeholder:text-[#0a0608]/20"
-              />
-            </div>
+        <div className="mb-10">
+          <FieldLabel htmlFor="annualTurnover">Annual turnover</FieldLabel>
+          <div className="flex items-center border-b border-[#0a0608]/20 focus-within:border-[#0a0608] max-w-xs">
+            <span className="text-2xl font-heading font-[800] mr-1">£</span>
+            <input
+              id="annualTurnover"
+              type="number"
+              inputMode="decimal"
+              min={0}
+              step="0.01"
+              required
+              value={annualTurnover}
+              onChange={(e) => setAnnualTurnover(e.target.value)}
+              placeholder="0"
+              className="w-full bg-transparent py-2 text-2xl font-heading font-[800] outline-none placeholder:text-[#0a0608]/20"
+            />
           </div>
         </div>
 
@@ -278,9 +334,242 @@ export default function OnboardingForm({ token }: { token: string }) {
         </div>
       </section>
 
+      <section className="mb-16 pt-16 border-t border-[#0a0608]/10">
+        <SectionHeading number="03" subhead="Every offer, even the ones you don't push anymore.">
+          Your offers
+        </SectionHeading>
+
+        {offers.map((row, i) => (
+          <div key={row.key} className="mb-6 rounded-md border border-[#0a0608]/10 p-4">
+            <div className="mb-3 flex items-center justify-between">
+              <p className="text-xs uppercase tracking-wide text-[#0a0608]/40">Offer {i + 1}</p>
+              {offers.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => setOffers((current) => current.filter((r) => r.key !== row.key))}
+                  className="text-xs text-[#0a0608]/40 hover:text-[#0a0608]"
+                >
+                  Remove
+                </button>
+              )}
+            </div>
+            <div className="mb-3">
+              <FieldLabel htmlFor={`offer-name-${row.key}`}>Name</FieldLabel>
+              <input
+                id={`offer-name-${row.key}`}
+                value={row.name}
+                onChange={(e) => updateOffer(row.key, { name: e.target.value })}
+                className={inputClass}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <FieldLabel htmlFor={`offer-price-${row.key}`}>Price</FieldLabel>
+                <input
+                  id={`offer-price-${row.key}`}
+                  type="number"
+                  step="0.01"
+                  value={row.price}
+                  onChange={(e) => updateOffer(row.key, { price: e.target.value })}
+                  className={inputClass}
+                />
+              </div>
+              <div>
+                <FieldLabel htmlFor={`offer-hours-${row.key}`}>Rough delivery hours per sale</FieldLabel>
+                <input
+                  id={`offer-hours-${row.key}`}
+                  type="number"
+                  step="0.5"
+                  value={row.deliveryHours}
+                  onChange={(e) => updateOffer(row.key, { deliveryHours: e.target.value })}
+                  className={inputClass}
+                />
+              </div>
+            </div>
+            <label className="mt-3 flex items-center gap-2 text-sm text-[#0a0608]/60">
+              <input
+                type="checkbox"
+                checked={row.stillLive}
+                onChange={(e) => updateOffer(row.key, { stillLive: e.target.checked })}
+              />
+              Still live
+            </label>
+          </div>
+        ))}
+        <button
+          type="button"
+          onClick={() => setOffers((current) => [...current, emptyOfferRow()])}
+          className="text-sm font-medium text-[#0a0608]/70 hover:text-[#0a0608]"
+        >
+          + Add another offer
+        </button>
+      </section>
+
+      <section className="mb-16 pt-16 border-t border-[#0a0608]/10">
+        <SectionHeading
+          number="04"
+          subhead="Launches, ads on and off, price changes, a podcast, a holiday, a slow spell — anything that moved the needle."
+        >
+          The last 12 months, month by month
+        </SectionHeading>
+
+        {timeline.map((row, i) => (
+          <div key={row.key} className="mb-4 flex gap-3">
+            <input
+              type="month"
+              value={row.month ? row.month.slice(0, 7) : ""}
+              onChange={(e) =>
+                updateTimelineRow(row.key, { month: e.target.value ? `${e.target.value}-01` : "" })
+              }
+              className="w-36 shrink-0 rounded-md border border-[#0a0608]/20 p-2 text-sm outline-none focus:border-[#0a0608] bg-transparent"
+            />
+            <input
+              value={row.whatHappened}
+              onChange={(e) => updateTimelineRow(row.key, { whatHappened: e.target.value })}
+              placeholder="What happened"
+              className={inputClass}
+            />
+            {timeline.length > 1 && (
+              <button
+                type="button"
+                onClick={() => setTimeline((current) => current.filter((r) => r.key !== row.key))}
+                className="shrink-0 text-[#0a0608]/40 hover:text-[#0a0608]"
+                aria-label={`Remove month ${i + 1}`}
+              >
+                ✕
+              </button>
+            )}
+          </div>
+        ))}
+        <button
+          type="button"
+          onClick={() => setTimeline((current) => [...current, emptyTimelineRow()])}
+          className="text-sm font-medium text-[#0a0608]/70 hover:text-[#0a0608]"
+        >
+          + Add a month
+        </button>
+      </section>
+
+      <section className="mb-16 pt-16 border-t border-[#0a0608]/10">
+        <SectionHeading number="05" subhead="So there's no back-and-forth chasing access later.">
+          Where things live
+        </SectionHeading>
+
+        <div className="mb-6 grid grid-cols-2 gap-4">
+          <div>
+            <FieldLabel htmlFor="paymentProcessors">Payment processors</FieldLabel>
+            <input
+              id="paymentProcessors"
+              value={paymentProcessors}
+              onChange={(e) => setPaymentProcessors(e.target.value)}
+              className={inputClass}
+              placeholder="e.g. Stripe, PayPal"
+            />
+          </div>
+          <div>
+            <FieldLabel htmlFor="emailPlatform">Email platform</FieldLabel>
+            <input
+              id="emailPlatform"
+              value={emailPlatform}
+              onChange={(e) => setEmailPlatform(e.target.value)}
+              className={inputClass}
+            />
+          </div>
+        </div>
+        <div className="mb-6 grid grid-cols-2 gap-4">
+          <div>
+            <FieldLabel htmlFor="subscriberCount">Subscriber count</FieldLabel>
+            <input
+              id="subscriberCount"
+              type="number"
+              value={subscriberCount}
+              onChange={(e) => setSubscriberCount(e.target.value)}
+              className={inputClass}
+            />
+          </div>
+          <div>
+            <FieldLabel htmlFor="whereEnquiriesLive">Where enquiries live</FieldLabel>
+            <input
+              id="whereEnquiriesLive"
+              value={whereEnquiriesLive}
+              onChange={(e) => setWhereEnquiriesLive(e.target.value)}
+              className={inputClass}
+              placeholder="e.g. inbox, DMs, a form"
+            />
+          </div>
+        </div>
+        <div className="mb-8">
+          <FieldLabel htmlFor="analyticsAccess">Analytics access</FieldLabel>
+          <input
+            id="analyticsAccess"
+            value={analyticsAccess}
+            onChange={(e) => setAnalyticsAccess(e.target.value)}
+            className={inputClass}
+            placeholder="e.g. Google Analytics, or none set up"
+          />
+        </div>
+
+        <div>
+          <FieldLabel htmlFor="files">Upload any exports you already have</FieldLabel>
+          <input
+            id="files"
+            type="file"
+            multiple
+            onChange={(e) => setFiles(e.target.files ? Array.from(e.target.files) : [])}
+            className="text-sm text-[#0a0608]/70"
+          />
+        </div>
+      </section>
+
+      <section className="mb-16 pt-16 border-t border-[#0a0608]/10">
+        <SectionHeading number="06" subhead="So the plan works around real constraints, not guessed ones.">
+          What&apos;s off the table
+        </SectionHeading>
+
+        <div className="mb-8">
+          <QuestionLabel htmlFor="offTheTable">
+            Anything not up for discussion right now — no ads, no new offer, no more delivery
+            hours?
+          </QuestionLabel>
+          <textarea
+            id="offTheTable"
+            rows={3}
+            value={offTheTable}
+            onChange={(e) => setOffTheTable(e.target.value)}
+            className={textareaClass}
+          />
+        </div>
+
+        <div className="mb-8">
+          <QuestionLabel htmlFor="whatTheyveTriedAndRuledOut">
+            What have you already tried and ruled out?
+          </QuestionLabel>
+          <textarea
+            id="whatTheyveTriedAndRuledOut"
+            rows={3}
+            value={whatTheyveTriedAndRuledOut}
+            onChange={(e) => setWhatTheyveTriedAndRuledOut(e.target.value)}
+            className={textareaClass}
+          />
+        </div>
+
+        <div>
+          <QuestionLabel htmlFor="ownTheory">
+            What&apos;s your own theory about what&apos;s causing it?
+          </QuestionLabel>
+          <textarea
+            id="ownTheory"
+            rows={3}
+            value={ownTheory}
+            onChange={(e) => setOwnTheory(e.target.value)}
+            className={textareaClass}
+          />
+        </div>
+      </section>
+
       <section className="mb-12 pt-16 border-t border-[#0a0608]/10">
         <SectionHeading
-          number="03"
+          number="07"
           subhead="The practical bits, so nothing falls through the cracks."
         >
           How this runs

@@ -654,6 +654,7 @@ export type Database = {
       }
       onboarding: {
         Row: {
+          analytics_access: string | null
           anything_else: string | null
           best_day_for_checkin: string | null
           best_email: string | null
@@ -661,14 +662,22 @@ export type Database = {
           client_id: string
           created_at: string
           definition_of_success: string | null
+          email_platform: string | null
           id: string
+          off_the_table: string | null
+          own_theory: string | null
+          payment_processors: string | null
           six_month_risk: string | null
+          subscriber_count: number | null
           updated_at: string
+          what_theyve_tried_and_ruled_out: string | null
           whats_generating_leads_now: string | null
+          where_enquiries_live: string | null
           where_revenue_data_lives: string | null
           why_now: string | null
         }
         Insert: {
+          analytics_access?: string | null
           anything_else?: string | null
           best_day_for_checkin?: string | null
           best_email?: string | null
@@ -676,14 +685,22 @@ export type Database = {
           client_id: string
           created_at?: string
           definition_of_success?: string | null
+          email_platform?: string | null
           id?: string
+          off_the_table?: string | null
+          own_theory?: string | null
+          payment_processors?: string | null
           six_month_risk?: string | null
+          subscriber_count?: number | null
           updated_at?: string
+          what_theyve_tried_and_ruled_out?: string | null
           whats_generating_leads_now?: string | null
+          where_enquiries_live?: string | null
           where_revenue_data_lives?: string | null
           why_now?: string | null
         }
         Update: {
+          analytics_access?: string | null
           anything_else?: string | null
           best_day_for_checkin?: string | null
           best_email?: string | null
@@ -691,10 +708,17 @@ export type Database = {
           client_id?: string
           created_at?: string
           definition_of_success?: string | null
+          email_platform?: string | null
           id?: string
+          off_the_table?: string | null
+          own_theory?: string | null
+          payment_processors?: string | null
           six_month_risk?: string | null
+          subscriber_count?: number | null
           updated_at?: string
+          what_theyve_tried_and_ruled_out?: string | null
           whats_generating_leads_now?: string | null
+          where_enquiries_live?: string | null
           where_revenue_data_lives?: string | null
           why_now?: string | null
         }

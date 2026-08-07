@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { getClientByToken } from "@/lib/db/clients";
 import { getCheckinsByClientId } from "@/lib/db/checkIns";
 import { getProofByClientId } from "@/lib/db/proof";
+import { getDecisions } from "@/lib/db/decisions";
 import RevenueTrendChart from "@/components/portal/RevenueTrendChart";
 import ProofForm from "@/components/portal/ProofForm";
 
@@ -30,9 +31,10 @@ export default async function EvidencePage({
   const client = await getClientByToken(token);
   if (!client) notFound();
 
-  const [checkins, proof] = await Promise.all([
+  const [checkins, proof, decisions] = await Promise.all([
     getCheckinsByClientId(client.id),
     getProofByClientId(client.id),
+    getDecisions(client.id),
   ]);
 
   const chartData = checkins.map((c) => ({
@@ -78,6 +80,44 @@ export default async function EvidencePage({
                   </p>
                   <p className="text-sm text-[#0a0608]/70">{c.yourResponse}</p>
                 </div>
+              )}
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="mb-14">
+        <h2 className="font-heading font-[800] text-2xl mb-6">Decisions</h2>
+        {decisions.length === 0 && (
+          <p className="text-sm text-[#0a0608]/50">No decisions logged yet.</p>
+        )}
+        <ul>
+          {decisions.map((d) => (
+            <li key={d.id} className="py-6 border-t border-[#0a0608]/10">
+              <div className="flex justify-between items-baseline mb-2 gap-4">
+                <p className="font-heading font-[800] text-sm">{d.decision}</p>
+                {d.decidedAt && (
+                  <p className="text-xs uppercase tracking-wide text-[#0a0608]/40 shrink-0">
+                    {formatDate(d.decidedAt)}
+                  </p>
+                )}
+              </div>
+              {d.promptedByNumber && (
+                <p className="text-xs uppercase tracking-wide text-[#0a0608]/40 mb-2">
+                  Prompted by: {d.promptedByNumber}
+                </p>
+              )}
+              {d.expected && (
+                <p className="text-sm text-[#0a0608]/80 mb-1">
+                  <span className="text-[#0a0608]/50">Expected: </span>
+                  {d.expected}
+                </p>
+              )}
+              {d.outcome && (
+                <p className="text-sm text-[#0a0608]/80">
+                  <span className="text-[#0a0608]/50">Outcome: </span>
+                  {d.outcome}
+                </p>
               )}
             </li>
           ))}
