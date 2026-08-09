@@ -145,7 +145,7 @@ export default function ProposalForm({
   }
 
   return (
-    <div className="max-w-2xl">
+    <div className="max-w-4xl">
       {savedLink && (
         <div className="mb-6 admin-card-blush p-4 text-sm">
           <p className="mb-1 font-heading font-[800]">Proposal link</p>
@@ -194,63 +194,65 @@ export default function ProposalForm({
         </div>
       </div>
 
-      {!locked && offers.length > 0 && (
-        <div className="mb-6 flex items-end gap-2">
-          <div className="flex-1">
-            <label className="admin-label mb-1 block">
-              Load from an offer template
-            </label>
-            <select
-              value={selectedOfferId}
-              onChange={(e) => handleOfferSelect(e.target.value)}
-              className="admin-input w-full px-3 py-2"
+      <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+        {!locked && offers.length > 0 && (
+          <div className="flex items-end gap-2">
+            <div className="flex-1">
+              <label className="admin-label mb-1 block">
+                Load from an offer template
+              </label>
+              <select
+                value={selectedOfferId}
+                onChange={(e) => handleOfferSelect(e.target.value)}
+                className="admin-input w-full px-3 py-2"
+              >
+                <option value="">— choose an offer —</option>
+                {offers.map((o) => (
+                  <option key={o.id} value={o.id}>
+                    {o.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <button
+              type="button"
+              onClick={() => loadOffer(selectedOfferId)}
+              disabled={!selectedOfferId || loadingOffer}
+              className="admin-btn-secondary px-3 py-2 text-sm"
+              title="Reset contract terms and line items back to this offer's defaults"
             >
-              <option value="">— choose an offer —</option>
-              {offers.map((o) => (
-                <option key={o.id} value={o.id}>
-                  {o.name}
-                </option>
-              ))}
-            </select>
+              {loadingOffer ? "Loading…" : "Reload defaults"}
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={() => loadOffer(selectedOfferId)}
-            disabled={!selectedOfferId || loadingOffer}
-            className="admin-btn-secondary px-3 py-2 text-sm"
-            title="Reset contract terms and line items back to this offer's defaults"
-          >
-            {loadingOffer ? "Loading…" : "Reload defaults"}
-          </button>
+        )}
+
+        <div>
+          <label className="admin-label mb-1 block">
+            Deposit amount (optional)
+          </label>
+          <input
+            type="number"
+            step="0.01"
+            min="0"
+            value={depositAmount}
+            onChange={(e) => setDepositAmount(e.target.value)}
+            disabled={locked}
+            placeholder="e.g. 500"
+            className="admin-input w-full px-3 py-2"
+          />
+          {!locked && (
+            <p className="mt-1 text-xs text-[#0a0608]/50">
+              One-off exception for this client only. If set, whatever payment plan they choose
+              becomes: this amount now, then the rest split evenly across that plan&apos;s
+              months (e.g. Pay in 3 becomes deposit + 3 more payments).
+            </p>
+          )}
         </div>
-      )}
+      </div>
 
       <div className="mb-6">
         <label className="admin-label mb-2 block">Line items</label>
         <LineItemRows rows={rows} onChange={setRows} disabled={locked} />
-      </div>
-
-      <div className="mb-6 sm:w-1/3">
-        <label className="admin-label mb-1 block">
-          Deposit amount (optional)
-        </label>
-        <input
-          type="number"
-          step="0.01"
-          min="0"
-          value={depositAmount}
-          onChange={(e) => setDepositAmount(e.target.value)}
-          disabled={locked}
-          placeholder="e.g. 500"
-          className="admin-input w-full px-3 py-2"
-        />
-        {!locked && (
-          <p className="mt-1 text-xs text-[#0a0608]/50">
-            One-off exception for this client only. If set, whatever payment plan they choose
-            becomes: this amount now, then the rest split evenly across that plan&apos;s months
-            (e.g. Pay in 3 becomes deposit + 3 more payments).
-          </p>
-        )}
       </div>
 
       <div className="mb-6">

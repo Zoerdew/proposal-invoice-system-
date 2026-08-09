@@ -84,28 +84,30 @@ export default function OfferForm({
   }
 
   return (
-    <div className="max-w-2xl">
-      <div className="mb-6">
-        <label className="admin-label mb-1 block">Offer name</label>
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="admin-input w-full px-3 py-2"
-        />
-      </div>
+    <div className="max-w-4xl">
+      <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div>
+          <label className="admin-label mb-1 block">Offer name</label>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="admin-input w-full px-3 py-2"
+          />
+        </div>
 
-      <div className="mb-6">
-        <label className="admin-label mb-1 block">
-          Tagline <span className="normal-case font-normal text-[#0a0608]/40">(shown on the proposal page)</span>
-        </label>
-        <input
-          type="text"
-          value={tagline}
-          onChange={(e) => setTagline(e.target.value)}
-          className="admin-input w-full px-3 py-2"
-          placeholder="A 90-day, one-to-one virtual advisory engagement"
-        />
+        <div>
+          <label className="admin-label mb-1 block">
+            Tagline <span className="normal-case font-normal text-[#0a0608]/40">(shown on the proposal page)</span>
+          </label>
+          <input
+            type="text"
+            value={tagline}
+            onChange={(e) => setTagline(e.target.value)}
+            className="admin-input w-full px-3 py-2"
+            placeholder="A 90-day, one-to-one virtual advisory engagement"
+          />
+        </div>
       </div>
 
       <div className="mb-6">
@@ -129,7 +131,7 @@ export default function OfferForm({
         <label className="admin-label mb-2 block">
           Payment plans offered
         </label>
-        <div className="space-y-1">
+        <div className="flex flex-wrap gap-4">
           {ALL_PAYMENT_PLANS.map((plan) => (
             <label key={plan} className="flex items-center gap-2 text-sm">
               <input
