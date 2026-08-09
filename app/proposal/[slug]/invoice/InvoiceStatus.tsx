@@ -51,39 +51,34 @@ export default function InvoiceStatus({
 
   if (status === "Invoiced" || status === "Paid") {
     return (
-      <div className="rounded-2xl border border-brand-pink/30 bg-brand-cream p-6">
-        <p className="mb-4 text-center font-extrabold text-brand-ink">
+      <div className="card-brutal-blush p-6">
+        <p className="mb-4 text-center font-heading font-[800]">
           Signed and invoiced — your invoice{invoices.length > 1 ? "s are" : " is"} ready.
         </p>
         {invoices.length > 0 ? (
-          <div className="space-y-2">
+          <div className="space-y-3">
             {invoices.map((invoice) => (
               <div
                 key={invoice.sequence}
-                className="flex items-center justify-between rounded-xl border border-brand-ink/10 bg-white px-4 py-3"
+                className="flex items-center justify-between card-brutal p-4"
               >
-                <div className="text-sm">
-                  <p className="font-medium text-brand-ink">
-                    {invoices.length > 1
-                      ? `Payment ${invoice.sequence} of ${invoices.length}`
-                      : "Payment"}
-                  </p>
-                  <p className="text-brand-ink/60">
+                <div className="text-sm flex flex-col gap-1.5">
+                  {invoices.length > 1 && (
+                    <span className="badge badge-neutral self-start">
+                      Payment {invoice.sequence} of {invoices.length}
+                    </span>
+                  )}
+                  <p className="text-[#0a0608]/60">
                     {currency.format(invoice.amount)} — due{" "}
                     {dateFormat.format(new Date(invoice.dueDate))}
                   </p>
                 </div>
                 {invoice.url ? (
-                  <a
-                    href={invoice.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="rounded-full bg-brand-pink px-4 py-2 text-sm font-extrabold text-white hover:opacity-90"
-                  >
+                  <a href={invoice.url} target="_blank" rel="noreferrer" className="btn-pill px-4 py-2 text-xs">
                     View & pay
                   </a>
                 ) : (
-                  <p className="text-xs text-brand-ink/50">
+                  <p className="text-xs text-[#0a0608]/50">
                     Will be sent closer to its due date
                   </p>
                 )}
@@ -91,7 +86,7 @@ export default function InvoiceStatus({
             ))}
           </div>
         ) : (
-          <p className="text-center text-sm text-brand-ink/60">
+          <p className="text-center text-sm text-[#0a0608]/60">
             Invoice link is on its way — refresh in a moment if it doesn&apos;t appear.
           </p>
         )}
@@ -100,9 +95,9 @@ export default function InvoiceStatus({
   }
 
   return (
-    <div className="rounded-2xl border border-brand-ink/10 bg-white p-6 text-center">
-      <p className="font-extrabold text-brand-ink">Signed — invoice on its way.</p>
-      <p className="mt-1 text-sm text-brand-ink/60">
+    <div className="card-brutal p-6 text-center">
+      <p className="font-heading font-[800]">Signed — invoice on its way.</p>
+      <p className="mt-1 text-sm text-[#0a0608]/60">
         This page will update automatically once it&apos;s ready.
       </p>
     </div>

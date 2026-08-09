@@ -21,16 +21,15 @@ export default async function InvoicePage({
   if (status !== "Signed" && status !== "Invoiced" && status !== "Paid") {
     return (
       <main className="mx-auto flex min-h-screen max-w-lg flex-col items-center justify-center gap-3 px-6 text-center">
-        <h1 className="text-xl font-extrabold text-brand-ink">Sign the contract first</h1>
-        <p className="text-brand-ink/60">
-          You&apos;ll see your invoice here once the contract is signed.
-        </p>
-        <Link
-          href={`/proposal/${slug}/contract`}
-          className="inline-block rounded-full bg-brand-pink px-6 py-3 font-extrabold text-white hover:opacity-90"
-        >
-          Go to contract
-        </Link>
+        <div className="card-brutal p-8 flex flex-col items-center gap-3">
+          <h1 className="font-heading font-[800] text-xl">Sign the contract first</h1>
+          <p className="text-[#0a0608]/60">
+            You&apos;ll see your invoice here once the contract is signed.
+          </p>
+          <Link href={`/proposal/${slug}/contract`} className="btn-pill px-6 py-3 text-sm">
+            Go to contract
+          </Link>
+        </div>
       </main>
     );
   }
@@ -40,9 +39,11 @@ export default async function InvoicePage({
   return (
     <main className="mx-auto max-w-2xl px-6 py-16">
       <StepNav current="invoice" />
-      <header className="mb-8">
-        <p className="text-sm font-medium uppercase tracking-wide text-brand-pink">Invoice</p>
-        <h1 className="text-2xl font-extrabold text-brand-ink">{proposal.clientName}</h1>
+      <header className="mb-8 flex flex-col items-start gap-3">
+        <span className="eyebrow-pill">Invoice</span>
+        <h1 className="font-heading font-[800] text-3xl md:text-4xl leading-[1.02] tracking-[-0.03em]">
+          {proposal.clientName}
+        </h1>
       </header>
 
       <InvoiceStatus

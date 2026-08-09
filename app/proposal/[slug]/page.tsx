@@ -23,10 +23,12 @@ export default async function ProposalPage({
   if (status === "Draft") {
     return (
       <main className="mx-auto flex min-h-screen max-w-lg flex-col items-center justify-center gap-2 px-6 text-center">
-        <h1 className="text-xl font-extrabold text-brand-ink">
-          This proposal isn&apos;t ready yet
-        </h1>
-        <p className="text-brand-ink/60">Check back once it&apos;s been sent to you.</p>
+        <div className="card-brutal p-8">
+          <h1 className="font-heading font-[800] text-xl mb-2">
+            This proposal isn&apos;t ready yet
+          </h1>
+          <p className="text-[#0a0608]/60">Check back once it&apos;s been sent to you.</p>
+        </div>
       </main>
     );
   }
@@ -42,31 +44,38 @@ export default async function ProposalPage({
   const availablePlans = getAvailablePaymentPlans(offer);
 
   const header = (
-    <header className="mb-8">
-      <p className="text-sm font-medium uppercase tracking-wide text-brand-pink">Proposal</p>
-      <h1 className="text-2xl font-extrabold text-brand-ink">
+    <header className="mb-8 flex flex-col items-start gap-3">
+      <span className="eyebrow-pill">Proposal</span>
+      <h1 className="font-heading font-[800] text-3xl md:text-4xl leading-[1.02] tracking-[-0.03em]">
         {proposal.clientName}
-        {proposal.company ? ` · ${proposal.company}` : ""}
+        {proposal.company ? (
+          <>
+            {" "}
+            <span className="text-accent">· {proposal.company}</span>
+          </>
+        ) : (
+          ""
+        )}
       </h1>
     </header>
   );
 
   const offerContent = offer && (offer.tagline || offer.description) && (
-    <section className="mb-8 rounded-2xl border border-brand-ink/10 bg-white p-6">
-      <h2 className="text-xl font-extrabold text-brand-ink">{offer.name}</h2>
-      {offer.tagline && <p className="mt-1 font-medium text-brand-pink">{offer.tagline}</p>}
+    <section className="mb-8 card-brutal p-6">
+      <h2 className="font-heading font-[800] text-xl">{offer.name}</h2>
+      {offer.tagline && <p className="mt-1 font-medium text-accent">{offer.tagline}</p>}
       {offer.description && (
-        <p className="mt-4 whitespace-pre-wrap text-sm text-brand-ink/80">{offer.description}</p>
+        <p className="mt-4 whitespace-pre-wrap text-sm text-[#0a0608]/80">{offer.description}</p>
       )}
     </section>
   );
 
   const fixedList = fixedItems.length > 0 && (
-    <ul className="mb-6 divide-y divide-brand-ink/10 rounded-2xl border border-brand-ink/10 bg-white">
+    <ul className="mb-6 card-brutal divide-y-2 divide-[#0a0608]/10 p-0 overflow-hidden">
       {fixedItems.map((item) => (
-        <li key={item.id} className="flex items-center justify-between px-4 py-3 text-sm">
+        <li key={item.id} className="flex items-center justify-between px-6 py-4 text-sm">
           <span>{item.description}</span>
-          <span className="font-extrabold">{currency.format(item.lineTotal)}</span>
+          <span className="font-heading font-[800]">{currency.format(item.lineTotal)}</span>
         </li>
       ))}
     </ul>
@@ -79,11 +88,8 @@ export default async function ProposalPage({
         {header}
         {offerContent}
         {fixedList}
-        <p className="mb-6 text-brand-ink/60">You&apos;ve already signed this proposal.</p>
-        <Link
-          href={`/proposal/${slug}/invoice`}
-          className="inline-block rounded-full bg-brand-pink px-6 py-3 font-extrabold text-white hover:opacity-90"
-        >
+        <p className="mb-6 text-[#0a0608]/60">You&apos;ve already signed this proposal.</p>
+        <Link href={`/proposal/${slug}/invoice`} className="btn-pill px-6 py-3 text-sm">
           View invoice
         </Link>
       </main>

@@ -79,15 +79,15 @@ export default function OptionsForm({
   const hasChoices = packageOptions.length > 0 || addons.length > 0 || paymentPlans.length > 1;
 
   return (
-    <div className="rounded-2xl border border-brand-ink/10 bg-white p-6">
+    <div className="card-brutal p-6">
       {packageOptions.length > 0 && (
         <div className="mb-6">
-          <h2 className="mb-3 text-lg font-extrabold text-brand-ink">Choose an option</h2>
+          <h2 className="mb-3 text-lg font-heading font-[800]">Choose an option</h2>
           <div className="space-y-2">
             {packageOptions.map((option) => (
               <label
                 key={option.id}
-                className="flex cursor-pointer items-center justify-between rounded-xl border border-brand-ink/10 px-4 py-3 has-[:checked]:border-brand-pink has-[:checked]:bg-brand-cream"
+                className="flex cursor-pointer items-center justify-between rounded-xl border-2 border-[#0a0608]/15 px-4 py-3 has-[:checked]:border-[#0a0608] has-[:checked]:shadow-[3px_3px_0_#F11787]"
               >
                 <span className="flex items-center gap-3">
                   <input
@@ -95,11 +95,11 @@ export default function OptionsForm({
                     name="package-option"
                     checked={selectedOptionId === option.id}
                     onChange={() => setSelectedOptionId(option.id)}
-                    className="accent-brand-pink"
+                    className="accent-[#F11787]"
                   />
                   {option.description}
                 </span>
-                <span className="font-extrabold">{currency.format(option.lineTotal)}</span>
+                <span className="font-heading font-[800]">{currency.format(option.lineTotal)}</span>
               </label>
             ))}
           </div>
@@ -108,23 +108,23 @@ export default function OptionsForm({
 
       {addons.length > 0 && (
         <div className="mb-6">
-          <h2 className="mb-3 text-lg font-extrabold text-brand-ink">Optional add-ons</h2>
+          <h2 className="mb-3 text-lg font-heading font-[800]">Optional add-ons</h2>
           <div className="space-y-2">
             {addons.map((addon) => (
               <label
                 key={addon.id}
-                className="flex cursor-pointer items-center justify-between rounded-xl border border-brand-ink/10 px-4 py-3 has-[:checked]:border-brand-pink has-[:checked]:bg-brand-cream"
+                className="flex cursor-pointer items-center justify-between rounded-xl border-2 border-[#0a0608]/15 px-4 py-3 has-[:checked]:border-[#0a0608] has-[:checked]:shadow-[3px_3px_0_#F11787]"
               >
                 <span className="flex items-center gap-3">
                   <input
                     type="checkbox"
                     checked={selectedAddonIds.has(addon.id)}
                     onChange={() => toggleAddon(addon.id)}
-                    className="accent-brand-pink"
+                    className="accent-[#F11787]"
                   />
                   {addon.description}
                 </span>
-                <span className="font-extrabold">{currency.format(addon.lineTotal)}</span>
+                <span className="font-heading font-[800]">{currency.format(addon.lineTotal)}</span>
               </label>
             ))}
           </div>
@@ -133,14 +133,14 @@ export default function OptionsForm({
 
       {paymentPlans.length > 1 && (
         <div className="mb-6">
-          <h2 className="mb-3 text-lg font-extrabold text-brand-ink">Choose how to pay</h2>
+          <h2 className="mb-3 text-lg font-heading font-[800]">Choose how to pay</h2>
           <div className="space-y-2">
             {paymentPlans.map((plan) => {
               const installments = computeInstallments(total, plan, new Date());
               return (
                 <label
                   key={plan}
-                  className="flex cursor-pointer items-center justify-between rounded-xl border border-brand-ink/10 px-4 py-3 has-[:checked]:border-brand-pink has-[:checked]:bg-brand-cream"
+                  className="flex cursor-pointer items-center justify-between rounded-xl border-2 border-[#0a0608]/15 px-4 py-3 has-[:checked]:border-[#0a0608] has-[:checked]:shadow-[3px_3px_0_#F11787]"
                 >
                   <span className="flex items-center gap-3">
                     <input
@@ -148,11 +148,11 @@ export default function OptionsForm({
                       name="payment-plan"
                       checked={paymentPlan === plan}
                       onChange={() => setPaymentPlan(plan)}
-                      className="accent-brand-pink"
+                      className="accent-[#F11787]"
                     />
                     {plan}
                   </span>
-                  <span className="font-extrabold">
+                  <span className="font-heading font-[800]">
                     {installments.length === 1
                       ? currency.format(installments[0].amount)
                       : `${installments.length} × ${currency.format(installments[0].amount)}`}
@@ -164,9 +164,9 @@ export default function OptionsForm({
         </div>
       )}
 
-      <div className="mb-4 flex items-center justify-between border-t border-brand-ink/10 pt-4 text-lg">
-        <span className="font-extrabold text-brand-ink">Total</span>
-        <span className="font-extrabold text-brand-pink">{currency.format(total)}</span>
+      <div className="mb-4 flex items-center justify-between border-t-2 border-[#0a0608]/15 pt-4 text-lg">
+        <span className="font-heading font-[800]">Total</span>
+        <span className="font-heading font-[800] text-accent">{currency.format(total)}</span>
       </div>
 
       {error && <p className="mb-4 text-sm text-red-600">{error}</p>}
@@ -175,7 +175,7 @@ export default function OptionsForm({
         type="button"
         onClick={handleContinue}
         disabled={submitting}
-        className="w-full rounded-full bg-brand-pink px-6 py-3 font-extrabold text-white hover:opacity-90 disabled:opacity-40"
+        className="btn-pill w-full px-6 py-3 text-sm"
       >
         {submitting ? "Saving…" : hasChoices ? "Continue to contract" : "Continue"}
       </button>

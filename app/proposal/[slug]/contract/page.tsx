@@ -22,10 +22,12 @@ export default async function ContractPage({
   if (status === "Draft") {
     return (
       <main className="mx-auto flex min-h-screen max-w-lg flex-col items-center justify-center gap-2 px-6 text-center">
-        <h1 className="text-xl font-extrabold text-brand-ink">
-          This proposal isn&apos;t ready yet
-        </h1>
-        <p className="text-brand-ink/60">Check back once it&apos;s been sent to you.</p>
+        <div className="card-brutal p-8">
+          <h1 className="font-heading font-[800] text-xl mb-2">
+            This proposal isn&apos;t ready yet
+          </h1>
+          <p className="text-[#0a0608]/60">Check back once it&apos;s been sent to you.</p>
+        </div>
       </main>
     );
   }
@@ -47,12 +49,9 @@ export default async function ContractPage({
     return (
       <main className="mx-auto max-w-2xl px-6 py-16">
         <StepNav current="contract" />
-        <h1 className="mb-6 text-2xl font-extrabold text-brand-ink">Contract</h1>
-        <p className="mb-6 text-brand-ink/60">You&apos;ve already signed this proposal.</p>
-        <Link
-          href={`/proposal/${slug}/invoice`}
-          className="inline-block rounded-full bg-brand-pink px-6 py-3 font-extrabold text-white hover:opacity-90"
-        >
+        <h1 className="mb-6 font-heading font-[800] text-2xl">Contract</h1>
+        <p className="mb-6 text-[#0a0608]/60">You&apos;ve already signed this proposal.</p>
+        <Link href={`/proposal/${slug}/invoice`} className="btn-pill px-6 py-3 text-sm">
           View invoice
         </Link>
       </main>
@@ -62,27 +61,29 @@ export default async function ContractPage({
   return (
     <main className="mx-auto max-w-2xl px-6 py-16">
       <StepNav current="contract" />
-      <header className="mb-8">
-        <p className="text-sm font-medium uppercase tracking-wide text-brand-pink">Contract</p>
-        <h1 className="text-2xl font-extrabold text-brand-ink">{proposal.clientName}</h1>
+      <header className="mb-8 flex flex-col items-start gap-3">
+        <span className="eyebrow-pill">Contract</span>
+        <h1 className="font-heading font-[800] text-3xl md:text-4xl leading-[1.02] tracking-[-0.03em]">
+          {proposal.clientName}
+        </h1>
       </header>
 
-      <section className="mb-8 overflow-hidden rounded-2xl border border-brand-ink/10 bg-white">
+      <section className="mb-8 card-brutal p-0 overflow-hidden">
         <table className="w-full text-sm">
           <tbody>
             {included.map((item) => (
-              <tr key={item.id} className="border-b border-brand-ink/10 last:border-0">
-                <td className="px-4 py-3">{item.description}</td>
-                <td className="px-4 py-3 text-right font-medium">
+              <tr key={item.id} className="border-b-2 border-[#0a0608]/10 last:border-0">
+                <td className="px-6 py-4">{item.description}</td>
+                <td className="px-6 py-4 text-right font-medium">
                   {currency.format(item.lineTotal)}
                 </td>
               </tr>
             ))}
           </tbody>
           <tfoot>
-            <tr className="border-t border-brand-ink/10">
-              <td className="px-4 py-3 font-extrabold text-brand-ink">Total</td>
-              <td className="px-4 py-3 text-right font-extrabold text-brand-pink">
+            <tr className="border-t-2 border-[#0a0608]/15">
+              <td className="px-6 py-4 font-heading font-[800]">Total</td>
+              <td className="px-6 py-4 text-right font-heading font-[800] text-accent">
                 {currency.format(total)}
               </td>
             </tr>
@@ -91,9 +92,9 @@ export default async function ContractPage({
       </section>
 
       {proposal.contractTerms && (
-        <section className="mb-8">
-          <h2 className="mb-2 text-lg font-extrabold text-brand-ink">Terms</h2>
-          <p className="whitespace-pre-wrap text-sm text-brand-ink/70">
+        <section className="mb-8 card-brutal-blush p-6">
+          <h2 className="mb-2 text-lg font-heading font-[800]">Terms</h2>
+          <p className="whitespace-pre-wrap text-sm text-[#0a0608]/70">
             {proposal.contractTerms}
           </p>
         </section>
