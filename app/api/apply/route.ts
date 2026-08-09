@@ -10,6 +10,7 @@ import {
   WHAT_THEYRE_AFTER_OPTIONS,
   createApplication,
 } from "@/lib/db/applications";
+import { sendSlackAlert } from "@/lib/slack";
 
 function optionalChoice<T extends string>(value: unknown, options: readonly T[]): T | undefined {
   return typeof value === "string" && (options as readonly string[]).includes(value)
@@ -55,6 +56,10 @@ export async function POST(request: NextRequest) {
     budgetFit: optionalChoice(body?.budgetFit, BUDGET_FIT_OPTIONS),
     anythingElse: body?.anythingElse || undefined,
   });
+
+  await sendSlackAlert(
+    `📝 New application — *${applicantName}*${application.businessName ? ` (${application.businessName})` : ""}, ${email}. Review in admin: /admin/applications/${application.id}`
+  );
 
   return NextResponse.json({ id: application.id }, { status: 201 });
 }

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getClientByToken } from "@/lib/db/clients";
 import { createCheckin } from "@/lib/db/checkIns";
+import { sendSlackAlert } from "@/lib/slack";
 
 const FELT_LIKE_OPTIONS = ["Ahead", "On track", "Behind"] as const;
 
@@ -39,6 +40,10 @@ export async function POST(
     qualitativeNotes,
     feltLike,
   });
+
+  await sendSlackAlert(
+    `✅ Check-in from *${client.name}* — felt ${feltLike.toLowerCase()}, £${revenueThisWeek} this week.`
+  );
 
   return NextResponse.json(checkin, { status: 201 });
 }
