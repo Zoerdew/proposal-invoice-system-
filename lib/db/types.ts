@@ -832,6 +832,7 @@ export type Database = {
           company: string | null
           contract_terms: string | null
           created_at: string
+          date_sent: string | null
           date_signed: string | null
           deposit_amount: number | null
           id: string
@@ -850,6 +851,7 @@ export type Database = {
           company?: string | null
           contract_terms?: string | null
           created_at?: string
+          date_sent?: string | null
           date_signed?: string | null
           deposit_amount?: number | null
           id?: string
@@ -868,6 +870,7 @@ export type Database = {
           company?: string | null
           contract_terms?: string | null
           created_at?: string
+          date_sent?: string | null
           date_signed?: string | null
           deposit_amount?: number | null
           id?: string

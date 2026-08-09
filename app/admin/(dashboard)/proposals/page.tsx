@@ -3,6 +3,11 @@ import { listProposals } from "@/lib/db/proposals";
 
 export const dynamic = "force-dynamic";
 
+function formatDate(iso: string | null): string {
+  if (!iso) return "—";
+  return new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+}
+
 export default async function AdminProposalsPage() {
   const proposals = await listProposals();
 
@@ -24,6 +29,7 @@ export default async function AdminProposalsPage() {
             <tr>
               <th className="px-4 py-2 font-medium">Client</th>
               <th className="px-4 py-2 font-medium">Status</th>
+              <th className="px-4 py-2 font-medium">Date sent</th>
               <th className="px-4 py-2 font-medium">Link</th>
               <th className="px-4 py-2" />
             </tr>
@@ -36,6 +42,7 @@ export default async function AdminProposalsPage() {
                   {p.company ? ` · ${p.company}` : ""}
                 </td>
                 <td className="px-4 py-2">{p.status}</td>
+                <td className="px-4 py-2">{formatDate(p.dateSent)}</td>
                 <td className="px-4 py-2">
                   <a
                     href={p.proposalLink}
@@ -55,7 +62,7 @@ export default async function AdminProposalsPage() {
             ))}
             {proposals.length === 0 && (
               <tr>
-                <td colSpan={4} className="px-4 py-6 text-center text-gray-500">
+                <td colSpan={5} className="px-4 py-6 text-center text-gray-500">
                   No proposals yet.
                 </td>
               </tr>

@@ -14,6 +14,7 @@ export interface Proposal {
   status: ProposalStatus;
   slug: string;
   contractTerms: string;
+  dateSent: string | null;
   dateSigned: string | null;
   paymentPlan: PaymentPlan | null;
   depositAmount: number | null;
@@ -39,6 +40,7 @@ type ProposalRow = {
   status: string;
   slug: string;
   contract_terms: string | null;
+  date_sent: string | null;
   date_signed: string | null;
   payment_plan: string | null;
   deposit_amount: number | null;
@@ -55,6 +57,7 @@ function toProposal(row: ProposalRow): Proposal {
     status: statusFromDb(row.status),
     slug: row.slug,
     contractTerms: row.contract_terms ?? "",
+    dateSent: row.date_sent,
     dateSigned: row.date_signed,
     paymentPlan: (row.payment_plan as PaymentPlan) ?? null,
     depositAmount: row.deposit_amount,
@@ -107,6 +110,7 @@ export async function createProposal(
 
 export interface ProposalUpdate extends ProposalInput {
   status?: ProposalStatus;
+  dateSent?: string | null;
   dateSigned?: string | null;
   paymentPlan?: PaymentPlan | null;
 }
@@ -120,6 +124,7 @@ export async function updateProposal(id: string, input: ProposalUpdate): Promise
   if (input.contractTerms !== undefined) patch.contract_terms = input.contractTerms;
   if (input.depositAmount !== undefined) patch.deposit_amount = input.depositAmount;
   if (input.status !== undefined) patch.status = statusToDb(input.status);
+  if (input.dateSent !== undefined) patch.date_sent = input.dateSent;
   if (input.dateSigned !== undefined) patch.date_signed = input.dateSigned;
   if (input.paymentPlan !== undefined) patch.payment_plan = input.paymentPlan;
 
