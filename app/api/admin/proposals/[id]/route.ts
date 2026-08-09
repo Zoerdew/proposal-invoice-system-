@@ -55,7 +55,9 @@ export async function PATCH(
     // null (not undefined) so clearing the field in the form actually clears
     // it, rather than leaving a stale deposit amount in place.
     depositAmount: typeof body.depositAmount === "number" ? body.depositAmount : null,
-    ...(body.markSent && proposal.status === "Draft" ? { status: "Sent" as const } : {}),
+    ...(body.markSent && proposal.status === "Draft"
+      ? { status: "Sent" as const, dateSent: new Date().toISOString().slice(0, 10) }
+      : {}),
   });
 
   await replaceLineItems(
