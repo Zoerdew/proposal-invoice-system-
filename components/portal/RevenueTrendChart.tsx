@@ -43,7 +43,7 @@ export default function RevenueTrendChart({ data }: { data: Point[] }) {
           <Tooltip
             formatter={(value: number) => [`£${value.toLocaleString()}`, "Revenue"]}
             contentStyle={{
-              background: "#FFFEFB",
+              background: "#fff4fa",
               border: "2px solid #0a0608",
               borderRadius: 10,
               fontSize: 12,

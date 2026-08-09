@@ -1,7 +1,9 @@
 @import "tailwindcss";
 
 :root {
-  --background: #fff4fa;
+  /* Default page background is blush, not white — brand kit rule, applies
+     app-wide including admin. See CLAUDE.md brand table. */
+  --background: #ffe2f4;
   --foreground: #0a0608;
 }
 
@@ -14,19 +16,21 @@
   --color-brand-cream: #fff4fa;
   --color-brand-ink: #0a0608;
 
-  /* Portal tokens (Phase 3) — additive, matches In Control portal's
-     tailwind.config.ts naming so ported components' utility classes
-     (bg-cream, text-ink, text-accent, font-heading) work unchanged. */
-  --color-cream: #faf3e9;
+  /* Portal tokens (Phase 3) — matches In Control portal's tailwind.config.ts
+     naming so ported components' utility classes (bg-cream, text-ink,
+     text-accent, font-heading) work unchanged. Values reconciled to the
+     Claude Design brand kit (v2 Phase 13) — cream is card interior, paper
+     is document/report backgrounds, not the other way round. */
+  --color-cream: #fff4fa;
   --color-ink: #0a0608;
   --color-accent: #f11787;
   --font-heading: var(--font-bricolage), sans-serif;
 
-  /* Full brand palette (Phase 7) — the portal is the first surface built
-     to the letter of CLAUDE.md's brand spec: chunky cards, hard offset
-     shadows, pill buttons. Proposal/invoice pages predate this and use a
-     softer style; not retrofitted here since that wasn't asked for. */
-  --color-paper: #fffefb;
+  /* Full brand palette (Phase 7, reconciled Phase 13) — the portal was the
+     first surface built to CLAUDE.md's brand spec: chunky cards, hard
+     offset shadows, pill buttons. Proposal/invoice pages predate this and
+     use a softer style; not retrofitted here since that wasn't asked for. */
+  --color-paper: #faf3e9;
   --color-blush: #ffe2f4;
   --color-yellow: #fde047;
 }
@@ -38,14 +42,14 @@ body {
 
 /* Brutalist card/button primitives for the client portal. */
 .card-brutal {
-  background: var(--color-paper);
+  background: var(--color-cream);
   border: 3px solid var(--color-ink);
   border-radius: 20px;
   box-shadow: 6px 6px 0 var(--color-ink);
 }
 
 .card-brutal-pink {
-  background: var(--color-paper);
+  background: var(--color-cream);
   border: 3px solid var(--color-ink);
   border-radius: 20px;
   box-shadow: 6px 6px 0 var(--color-accent);
@@ -75,26 +79,27 @@ body {
 }
 
 .input-brutal {
-  background: var(--color-paper);
+  background: var(--color-cream);
   border: 3px solid var(--color-ink);
   border-radius: 14px;
 }
 
 .btn-pill {
   display: inline-block;
+  border: 3px solid var(--color-ink);
   border-radius: 9999px;
-  background: var(--color-ink);
+  background: var(--color-accent);
   color: var(--color-cream);
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  box-shadow: 4px 4px 0 var(--color-accent);
+  box-shadow: 4px 4px 0 var(--color-ink);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .btn-pill:hover:not(:disabled) {
   transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0 var(--color-accent);
+  box-shadow: 6px 6px 0 var(--color-ink);
 }
 
 .btn-pill:disabled {
@@ -116,3 +121,69 @@ body {
   color: var(--color-cream);
   box-shadow: 3px 3px 0 var(--color-accent);
 }
+
+/* Sticker-pop primitives from the Claude Design brand kit (v2 Phase 13),
+   ported onto this app's existing --color-* tokens rather than the kit's
+   own --pink/--ink names, so there's one token system, not two. */
+
+.eyebrow-pill {
+  display: inline-flex;
+  align-self: flex-start;
+  background: var(--color-yellow);
+  color: var(--color-ink);
+  border: 3px solid var(--color-ink);
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+/* Card tab — overhangs the top-left corner of a .card-brutal*. */
+.card-tab {
+  position: absolute;
+  top: -16px;
+  left: 24px;
+  border: 3px solid var(--color-ink);
+  border-radius: 8px;
+  padding: 5px 12px;
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+.card-tab-yellow { background: var(--color-yellow); color: var(--color-ink); }
+.card-tab-pink   { background: var(--color-accent); color: var(--color-cream); }
+.card-tab-ink    { background: var(--color-ink); color: var(--color-cream); }
+
+.tilt-l { transform: rotate(-1deg); }
+.tilt-r { transform: rotate(1deg); }
+/* Buttons, inputs, logos and anything with a card-tab stay upright. */
+.card-tab, .btn-pill, .input-brutal, .logo-lockup, .logo-lockup img { transform: none; }
+
+/* Status badges — pos/neutral/neg, small inline markers for things like
+   finding status or how a check-in felt. Include a leading dot span for
+   the marker; text content carries the label itself. */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 2px solid var(--color-ink);
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.badge-pos     { background: var(--color-yellow); color: var(--color-ink); }
+.badge-neutral { background: var(--color-cream);  color: var(--color-ink); }
+.badge-neg     { background: var(--color-ink);    color: var(--color-cream); }
+/* Ink-filled but not a "no" — strongest emphasis for a good final state
+   (e.g. a finding that's Banked), distinct from badge-neg's negative use. */
+.badge-strong  { background: var(--color-ink);    color: var(--color-cream); }

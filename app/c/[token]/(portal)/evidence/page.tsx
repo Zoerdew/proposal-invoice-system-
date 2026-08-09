@@ -22,6 +22,12 @@ function formatDate(iso: string | null): string {
   });
 }
 
+function feltLikeBadgeClass(feltLike: string): string {
+  if (feltLike === "Ahead") return "badge badge-pos";
+  if (feltLike === "Behind") return "badge badge-neg";
+  return "badge badge-neutral";
+}
+
 export default async function EvidencePage({
   params,
 }: {
@@ -46,9 +52,12 @@ export default async function EvidencePage({
 
   return (
     <div>
-      <p className="text-sm tracking-wide uppercase text-[#F11787] font-heading font-[800] mb-10">
-        Evidence Dashboard
-      </p>
+      <div className="flex flex-col items-start gap-4 mb-10">
+        <span className="eyebrow-pill">In Control</span>
+        <h1 className="font-heading font-[800] text-4xl md:text-5xl leading-[0.98] tracking-[-0.03em]">
+          Evidence <span className="text-accent">Dashboard</span>
+        </h1>
+      </div>
 
       <section className="card-brutal mb-10 p-8">
         <h2 className="font-heading font-[800] text-2xl mb-6 tracking-[-0.03em]">Revenue trend</h2>
@@ -66,11 +75,15 @@ export default async function EvidencePage({
               key={c.id}
               className={`py-6 ${i > 0 ? "border-t-2 border-[#0a0608]/15" : ""}`}
             >
-              <div className="flex justify-between items-baseline mb-2 gap-4">
-                <p className="text-xs uppercase tracking-wide text-[#0a0608]/40">
-                  {formatDate(c.weekDate)}
-                  {c.feltLike && ` · Felt ${c.feltLike.toLowerCase()}`}
-                </p>
+              <div className="flex justify-between items-center mb-2 gap-4">
+                <div className="flex items-center gap-3">
+                  <p className="text-xs uppercase tracking-wide text-[#0a0608]/40">
+                    {formatDate(c.weekDate)}
+                  </p>
+                  {c.feltLike && (
+                    <span className={feltLikeBadgeClass(c.feltLike)}>{c.feltLike}</span>
+                  )}
+                </div>
                 <p className="font-heading font-[800] text-sm shrink-0">
                   {formatCurrency(c.revenueThisWeek)}
                 </p>
