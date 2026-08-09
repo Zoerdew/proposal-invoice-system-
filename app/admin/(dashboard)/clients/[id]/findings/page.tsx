@@ -14,7 +14,7 @@ export default async function ClientFindingsPage({
 
   return (
     <div>
-      <h1 className="mb-2 text-xl font-semibold">Findings</h1>
+      <h1 className="mb-2 font-heading font-[800] text-xl">Findings</h1>
       <ClientTabs clientId={id} />
       <FindingsTable
         clientId={id}

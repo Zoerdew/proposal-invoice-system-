@@ -35,18 +35,21 @@ export default async function SnapshotPage({
 
   return (
     <div>
-      <p className="text-sm tracking-wide uppercase text-[#F11787] font-heading font-[800] mb-2">
-        Commercial Snapshot
-      </p>
+      <div className="flex flex-col items-start gap-4 mb-10">
+        <span className="eyebrow-pill">In Control</span>
+        <h1 className="font-heading font-[800] text-4xl md:text-5xl leading-[0.98] tracking-[-0.03em]">
+          Commercial <span className="text-accent">Snapshot</span>
+        </h1>
+      </div>
 
-      <div className="grid grid-cols-2 gap-6 mt-10">
-        <div className="card-brutal p-6">
+      <div className="grid grid-cols-2 gap-6">
+        <div className="card-brutal tilt-l p-6">
           <p className="text-sm text-[#0a0608]/60 mb-1">Identified</p>
           <p className="font-heading font-[800] text-4xl leading-none tracking-[-0.03em]">
             {formatCurrency(client.totalIdentified)}
           </p>
         </div>
-        <div className="card-brutal-pink p-6">
+        <div className="card-brutal-pink tilt-r p-6">
           <p className="text-sm text-[#0a0608]/60 mb-1">Banked</p>
           <p className="font-heading font-[800] text-4xl leading-none tracking-[-0.03em]">
             {formatCurrency(client.totalBanked)}
@@ -54,25 +57,27 @@ export default async function SnapshotPage({
         </div>
       </div>
 
-      <div className="card-brutal-blush mt-8 p-6">
-        <div className="flex justify-between text-sm text-[#0a0608]/60 mb-3">
-          <span>Progress against target</span>
-          <span className="font-heading font-[800] text-[#0a0608]">
-            {formatCurrency(client.targetFigure)}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10 items-stretch">
+        <div className="card-brutal-blush relative p-6 md:col-span-2">
+          <span className="card-tab card-tab-yellow">
+            Target {formatCurrency(client.targetFigure)}
           </span>
+          <div className="flex justify-between text-sm text-[#0a0608]/60 mb-3 mt-2">
+            <span>Progress against target</span>
+            <span className="font-heading font-[800] text-[#0a0608]">{progressPct}%</span>
+          </div>
+          <div className="h-4 w-full bg-cream rounded-full border-2 border-[#0a0608] overflow-hidden">
+            <div
+              className="h-full bg-[#F11787]"
+              style={{ width: `${progressPct}%` }}
+            />
+          </div>
         </div>
-        <div className="h-4 w-full bg-[#FFFEFB] rounded-full border-2 border-[#0a0608] overflow-hidden">
-          <div
-            className="h-full bg-[#F11787]"
-            style={{ width: `${progressPct}%` }}
-          />
-        </div>
-        <p className="text-sm text-[#0a0608]/60 mt-2">{progressPct}%</p>
-      </div>
 
-      <div className="card-brutal-yellow mt-8 p-6 flex justify-between items-baseline">
-        <p className="text-sm text-[#0a0608]/70">Days remaining</p>
-        <p className="font-heading font-[800] text-2xl">{daysLeft}</p>
+        <div className="card-brutal-yellow p-6 flex md:flex-col justify-between md:justify-center items-baseline md:items-start gap-2">
+          <p className="text-sm text-[#0a0608]/70">Days remaining</p>
+          <p className="font-heading font-[800] text-4xl leading-none">{daysLeft}</p>
+        </div>
       </div>
     </div>
   );

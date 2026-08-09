@@ -88,9 +88,9 @@ function PillGroup<T extends string>({
   );
 }
 
-const textareaClass = "input-brutal w-full p-4 text-sm leading-relaxed outline-none focus:shadow-[3px_3px_0_#F11787] transition-shadow bg-[#FFFEFB] placeholder:text-[#0a0608]/30";
-const inputClass = "input-brutal w-full p-3 text-sm outline-none focus:shadow-[3px_3px_0_#F11787] transition-shadow bg-[#FFFEFB] placeholder:text-[#0a0608]/30";
-const nestedCardClass = "border-2 border-[#0a0608] rounded-[14px] p-4 bg-[#FFFEFB]";
+const textareaClass = "input-brutal w-full p-4 text-sm leading-relaxed outline-none focus:shadow-[3px_3px_0_#F11787] transition-shadow bg-cream placeholder:text-[#0a0608]/30";
+const inputClass = "input-brutal w-full p-3 text-sm outline-none focus:shadow-[3px_3px_0_#F11787] transition-shadow bg-cream placeholder:text-[#0a0608]/30";
+const nestedCardClass = "border-2 border-[#0a0608] rounded-[14px] p-4 bg-cream";
 
 interface OfferRow {
   key: string;
@@ -301,7 +301,7 @@ export default function OnboardingForm({ token }: { token: string }) {
             required
             value={programmeStartDate}
             onChange={(e) => setProgrammeStartDate(e.target.value)}
-            className="input-brutal py-3 px-4 text-sm outline-none focus:shadow-[3px_3px_0_#F11787] transition-shadow bg-[#FFFEFB] max-w-xs"
+            className="input-brutal py-3 px-4 text-sm outline-none focus:shadow-[3px_3px_0_#F11787] transition-shadow bg-cream max-w-xs"
           />
         </div>
 
@@ -422,7 +422,7 @@ export default function OnboardingForm({ token }: { token: string }) {
               onChange={(e) =>
                 updateTimelineRow(row.key, { month: e.target.value ? `${e.target.value}-01` : "" })
               }
-              className="input-brutal w-40 shrink-0 p-2 text-sm outline-none focus:shadow-[3px_3px_0_#F11787] transition-shadow bg-[#FFFEFB]"
+              className="input-brutal w-40 shrink-0 p-2 text-sm outline-none focus:shadow-[3px_3px_0_#F11787] transition-shadow bg-cream"
             />
             <input
               value={row.whatHappened}

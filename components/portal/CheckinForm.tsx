@@ -61,7 +61,7 @@ export default function CheckinForm({ token }: { token: string }) {
         <label className="block text-sm text-[#0a0608]/60 mb-2" htmlFor="revenue">
           Revenue this week
         </label>
-        <div className="input-brutal flex items-center px-4 focus-within:shadow-[3px_3px_0_#F11787] transition-shadow bg-[#FFFEFB]">
+        <div className="input-brutal flex items-center px-4 focus-within:shadow-[3px_3px_0_#F11787] transition-shadow bg-cream">
           <span className="text-2xl font-heading font-[800] mr-2">£</span>
           <input
             id="revenue"
@@ -89,7 +89,7 @@ export default function CheckinForm({ token }: { token: string }) {
           value={qualitativeNotes}
           onChange={(e) => setQualitativeNotes(e.target.value)}
           placeholder="Wins, blockers, anything worth flagging..."
-          className="input-brutal w-full p-4 text-sm outline-none focus:shadow-[3px_3px_0_#F11787] transition-shadow bg-[#FFFEFB] placeholder:text-[#0a0608]/30"
+          className="input-brutal w-full p-4 text-sm outline-none focus:shadow-[3px_3px_0_#F11787] transition-shadow bg-cream placeholder:text-[#0a0608]/30"
         />
       </div>
 

@@ -48,31 +48,31 @@ export default function TimelineTable({ clientId, initialRows }: { clientId: str
   }
 
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-6">
+    <div className="admin-card p-6">
       <table className="w-full text-sm">
-        <thead className="text-left text-gray-500">
+        <thead className="text-left">
           <tr>
-            <th className="w-40 py-1 font-medium">Month</th>
-            <th className="py-1 font-medium">What happened</th>
+            <th className="w-40 py-1 admin-label">Month</th>
+            <th className="py-1 admin-label">What happened</th>
             <th className="py-1" />
           </tr>
         </thead>
         <tbody>
           {rows.map((row) => (
-            <tr key={row.key} className="border-t border-gray-100">
+            <tr key={row.key} className="border-t-2 border-[#0a0608]/10">
               <td className="py-2 pr-2">
                 <input
                   type="month"
                   value={row.month ? row.month.slice(0, 7) : ""}
                   onChange={(e) => updateRow(row.key, { month: e.target.value ? `${e.target.value}-01` : "" })}
-                  className="rounded-md border border-gray-300 px-2 py-1"
+                  className="admin-input px-2 py-1"
                 />
               </td>
               <td className="py-2 pr-2">
                 <input
                   value={row.whatHappened}
                   onChange={(e) => updateRow(row.key, { whatHappened: e.target.value })}
-                  className="w-full rounded-md border border-gray-300 px-2 py-1"
+                  className="w-full admin-input px-2 py-1"
                   placeholder="e.g. Launched, ads on, price change, holiday..."
                 />
               </td>
@@ -80,7 +80,7 @@ export default function TimelineTable({ clientId, initialRows }: { clientId: str
                 <button
                   type="button"
                   onClick={() => setRows((current) => current.filter((r) => r.key !== row.key))}
-                  className="text-gray-400 hover:text-red-600"
+                  className="text-[#0a0608]/30 hover:text-red-600"
                   aria-label="Remove row"
                 >
                   ✕
@@ -93,7 +93,7 @@ export default function TimelineTable({ clientId, initialRows }: { clientId: str
       <button
         type="button"
         onClick={() => setRows((current) => [...current, emptyRow()])}
-        className="mt-3 text-sm font-medium text-gray-700 hover:text-gray-900"
+        className="admin-btn-secondary text-xs px-3 py-1.5 mt-3"
       >
         + Add month
       </button>
@@ -101,11 +101,7 @@ export default function TimelineTable({ clientId, initialRows }: { clientId: str
       {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
 
       <div className="mt-4">
-        <button
-          onClick={handleSave}
-          disabled={saving}
-          className="rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-40"
-        >
+        <button onClick={handleSave} disabled={saving} className="admin-btn px-4 py-2 text-sm">
           {saving ? "Saving…" : "Save"}
         </button>
       </div>

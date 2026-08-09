@@ -57,32 +57,32 @@ export default function MetricsTable({ clientId, initialRows }: { clientId: stri
   }
 
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-6">
+    <div className="admin-card p-6">
       <table className="w-full text-sm">
-        <thead className="text-left text-gray-500">
+        <thead className="text-left">
           <tr>
-            <th className="py-1 font-medium">Name</th>
-            <th className="py-1 font-medium">Definition</th>
-            <th className="py-1 font-medium">Baseline</th>
-            <th className="py-1 font-medium">Target</th>
+            <th className="py-1 admin-label">Name</th>
+            <th className="py-1 admin-label">Definition</th>
+            <th className="py-1 admin-label">Baseline</th>
+            <th className="py-1 admin-label">Target</th>
             <th className="py-1" />
           </tr>
         </thead>
         <tbody>
           {rows.map((row) => (
-            <tr key={row.key} className="border-t border-gray-100">
+            <tr key={row.key} className="border-t-2 border-[#0a0608]/10">
               <td className="py-2 pr-2">
                 <input
                   value={row.name}
                   onChange={(e) => updateRow(row.key, { name: e.target.value })}
-                  className="w-32 rounded-md border border-gray-300 px-2 py-1"
+                  className="w-32 admin-input px-2 py-1"
                 />
               </td>
               <td className="py-2 pr-2">
                 <input
                   value={row.definition}
                   onChange={(e) => updateRow(row.key, { definition: e.target.value })}
-                  className="w-full rounded-md border border-gray-300 px-2 py-1"
+                  className="w-full admin-input px-2 py-1"
                 />
               </td>
               <td className="py-2 pr-2">
@@ -91,7 +91,7 @@ export default function MetricsTable({ clientId, initialRows }: { clientId: stri
                   step="0.01"
                   value={row.baseline}
                   onChange={(e) => updateRow(row.key, { baseline: e.target.value })}
-                  className="w-24 rounded-md border border-gray-300 px-2 py-1"
+                  className="w-24 admin-input px-2 py-1"
                 />
               </td>
               <td className="py-2 pr-2">
@@ -100,14 +100,14 @@ export default function MetricsTable({ clientId, initialRows }: { clientId: stri
                   step="0.01"
                   value={row.target}
                   onChange={(e) => updateRow(row.key, { target: e.target.value })}
-                  className="w-24 rounded-md border border-gray-300 px-2 py-1"
+                  className="w-24 admin-input px-2 py-1"
                 />
               </td>
               <td className="py-2">
                 <button
                   type="button"
                   onClick={() => setRows((current) => current.filter((r) => r.key !== row.key))}
-                  className="text-gray-400 hover:text-red-600"
+                  className="text-[#0a0608]/30 hover:text-red-600"
                   aria-label="Remove row"
                 >
                   ✕
@@ -120,7 +120,7 @@ export default function MetricsTable({ clientId, initialRows }: { clientId: stri
       <button
         type="button"
         onClick={() => setRows((current) => [...current, emptyRow()])}
-        className="mt-3 text-sm font-medium text-gray-700 hover:text-gray-900"
+        className="admin-btn-secondary text-xs px-3 py-1.5 mt-3"
       >
         + Add metric
       </button>
@@ -128,11 +128,7 @@ export default function MetricsTable({ clientId, initialRows }: { clientId: stri
       {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
 
       <div className="mt-4">
-        <button
-          onClick={handleSave}
-          disabled={saving}
-          className="rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-40"
-        >
+        <button onClick={handleSave} disabled={saving} className="admin-btn px-4 py-2 text-sm">
           {saving ? "Saving…" : "Save"}
         </button>
       </div>

@@ -33,26 +33,24 @@ export default function AdminLoginPage() {
 
   return (
     <main className="mx-auto flex min-h-screen max-w-sm flex-col justify-center px-6">
-      <h1 className="mb-6 text-xl font-semibold">Admin login</h1>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Password"
-          className="mb-4 w-full rounded-md border border-gray-300 px-3 py-2"
-          autoFocus
-          required
-        />
-        {error && <p className="mb-4 text-sm text-red-600">{error}</p>}
-        <button
-          type="submit"
-          disabled={submitting}
-          className="w-full rounded-md bg-gray-900 px-4 py-2 font-medium text-white disabled:opacity-40"
-        >
-          {submitting ? "Logging in…" : "Log in"}
-        </button>
-      </form>
+      <div className="admin-card p-8">
+        <h1 className="mb-6 font-heading font-[800] text-xl">Admin login</h1>
+        <form onSubmit={handleSubmit}>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Password"
+            className="admin-input mb-4 w-full px-3 py-2.5"
+            autoFocus
+            required
+          />
+          {error && <p className="mb-4 text-sm text-red-600">{error}</p>}
+          <button type="submit" disabled={submitting} className="admin-btn w-full py-2.5">
+            {submitting ? "Logging in…" : "Log in"}
+          </button>
+        </form>
+      </div>
     </main>
   );
 }

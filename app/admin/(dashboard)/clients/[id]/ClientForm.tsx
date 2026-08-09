@@ -94,12 +94,12 @@ export default function ClientForm({ clientId, initial }: { clientId: string; in
     }
   }
 
-  const inputClass = "w-full rounded-md border border-gray-300 px-3 py-2";
-  const labelClass = "mb-1 block text-sm font-medium text-gray-700";
+  const inputClass = "admin-input w-full px-3 py-2";
+  const labelClass = "admin-label mb-1 block";
 
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-6">
-      <h2 className="mb-4 text-lg font-semibold">Details</h2>
+    <div className="admin-card p-6">
+      <h2 className="mb-4 font-heading font-[800] text-lg">Details</h2>
 
       <div className="mb-4 grid gap-4 sm:grid-cols-3">
         <div>
@@ -196,7 +196,7 @@ export default function ClientForm({ clientId, initial }: { clientId: string; in
         <textarea rows={3} value={notes} onChange={(e) => setNotes(e.target.value)} className={inputClass} />
       </div>
 
-      <h3 className="mb-3 mt-6 text-sm font-semibold uppercase tracking-wide text-gray-500">
+      <h3 className="admin-label mb-3 mt-6">
         Baseline (fills in from onboarding, editable here)
       </h3>
       <div className="mb-4 grid gap-4 sm:grid-cols-2">
@@ -253,11 +253,7 @@ export default function ClientForm({ clientId, initial }: { clientId: string; in
 
       {error && <p className="mb-4 text-sm text-red-600">{error}</p>}
 
-      <button
-        onClick={handleSave}
-        disabled={saving}
-        className="rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-40"
-      >
+      <button onClick={handleSave} disabled={saving} className="admin-btn px-4 py-2 text-sm">
         {saving ? "Saving…" : "Save"}
       </button>
     </div>

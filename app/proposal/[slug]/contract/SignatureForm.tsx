@@ -33,28 +33,25 @@ export default function SignatureForm({ slug }: { slug: string }) {
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="rounded-2xl border border-brand-ink/10 bg-white p-6"
-    >
-      <h2 className="mb-4 text-lg font-extrabold text-brand-ink">Sign to accept</h2>
-      <label className="mb-1 block text-sm font-medium text-brand-ink/70">
+    <form onSubmit={handleSubmit} className="card-brutal p-6">
+      <h2 className="mb-4 text-lg font-heading font-[800]">Sign to accept</h2>
+      <label className="mb-1 block text-sm font-medium text-[#0a0608]/70">
         Type your full name
       </label>
       <input
         type="text"
         value={signedName}
         onChange={(e) => setSignedName(e.target.value)}
-        className="mb-4 w-full rounded-xl border border-brand-ink/15 px-3 py-2 focus:border-brand-pink focus:outline-none"
+        className="input-brutal mb-4 w-full px-3 py-2.5 focus:shadow-[3px_3px_0_#F11787] transition-shadow outline-none"
         placeholder="Jane Smith"
         required
       />
-      <label className="mb-4 flex items-start gap-2 text-sm text-brand-ink/70">
+      <label className="mb-4 flex items-start gap-2 text-sm text-[#0a0608]/70">
         <input
           type="checkbox"
           checked={agreed}
           onChange={(e) => setAgreed(e.target.checked)}
-          className="mt-1 accent-brand-pink"
+          className="mt-1 accent-[#F11787]"
           required
         />
         I agree to the terms above.
@@ -63,7 +60,7 @@ export default function SignatureForm({ slug }: { slug: string }) {
       <button
         type="submit"
         disabled={submitting || !signedName.trim() || !agreed}
-        className="w-full rounded-full bg-brand-pink px-6 py-3 font-extrabold text-white hover:opacity-90 disabled:opacity-40"
+        className="btn-pill w-full px-6 py-3 text-sm"
       >
         {submitting ? "Submitting…" : "Sign & submit"}
       </button>

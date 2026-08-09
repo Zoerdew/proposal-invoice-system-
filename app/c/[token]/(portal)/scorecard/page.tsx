@@ -30,15 +30,18 @@ export default async function ScorecardPage({
 
   return (
     <div>
-      <p className="text-sm tracking-wide uppercase text-[#F11787] font-heading font-[800] mb-10">
-        Commercial Scorecard
-      </p>
+      <div className="flex flex-col items-start gap-4 mb-10">
+        <span className="eyebrow-pill">In Control</span>
+        <h1 className="font-heading font-[800] text-4xl md:text-5xl leading-[0.98] tracking-[-0.03em]">
+          Commercial <span className="text-accent">Scorecard</span>
+        </h1>
+      </div>
 
       {metrics.length === 0 && (
         <p className="text-sm text-[#0a0608]/50">No metrics set up yet.</p>
       )}
 
-      <ul className="flex flex-col gap-6">
+      <ul className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
         {metrics.map((metric: Metric, i) => {
           const readings = readingsByMetric.get(metric.id) ?? [];
           const latest = readings[readings.length - 1];
@@ -67,7 +70,7 @@ export default async function ScorecardPage({
                   {readings.map((r) => (
                     <li
                       key={r.id}
-                      className="text-xs text-[#0a0608]/60 bg-[#FFFEFB] border-2 border-[#0a0608] rounded-full px-3 py-1"
+                      className="text-xs text-[#0a0608]/60 bg-cream border-2 border-[#0a0608] rounded-full px-3 py-1"
                     >
                       {formatDate(r.readAt)}: {formatNumber(r.value ?? 0)}
                     </li>

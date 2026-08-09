@@ -22,6 +22,12 @@ function formatDate(iso: string | null): string {
   });
 }
 
+function statusBadgeClass(status: string): string {
+  if (status === "Banked") return "badge badge-strong";
+  if (status === "Fixed") return "badge badge-pos";
+  return "badge badge-neutral";
+}
+
 export default async function GoldPage({
   params,
 }: {
@@ -40,9 +46,12 @@ export default async function GoldPage({
 
   return (
     <div>
-      <p className="text-sm tracking-wide uppercase text-[#F11787] font-heading font-[800] mb-10">
-        GOLD Report
-      </p>
+      <div className="flex flex-col items-start gap-4 mb-10">
+        <span className="eyebrow-pill">In Control</span>
+        <h1 className="font-heading font-[800] text-4xl md:text-5xl leading-[0.98] tracking-[-0.03em]">
+          <span className="text-accent">GOLD</span> Report
+        </h1>
+      </div>
 
       {groups.length === 0 && (
         <p className="text-sm text-[#0a0608]/60">
@@ -50,50 +59,53 @@ export default async function GoldPage({
         </p>
       )}
 
-      {groups.map((group, i) => (
-        <section
-          key={group.type}
-          className={`mb-8 last:mb-0 p-6 ${i % 2 === 0 ? "card-brutal" : "card-brutal-blush"}`}
-        >
-          <h2 className="font-heading font-[800] text-2xl mb-4 tracking-[-0.03em]">
-            {group.type}
-          </h2>
-          <ul>
-            {group.findings.map((finding: Finding, j) => (
-              <li
-                key={finding.id}
-                className={`py-6 flex justify-between gap-8 ${
-                  j > 0 ? "border-t-2 border-[#0a0608]/15" : ""
-                }`}
-              >
-                <div>
-                  <p className="font-heading font-[800] text-lg mb-1">
-                    {finding.title}
-                  </p>
-                  {finding.description && (
-                    <p className="text-sm text-[#0a0608]/70 mb-3 max-w-md">
-                      {finding.description}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+        {groups.map((group, i) => (
+          <section
+            key={group.type}
+            className={`relative p-6 ${i % 2 === 0 ? "card-brutal" : "card-brutal-blush"}`}
+          >
+            <span className="card-tab card-tab-pink">
+              {group.findings.length} {group.findings.length === 1 ? "finding" : "findings"}
+            </span>
+            <h2 className="font-heading font-[800] text-2xl mb-4 mt-2 tracking-[-0.03em]">
+              {group.type}
+            </h2>
+            <ul>
+              {group.findings.map((finding: Finding, j) => (
+                <li
+                  key={finding.id}
+                  className={`py-6 flex flex-wrap justify-between gap-4 ${
+                    j > 0 ? "border-t-2 border-[#0a0608]/15" : ""
+                  }`}
+                >
+                  <div>
+                    <p className="font-heading font-[800] text-lg mb-1">
+                      {finding.title}
                     </p>
-                  )}
-                  <p className="text-xs text-[#0a0608]/40 uppercase tracking-wide">
-                    {[finding.source, formatDate(finding.dateFound)]
-                      .filter(Boolean)
-                      .join(" · ")}
-                  </p>
-                </div>
-                <div className="text-right shrink-0">
-                  <p className="font-heading font-[800] text-xl">
-                    {formatCurrency(finding.value)}
-                  </p>
-                  <p className="text-xs uppercase tracking-wide text-[#0a0608]/50 mt-1">
-                    {finding.status}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </section>
-      ))}
+                    {finding.description && (
+                      <p className="text-sm text-[#0a0608]/70 mb-3 max-w-xs">
+                        {finding.description}
+                      </p>
+                    )}
+                    <p className="text-xs text-[#0a0608]/40 uppercase tracking-wide">
+                      {[finding.source, formatDate(finding.dateFound)]
+                        .filter(Boolean)
+                        .join(" · ")}
+                    </p>
+                  </div>
+                  <div className="text-right shrink-0 flex flex-col items-end gap-2">
+                    <p className="font-heading font-[800] text-xl">
+                      {formatCurrency(finding.value)}
+                    </p>
+                    <span className={statusBadgeClass(finding.status)}>{finding.status}</span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
+      </div>
     </div>
   );
 }

@@ -20,6 +20,6 @@ export default async function ClientPortalLayout({
   if (!client) notFound();
 
   return (
-    <div className="min-h-screen bg-[#FAF3E9] text-[#0a0608]">{children}</div>
+    <div className="min-h-screen bg-blush text-[#0a0608]">{children}</div>
   );
 }

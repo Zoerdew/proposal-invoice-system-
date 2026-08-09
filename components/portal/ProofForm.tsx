@@ -80,7 +80,7 @@ export default function ProofForm({ token }: { token: string }) {
           rows={3}
           value={text}
           onChange={(e) => setText(e.target.value)}
-          className="input-brutal w-full p-3 text-sm outline-none focus:shadow-[3px_3px_0_#F11787] transition-shadow bg-[#FFFEFB]"
+          className="input-brutal w-full p-3 text-sm outline-none focus:shadow-[3px_3px_0_#F11787] transition-shadow bg-cream"
         />
       </div>
 
@@ -94,7 +94,7 @@ export default function ProofForm({ token }: { token: string }) {
           value={source}
           onChange={(e) => setSource(e.target.value)}
           placeholder="e.g. Slack DM, Email"
-          className="input-brutal w-full p-3 text-sm outline-none focus:shadow-[3px_3px_0_#F11787] transition-shadow bg-[#FFFEFB] placeholder:text-[#0a0608]/30"
+          className="input-brutal w-full p-3 text-sm outline-none focus:shadow-[3px_3px_0_#F11787] transition-shadow bg-cream placeholder:text-[#0a0608]/30"
         />
       </div>
 

@@ -13,9 +13,12 @@ export default async function CheckinPage({
 
   return (
     <div>
-      <p className="text-sm tracking-wide uppercase text-[#F11787] font-heading font-[800] mb-10">
-        Weekly Check-in
-      </p>
+      <div className="flex flex-col items-start gap-4 mb-10">
+        <span className="eyebrow-pill">In Control</span>
+        <h1 className="font-heading font-[800] text-4xl md:text-5xl leading-[0.98] tracking-[-0.03em]">
+          Weekly <span className="text-accent">Check-in</span>
+        </h1>
+      </div>
       <CheckinForm token={token} />
     </div>
   );

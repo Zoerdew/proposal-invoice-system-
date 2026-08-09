@@ -32,7 +32,7 @@ export default async function OnboardingPage({
         <h1 className="font-heading font-[800] text-4xl mb-3 tracking-[-0.03em]">
           Let&apos;s get you set up
         </h1>
-        <p className="text-[#FAF3E9]/70 max-w-sm">
+        <p className="text-cream/70 max-w-sm">
           Ten minutes now saves a lot of guessing later.
         </p>
       </div>

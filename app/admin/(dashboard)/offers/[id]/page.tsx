@@ -22,7 +22,7 @@ export default async function EditOfferPage({
 
   return (
     <div>
-      <h1 className="mb-6 text-xl font-semibold">Edit offer</h1>
+      <h1 className="mb-6 font-heading font-[800] text-xl">Edit offer</h1>
       <OfferForm
         mode="edit"
         offerId={id}

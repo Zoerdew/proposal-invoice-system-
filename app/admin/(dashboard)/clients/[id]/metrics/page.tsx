@@ -18,7 +18,7 @@ export default async function ClientMetricsPage({
 
   return (
     <div>
-      <h1 className="mb-2 text-xl font-semibold">Metrics</h1>
+      <h1 className="mb-2 font-heading font-[800] text-xl">Metrics</h1>
       <ClientTabs clientId={id} />
       <div className="mb-6">
         <MetricsTable

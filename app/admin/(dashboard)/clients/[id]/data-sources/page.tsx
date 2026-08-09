@@ -14,7 +14,7 @@ export default async function ClientDataSourcesPage({
 
   return (
     <div>
-      <h1 className="mb-2 text-xl font-semibold">Data sources</h1>
+      <h1 className="mb-2 font-heading font-[800] text-xl">Data sources</h1>
       <ClientTabs clientId={id} />
       <DataSourcesTable
         clientId={id}

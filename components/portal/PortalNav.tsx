@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -21,14 +22,23 @@ export default function PortalNav({
   const pathname = usePathname();
 
   return (
-    <header className="border-b-[3px] border-[#0a0608] bg-[#FFFEFB]">
-      <div className="max-w-2xl mx-auto w-full px-8 pt-10 pb-6 flex items-center justify-between">
-        <p className="font-heading font-[800] text-lg leading-none">
-          In Control
-        </p>
+    <header className="border-b-[3px] border-[#0a0608] bg-cream">
+      <div className="max-w-5xl mx-auto w-full px-8 pt-10 pb-6 flex items-center justify-between">
+        <div className="flex items-center gap-2.5">
+          <Image
+            src="/brand/zd-monogram.png"
+            alt="Zoë Dew"
+            width={40}
+            height={40}
+            className="h-8 w-8"
+          />
+          <p className="font-heading font-[800] text-lg leading-none">
+            In Control
+          </p>
+        </div>
         <p className="text-sm text-[#0a0608]/50">{clientName}</p>
       </div>
-      <nav className="max-w-2xl mx-auto w-full px-8">
+      <nav className="max-w-5xl mx-auto w-full px-8">
         <ul className="flex gap-3 flex-wrap pb-4">
           {TABS.map((tab) => {
             const href = `/c/${token}/${tab.segment}`;
