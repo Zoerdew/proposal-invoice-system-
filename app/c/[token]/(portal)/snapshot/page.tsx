@@ -57,25 +57,27 @@ export default async function SnapshotPage({
         </div>
       </div>
 
-      <div className="card-brutal-blush relative mt-10 p-6">
-        <span className="card-tab card-tab-yellow">
-          Target {formatCurrency(client.targetFigure)}
-        </span>
-        <div className="flex justify-between text-sm text-[#0a0608]/60 mb-3 mt-2">
-          <span>Progress against target</span>
-          <span className="font-heading font-[800] text-[#0a0608]">{progressPct}%</span>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10 items-stretch">
+        <div className="card-brutal-blush relative p-6 md:col-span-2">
+          <span className="card-tab card-tab-yellow">
+            Target {formatCurrency(client.targetFigure)}
+          </span>
+          <div className="flex justify-between text-sm text-[#0a0608]/60 mb-3 mt-2">
+            <span>Progress against target</span>
+            <span className="font-heading font-[800] text-[#0a0608]">{progressPct}%</span>
+          </div>
+          <div className="h-4 w-full bg-cream rounded-full border-2 border-[#0a0608] overflow-hidden">
+            <div
+              className="h-full bg-[#F11787]"
+              style={{ width: `${progressPct}%` }}
+            />
+          </div>
         </div>
-        <div className="h-4 w-full bg-cream rounded-full border-2 border-[#0a0608] overflow-hidden">
-          <div
-            className="h-full bg-[#F11787]"
-            style={{ width: `${progressPct}%` }}
-          />
-        </div>
-      </div>
 
-      <div className="card-brutal-yellow mt-8 p-6 flex justify-between items-baseline">
-        <p className="text-sm text-[#0a0608]/70">Days remaining</p>
-        <p className="font-heading font-[800] text-2xl">{daysLeft}</p>
+        <div className="card-brutal-yellow p-6 flex md:flex-col justify-between md:justify-center items-baseline md:items-start gap-2">
+          <p className="text-sm text-[#0a0608]/70">Days remaining</p>
+          <p className="font-heading font-[800] text-4xl leading-none">{daysLeft}</p>
+        </div>
       </div>
     </div>
   );

@@ -23,7 +23,7 @@ export default function PortalNav({
 
   return (
     <header className="border-b-[3px] border-[#0a0608] bg-cream">
-      <div className="max-w-4xl mx-auto w-full px-8 pt-10 pb-6 flex items-center justify-between">
+      <div className="max-w-5xl mx-auto w-full px-8 pt-10 pb-6 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <Image
             src="/brand/zd-monogram.png"
@@ -38,7 +38,7 @@ export default function PortalNav({
         </div>
         <p className="text-sm text-[#0a0608]/50">{clientName}</p>
       </div>
-      <nav className="max-w-4xl mx-auto w-full px-8">
+      <nav className="max-w-5xl mx-auto w-full px-8">
         <ul className="flex gap-3 flex-wrap pb-4">
           {TABS.map((tab) => {
             const href = `/c/${token}/${tab.segment}`;

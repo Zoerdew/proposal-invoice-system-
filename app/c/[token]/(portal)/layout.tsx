@@ -26,7 +26,7 @@ export default async function PortalLayout({
   return (
     <>
       <PortalNav token={token} clientName={client.name} />
-      <main className="max-w-4xl mx-auto w-full px-8 py-12">{children}</main>
+      <main className="max-w-5xl mx-auto w-full px-8 py-12">{children}</main>
     </>
   );
 }

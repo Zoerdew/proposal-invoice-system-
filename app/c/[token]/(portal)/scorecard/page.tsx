@@ -41,7 +41,7 @@ export default async function ScorecardPage({
         <p className="text-sm text-[#0a0608]/50">No metrics set up yet.</p>
       )}
 
-      <ul className="flex flex-col gap-6">
+      <ul className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
         {metrics.map((metric: Metric, i) => {
           const readings = readingsByMetric.get(metric.id) ?? [];
           const latest = readings[readings.length - 1];
