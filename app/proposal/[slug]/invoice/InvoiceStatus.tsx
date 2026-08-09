@@ -53,7 +53,9 @@ export default function InvoiceStatus({
     return (
       <div className="card-brutal-blush p-6">
         <p className="mb-4 text-center font-heading font-[800]">
-          Signed and invoiced — your invoice{invoices.length > 1 ? "s are" : " is"} ready.
+          {status === "Paid"
+            ? "Signed, invoiced, and paid — thank you."
+            : `Signed and invoiced — your invoice${invoices.length > 1 ? "s are" : " is"} ready.`}
         </p>
         {invoices.length > 0 ? (
           <div className="space-y-3">
@@ -73,7 +75,9 @@ export default function InvoiceStatus({
                     {dateFormat.format(new Date(invoice.dueDate))}
                   </p>
                 </div>
-                {invoice.url ? (
+                {status === "Paid" ? (
+                  <span className="badge badge-pos">Paid</span>
+                ) : invoice.url ? (
                   <a href={invoice.url} target="_blank" rel="noreferrer" className="btn-pill px-4 py-2 text-xs">
                     View & pay
                   </a>
