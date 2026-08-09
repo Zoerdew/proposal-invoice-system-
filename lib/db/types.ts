@@ -455,6 +455,126 @@ export type Database = {
           },
         ]
       }
+      lead_attachments: {
+        Row: {
+          created_at: string
+          file_name: string | null
+          file_url: string
+          id: string
+          lead_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          file_name?: string | null
+          file_url: string
+          id?: string
+          lead_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          file_name?: string | null
+          file_url?: string
+          id?: string
+          lead_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_attachments_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      leads: {
+        Row: {
+          application_id: string | null
+          client_id: string | null
+          close_date: string | null
+          conversion_probability: number | null
+          created_at: string
+          days_until_next_contact: number | null
+          email: string | null
+          first_contact_date: string | null
+          first_name: string | null
+          id: string
+          last_name: string | null
+          lead_stage: string
+          lead_value: number | null
+          notes: string | null
+          phone: string | null
+          product_id: string | null
+          source: string | null
+          updated_at: string
+        }
+        Insert: {
+          application_id?: string | null
+          client_id?: string | null
+          close_date?: string | null
+          conversion_probability?: number | null
+          created_at?: string
+          days_until_next_contact?: number | null
+          email?: string | null
+          first_contact_date?: string | null
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          lead_stage?: string
+          lead_value?: number | null
+          notes?: string | null
+          phone?: string | null
+          product_id?: string | null
+          source?: string | null
+          updated_at?: string
+        }
+        Update: {
+          application_id?: string | null
+          client_id?: string | null
+          close_date?: string | null
+          conversion_probability?: number | null
+          created_at?: string
+          days_until_next_contact?: number | null
+          email?: string | null
+          first_contact_date?: string | null
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          lead_stage?: string
+          lead_value?: number | null
+          notes?: string | null
+          phone?: string | null
+          product_id?: string | null
+          source?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "leads_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "leads_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "leads_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       line_items: {
         Row: {
           created_at: string
@@ -732,6 +852,33 @@ export type Database = {
           },
         ]
       }
+      products: {
+        Row: {
+          active: boolean
+          created_at: string
+          id: string
+          name: string
+          price: number | null
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          name: string
+          price?: number | null
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          name?: string
+          price?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       proof: {
         Row: {
           client_id: string
@@ -836,6 +983,7 @@ export type Database = {
           date_signed: string | null
           deposit_amount: number | null
           id: string
+          lead_id: string | null
           notes: string | null
           offer_id: string | null
           payment_plan: string | null
@@ -855,6 +1003,7 @@ export type Database = {
           date_signed?: string | null
           deposit_amount?: number | null
           id?: string
+          lead_id?: string | null
           notes?: string | null
           offer_id?: string | null
           payment_plan?: string | null
@@ -874,6 +1023,7 @@ export type Database = {
           date_signed?: string | null
           deposit_amount?: number | null
           id?: string
+          lead_id?: string | null
           notes?: string | null
           offer_id?: string | null
           payment_plan?: string | null
@@ -894,6 +1044,13 @@ export type Database = {
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "proposals_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
             referencedColumns: ["id"]
           },
           {
