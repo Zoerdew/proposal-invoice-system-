@@ -45,14 +45,22 @@ The next ninety days. What working together would build, framed as things within
 
 How we'll know it's working. Concrete, checkable markers, not vague reassurance. Tie these to the actual deliverables (GOLD Report, Evidence Dashboard, Commercial Scorecard, Decision Log) and to something specific and true about this prospect's situation right now, not a generic KPI list.
 
-How it works. The standard structure: 90 minute kickoff, five 60 minute calls one every other week, final call mapping the next six to twelve months. Describe each step in terms of what it means for this specific prospect's problem, not in the abstract. If there is a genuine, sourced proof point relevant to this prospect's industry or situation, include it here as a short paragraph. If there isn't one that actually fits, leave the section without one rather than forcing an unrelated story in.
+How it works. The standard structure: a 90 minute kickoff, five 60 minute calls one every other week, then a final call mapping the next six to twelve months. The kickoff is not a joint discovery session: it is where Zoe walks the prospect through the reports she has already prepared for them. The five 60 minute calls follow Zoe's five-stage method, in this order, and should be named and framed accordingly:
+
+- Find. Identify where untapped revenue and opportunities already exist.
+- Focus. Prioritise by return and decide what deserves attention first.
+- Fix. Remove bottlenecks and implement the highest-impact improvements.
+- Fortify. Embed the changes so they are repeatable without constant intervention.
+- Future. Plan the next phase and decide where to focus next.
+
+Describe each step in terms of what it means for this specific prospect's problem, not in the abstract. If there is a genuine, sourced proof point relevant to this prospect's industry or situation, include it here as a short paragraph. If there isn't one that actually fits, leave the section without one rather than forcing an unrelated story in.
 
 What each of us brings. Two short columns: what Zoë brings, what the prospect brings. Specific to what was actually asked of them on the call (send their history, answer honestly, do the agreed work between calls), not generic responsibility boilerplate.
 
 Investment. This section branches:
 
 - If specific pricing or package options were discussed live on the call, use exactly those options, those numbers, and nothing else. Do not add a third option, a deposit, or a payment plan that wasn't part of that conversation. If more than one option was discussed, show it as a toggle between exactly those options, matching the wording used on the call as closely as possible.
-- If pricing was not discussed live, use the current standard offer terms and current live discount window and capacity, pulled from the pricing source of truth, not hardcoded into this prompt, since those change over time. State them plainly: the price, VAT status if UK, whether a time-limited discount currently applies and its real deadline, and current capacity if that's genuinely limited right now.
+- If pricing was not discussed live, use the current standard offer terms and current live discount window and capacity, pulled from the pricing source of truth, not hardcoded into this prompt, since those change over time. Falling Forwards standard pricing is always quoted exclusive of VAT — state it as the amount plus VAT (e.g. "£3,300 + VAT"), not as a conditional "if UK." State the rest plainly too: whether a time-limited discount currently applies and its real deadline, and current capacity if that's genuinely limited right now.
 - Do not introduce a deposit-to-hold-your-place mechanic unless it was specifically discussed on the call for this prospect. Some proposals will need one, most won't. Ask if unclear rather than defaulting it in.
 - Show instalment figures as actual division of the total (total divided by 3, correctly rounded), never a vague "instalments available" without the number.
 
