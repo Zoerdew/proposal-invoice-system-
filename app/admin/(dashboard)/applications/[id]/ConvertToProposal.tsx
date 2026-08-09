@@ -25,18 +25,14 @@ export default function ConvertToProposal({ applicationId }: { applicationId: st
   }
 
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-6">
-      <h2 className="mb-2 text-lg font-semibold">Convert</h2>
-      <p className="mb-4 text-sm text-gray-600">
+    <div className="admin-card p-6">
+      <h2 className="mb-2 font-heading font-[800] text-lg">Convert</h2>
+      <p className="mb-4 text-sm text-[#0a0608]/60">
         Creates a draft proposal pre-filled with this applicant&apos;s name, email, and business —
         offer, line items, and contract terms still need filling in.
       </p>
       {error && <p className="mb-4 text-sm text-red-600">{error}</p>}
-      <button
-        onClick={handleClick}
-        disabled={converting}
-        className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium disabled:opacity-40"
-      >
+      <button onClick={handleClick} disabled={converting} className="admin-btn-secondary px-4 py-2 text-sm">
         {converting ? "Converting…" : "Convert to proposal"}
       </button>
     </div>

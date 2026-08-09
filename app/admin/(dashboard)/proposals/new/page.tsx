@@ -8,7 +8,7 @@ export default async function NewProposalPage() {
 
   return (
     <div>
-      <h1 className="mb-6 text-xl font-semibold">New proposal</h1>
+      <h1 className="mb-6 font-heading font-[800] text-xl">New proposal</h1>
       <ProposalForm
         mode="create"
         offers={offers.map((o) => ({ id: o.id, name: o.name || "Untitled" }))}

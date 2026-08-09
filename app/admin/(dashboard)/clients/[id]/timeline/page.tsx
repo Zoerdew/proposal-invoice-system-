@@ -14,7 +14,7 @@ export default async function ClientTimelinePage({
 
   return (
     <div>
-      <h1 className="mb-2 text-xl font-semibold">Timeline</h1>
+      <h1 className="mb-2 font-heading font-[800] text-xl">Timeline</h1>
       <ClientTabs clientId={id} />
       <TimelineTable
         clientId={id}

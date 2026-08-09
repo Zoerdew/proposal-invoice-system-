@@ -147,49 +147,49 @@ export default function ProposalForm({
   return (
     <div className="max-w-2xl">
       {savedLink && (
-        <div className="mb-6 rounded-md border border-gray-200 bg-gray-50 p-4 text-sm">
-          <p className="mb-1 font-medium">Proposal link</p>
-          <a href={savedLink} target="_blank" rel="noreferrer" className="text-blue-700 underline">
+        <div className="mb-6 admin-card-blush p-4 text-sm">
+          <p className="mb-1 font-heading font-[800]">Proposal link</p>
+          <a href={savedLink} target="_blank" rel="noreferrer" className="text-accent underline">
             {savedLink}
           </a>
         </div>
       )}
 
       {locked && (
-        <p className="mb-6 rounded-md border border-yellow-200 bg-yellow-50 p-4 text-sm text-yellow-900">
+        <p className="mb-6 card-brutal-yellow p-4 text-sm">
           This proposal has already been signed and can no longer be edited.
         </p>
       )}
 
       <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">Client name</label>
+          <label className="admin-label mb-1 block">Client name</label>
           <input
             type="text"
             value={clientName}
             onChange={(e) => setClientName(e.target.value)}
             disabled={locked}
-            className="w-full rounded-md border border-gray-300 px-3 py-2"
+            className="admin-input w-full px-3 py-2"
           />
         </div>
         <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">Client email</label>
+          <label className="admin-label mb-1 block">Client email</label>
           <input
             type="email"
             value={clientEmail}
             onChange={(e) => setClientEmail(e.target.value)}
             disabled={locked}
-            className="w-full rounded-md border border-gray-300 px-3 py-2"
+            className="admin-input w-full px-3 py-2"
           />
         </div>
         <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">Company</label>
+          <label className="admin-label mb-1 block">Company</label>
           <input
             type="text"
             value={company}
             onChange={(e) => setCompany(e.target.value)}
             disabled={locked}
-            className="w-full rounded-md border border-gray-300 px-3 py-2"
+            className="admin-input w-full px-3 py-2"
           />
         </div>
       </div>
@@ -197,13 +197,13 @@ export default function ProposalForm({
       {!locked && offers.length > 0 && (
         <div className="mb-6 flex items-end gap-2">
           <div className="flex-1">
-            <label className="mb-1 block text-sm font-medium text-gray-700">
+            <label className="admin-label mb-1 block">
               Load from an offer template
             </label>
             <select
               value={selectedOfferId}
               onChange={(e) => handleOfferSelect(e.target.value)}
-              className="w-full rounded-md border border-gray-300 px-3 py-2"
+              className="admin-input w-full px-3 py-2"
             >
               <option value="">— choose an offer —</option>
               {offers.map((o) => (
@@ -217,7 +217,7 @@ export default function ProposalForm({
             type="button"
             onClick={() => loadOffer(selectedOfferId)}
             disabled={!selectedOfferId || loadingOffer}
-            className="rounded-md border border-gray-300 px-3 py-2 text-sm font-medium disabled:opacity-40"
+            className="admin-btn-secondary px-3 py-2 text-sm"
             title="Reset contract terms and line items back to this offer's defaults"
           >
             {loadingOffer ? "Loading…" : "Reload defaults"}
@@ -226,12 +226,12 @@ export default function ProposalForm({
       )}
 
       <div className="mb-6">
-        <label className="mb-2 block text-sm font-medium text-gray-700">Line items</label>
+        <label className="admin-label mb-2 block">Line items</label>
         <LineItemRows rows={rows} onChange={setRows} disabled={locked} />
       </div>
 
       <div className="mb-6 sm:w-1/3">
-        <label className="mb-1 block text-sm font-medium text-gray-700">
+        <label className="admin-label mb-1 block">
           Deposit amount (optional)
         </label>
         <input
@@ -242,10 +242,10 @@ export default function ProposalForm({
           onChange={(e) => setDepositAmount(e.target.value)}
           disabled={locked}
           placeholder="e.g. 500"
-          className="w-full rounded-md border border-gray-300 px-3 py-2"
+          className="admin-input w-full px-3 py-2"
         />
         {!locked && (
-          <p className="mt-1 text-xs text-gray-500">
+          <p className="mt-1 text-xs text-[#0a0608]/50">
             One-off exception for this client only. If set, whatever payment plan they choose
             becomes: this amount now, then the rest split evenly across that plan&apos;s months
             (e.g. Pay in 3 becomes deposit + 3 more payments).
@@ -255,13 +255,9 @@ export default function ProposalForm({
 
       <div className="mb-6">
         <div className="mb-1 flex items-center justify-between">
-          <label className="block text-sm font-medium text-gray-700">Contract terms</label>
+          <label className="admin-label block">Contract terms</label>
           {!locked && (
-            <button
-              type="button"
-              onClick={fillPlaceholders}
-              className="text-sm font-medium text-gray-700 hover:text-gray-900"
-            >
+            <button type="button" onClick={fillPlaceholders} className="admin-btn-secondary text-xs px-3 py-1.5">
               Fill placeholders
             </button>
           )}
@@ -271,10 +267,10 @@ export default function ProposalForm({
           onChange={(e) => setContractTerms(e.target.value)}
           disabled={locked}
           rows={6}
-          className="w-full rounded-md border border-gray-300 px-3 py-2"
+          className="admin-input w-full px-3 py-2"
         />
         {!locked && (
-          <p className="mt-1 text-xs text-gray-500">
+          <p className="mt-1 text-xs text-[#0a0608]/50">
             Placeholders: {PLACEHOLDER_TOKENS.join(", ")} — set your line items above first, then
             click &quot;Fill placeholders&quot; last to swap the tokens for real values.{" "}
             <strong>{"{{Total}}"}</strong> and <strong>{"{{Payment Plan}}"}</strong> fill in
@@ -292,7 +288,7 @@ export default function ProposalForm({
             type="button"
             onClick={() => handleSave(false)}
             disabled={saving || !clientName.trim()}
-            className="rounded-md bg-gray-900 px-4 py-2 font-medium text-white disabled:opacity-40"
+            className="admin-btn px-4 py-2"
           >
             {saving ? "Saving…" : "Save"}
           </button>
@@ -301,7 +297,7 @@ export default function ProposalForm({
               type="button"
               onClick={() => handleSave(true)}
               disabled={saving || !clientName.trim() || !contractTerms.trim()}
-              className="rounded-md border border-gray-300 px-4 py-2 font-medium disabled:opacity-40"
+              className="admin-btn-secondary px-4 py-2"
             >
               Save & mark as sent
             </button>

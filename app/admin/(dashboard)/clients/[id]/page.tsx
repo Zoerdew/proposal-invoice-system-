@@ -11,8 +11,8 @@ function Field({ label, value }: { label: string; value: string | null | undefin
   if (!value) return null;
   return (
     <div className="mb-4">
-      <dt className="text-xs font-medium uppercase tracking-wide text-gray-500">{label}</dt>
-      <dd className="mt-1 whitespace-pre-wrap text-sm text-gray-900">{value}</dd>
+      <dt className="admin-label">{label}</dt>
+      <dd className="mt-1 whitespace-pre-wrap text-sm">{value}</dd>
     </div>
   );
 }
@@ -35,12 +35,12 @@ export default async function ClientDetailPage({
 
   return (
     <div>
-      <h1 className="mb-2 text-xl font-semibold">
+      <h1 className="mb-2 font-heading font-[800] text-xl">
         {client.name}
         {client.businessName ? ` · ${client.businessName}` : ""}
       </h1>
       {client.proposalId && (
-        <p className="mb-4 text-sm text-gray-500">
+        <p className="mb-4 text-sm text-[#0a0608]/50">
           <Link href={`/admin/proposals/${client.proposalId}`} className="underline">
             Linked proposal
           </Link>
@@ -77,10 +77,10 @@ export default async function ClientDetailPage({
         <div className="flex flex-col gap-6">
           <ResendOnboarding clientId={id} portalToken={client.portalToken} />
 
-          <div className="rounded-lg border border-gray-200 bg-white p-6">
-            <h2 className="mb-2 text-lg font-semibold">Onboarding responses</h2>
+          <div className="admin-card p-6">
+            <h2 className="mb-2 font-heading font-[800] text-lg">Onboarding responses</h2>
             {!onboarding ? (
-              <p className="text-sm text-gray-500">Not submitted yet.</p>
+              <p className="text-sm text-[#0a0608]/50">Not submitted yet.</p>
             ) : (
               <dl>
                 <Field label="Best day for check-in" value={onboarding.bestDayForCheckin} />

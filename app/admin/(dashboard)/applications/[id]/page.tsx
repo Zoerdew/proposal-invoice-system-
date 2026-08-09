@@ -9,8 +9,8 @@ function Field({ label, value }: { label: string; value: string | null | undefin
   if (!value) return null;
   return (
     <div className="mb-4">
-      <dt className="text-xs font-medium uppercase tracking-wide text-gray-500">{label}</dt>
-      <dd className="mt-1 whitespace-pre-wrap text-sm text-gray-900">{value}</dd>
+      <dt className="admin-label">{label}</dt>
+      <dd className="mt-1 whitespace-pre-wrap text-sm">{value}</dd>
     </div>
   );
 }
@@ -31,13 +31,13 @@ export default async function ApplicationDetailPage({
 
   return (
     <div>
-      <h1 className="mb-6 text-xl font-semibold">
+      <h1 className="mb-6 font-heading font-[800] text-xl">
         {application.applicantName}
         {application.businessName ? ` · ${application.businessName}` : ""}
       </h1>
 
       <div className="grid gap-6 sm:grid-cols-3">
-        <div className="sm:col-span-2 rounded-lg border border-gray-200 bg-white p-6">
+        <div className="sm:col-span-2 admin-card p-6">
           <dl>
             <Field label="Email" value={application.email} />
             <Field label="Website" value={application.website} />

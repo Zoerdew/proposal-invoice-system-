@@ -86,47 +86,47 @@ export default function OfferForm({
   return (
     <div className="max-w-2xl">
       <div className="mb-6">
-        <label className="mb-1 block text-sm font-medium text-gray-700">Offer name</label>
+        <label className="admin-label mb-1 block">Offer name</label>
         <input
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="w-full rounded-md border border-gray-300 px-3 py-2"
+          className="admin-input w-full px-3 py-2"
         />
       </div>
 
       <div className="mb-6">
-        <label className="mb-1 block text-sm font-medium text-gray-700">
-          Tagline <span className="font-normal text-gray-400">(shown on the proposal page)</span>
+        <label className="admin-label mb-1 block">
+          Tagline <span className="normal-case font-normal text-[#0a0608]/40">(shown on the proposal page)</span>
         </label>
         <input
           type="text"
           value={tagline}
           onChange={(e) => setTagline(e.target.value)}
-          className="w-full rounded-md border border-gray-300 px-3 py-2"
+          className="admin-input w-full px-3 py-2"
           placeholder="A 90-day, one-to-one virtual advisory engagement"
         />
       </div>
 
       <div className="mb-6">
-        <label className="mb-1 block text-sm font-medium text-gray-700">
-          Description <span className="font-normal text-gray-400">(what's included)</span>
+        <label className="admin-label mb-1 block">
+          Description <span className="normal-case font-normal text-[#0a0608]/40">(what's included)</span>
         </label>
         <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows={6}
-          className="w-full rounded-md border border-gray-300 px-3 py-2"
+          className="admin-input w-full px-3 py-2"
           placeholder="Six calls, a GOLD Report, an Evidence Dashboard..."
         />
-        <p className="mt-1 text-xs text-gray-500">
+        <p className="mt-1 text-xs text-[#0a0608]/50">
           Same for every proposal built from this offer — shown prominently on the client-facing
           proposal page.
         </p>
       </div>
 
       <div className="mb-6">
-        <label className="mb-2 block text-sm font-medium text-gray-700">
+        <label className="admin-label mb-2 block">
           Payment plans offered
         </label>
         <div className="space-y-1">
@@ -136,27 +136,28 @@ export default function OfferForm({
                 type="checkbox"
                 checked={paymentPlans.has(plan)}
                 onChange={() => togglePlan(plan)}
+                className="accent-[#F11787]"
               />
               {plan}
             </label>
           ))}
         </div>
-        <p className="mt-1 text-xs text-gray-500">
+        <p className="mt-1 text-xs text-[#0a0608]/50">
           None checked = Pay in Full only (no payment choice shown to the client).
         </p>
       </div>
 
       <div className="mb-6">
-        <label className="mb-1 block text-sm font-medium text-gray-700">
+        <label className="admin-label mb-1 block">
           Default contract terms
         </label>
         <textarea
           value={contractTerms}
           onChange={(e) => setContractTerms(e.target.value)}
           rows={6}
-          className="w-full rounded-md border border-gray-300 px-3 py-2"
+          className="admin-input w-full px-3 py-2"
         />
-        <p className="mt-1 text-xs text-gray-500">
+        <p className="mt-1 text-xs text-[#0a0608]/50">
           Placeholders: {PLACEHOLDER_TOKENS.join(", ")} — get swapped for the real client
           details when filling in a proposal built from this offer. {"{{Total}}"} and{" "}
           {"{{Payment Plan}}"} fill in automatically once the client confirms their options, and
@@ -165,7 +166,7 @@ export default function OfferForm({
       </div>
 
       <div className="mb-6">
-        <label className="mb-2 block text-sm font-medium text-gray-700">
+        <label className="admin-label mb-2 block">
           Default line items
         </label>
         <LineItemRows rows={rows} onChange={setRows} />
@@ -173,12 +174,7 @@ export default function OfferForm({
 
       {error && <p className="mb-4 text-sm text-red-600">{error}</p>}
 
-      <button
-        type="button"
-        onClick={handleSave}
-        disabled={saving || !name.trim()}
-        className="rounded-md bg-gray-900 px-4 py-2 font-medium text-white disabled:opacity-40"
-      >
+      <button type="button" onClick={handleSave} disabled={saving || !name.trim()} className="admin-btn px-4 py-2">
         {saving ? "Saving…" : "Save"}
       </button>
     </div>

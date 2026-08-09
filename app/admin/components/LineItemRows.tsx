@@ -36,41 +36,41 @@ export default function LineItemRows({
   return (
     <div>
       <table className="w-full text-sm">
-        <thead className="text-left text-gray-500">
+        <thead className="text-left">
           <tr>
-            <th className="w-1/2 py-1 font-medium">Description</th>
-            <th className="py-1 font-medium">Kind</th>
-            <th className="py-1 font-medium">Qty</th>
-            <th className="py-1 font-medium">Unit price</th>
+            <th className="w-1/2 py-1 admin-label">Description</th>
+            <th className="py-1 admin-label">Kind</th>
+            <th className="py-1 admin-label">Qty</th>
+            <th className="py-1 admin-label">Unit price</th>
             <th className="py-1" />
           </tr>
         </thead>
         <tbody>
           {rows.map((row) => (
-            <tr key={row.key} className="border-t border-gray-100">
-              <td className="py-1 pr-2">
+            <tr key={row.key} className="border-t-2 border-[#0a0608]/10">
+              <td className="py-1.5 pr-2">
                 <input
                   type="text"
                   value={row.description}
                   onChange={(e) => updateRow(row.key, { description: e.target.value })}
                   disabled={disabled}
-                  className="w-full rounded-md border border-gray-300 px-2 py-1"
+                  className="admin-input w-full px-2 py-1"
                   placeholder="Line item description"
                 />
               </td>
-              <td className="py-1 pr-2">
+              <td className="py-1.5 pr-2">
                 <select
                   value={row.kind}
                   onChange={(e) => updateRow(row.key, { kind: e.target.value as RowKind })}
                   disabled={disabled}
-                  className="rounded-md border border-gray-300 px-2 py-1"
+                  className="admin-input px-2 py-1"
                 >
                   <option value="Fixed">Fixed</option>
                   <option value="Package Option">Package Option</option>
                   <option value="Add-on">Add-on</option>
                 </select>
               </td>
-              <td className="py-1 pr-2">
+              <td className="py-1.5 pr-2">
                 <input
                   type="number"
                   value={row.quantity}
@@ -78,11 +78,11 @@ export default function LineItemRows({
                     updateRow(row.key, { quantity: Number(e.target.value) || 0 })
                   }
                   disabled={disabled}
-                  className="w-16 rounded-md border border-gray-300 px-2 py-1"
+                  className="admin-input w-16 px-2 py-1"
                   step="0.01"
                 />
               </td>
-              <td className="py-1 pr-2">
+              <td className="py-1.5 pr-2">
                 <input
                   type="number"
                   value={row.unitPrice}
@@ -90,16 +90,16 @@ export default function LineItemRows({
                     updateRow(row.key, { unitPrice: Number(e.target.value) || 0 })
                   }
                   disabled={disabled}
-                  className="w-24 rounded-md border border-gray-300 px-2 py-1"
+                  className="admin-input w-24 px-2 py-1"
                   step="0.01"
                 />
               </td>
-              <td className="py-1">
+              <td className="py-1.5">
                 {!disabled && (
                   <button
                     type="button"
                     onClick={() => onChange(rows.filter((r) => r.key !== row.key))}
-                    className="text-gray-400 hover:text-red-600"
+                    className="text-[#0a0608]/30 hover:text-red-600"
                     aria-label="Remove row"
                   >
                     ✕
@@ -111,11 +111,7 @@ export default function LineItemRows({
         </tbody>
       </table>
       {!disabled && (
-        <button
-          type="button"
-          onClick={() => onChange([...rows, emptyRow()])}
-          className="mt-2 text-sm font-medium text-gray-700 hover:text-gray-900"
-        >
+        <button type="button" onClick={() => onChange([...rows, emptyRow()])} className="admin-btn-secondary text-xs px-3 py-1.5 mt-3">
           + Add row
         </button>
       )}

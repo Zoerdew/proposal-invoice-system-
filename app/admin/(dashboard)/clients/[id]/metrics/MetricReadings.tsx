@@ -41,12 +41,12 @@ export default function MetricReadings({
   }
 
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-4">
-      <h3 className="mb-2 text-sm font-semibold">{metricName} — readings</h3>
+    <div className="admin-card p-4">
+      <h3 className="mb-2 font-heading font-[800] text-sm">{metricName} — readings</h3>
       {readings.length === 0 ? (
-        <p className="mb-2 text-xs text-gray-500">No readings yet.</p>
+        <p className="mb-2 text-xs text-[#0a0608]/50">No readings yet.</p>
       ) : (
-        <ul className="mb-2 text-xs text-gray-600">
+        <ul className="mb-2 text-xs text-[#0a0608]/60">
           {readings.map((r) => (
             <li key={r.id}>
               {new Date(r.readAt).toLocaleDateString("en-GB")} — {r.value}
@@ -61,13 +61,9 @@ export default function MetricReadings({
           value={value}
           onChange={(e) => setValue(e.target.value)}
           placeholder="New reading"
-          className="w-32 rounded-md border border-gray-300 px-2 py-1 text-sm"
+          className="admin-input w-32 px-2 py-1 text-sm"
         />
-        <button
-          onClick={handleAdd}
-          disabled={saving}
-          className="rounded-md border border-gray-300 px-3 py-1 text-sm disabled:opacity-40"
-        >
+        <button onClick={handleAdd} disabled={saving} className="admin-btn-secondary px-3 py-1 text-sm">
           Add
         </button>
       </div>

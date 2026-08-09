@@ -32,7 +32,7 @@ export default async function EditProposalPage({
 
   return (
     <div>
-      <h1 className="mb-6 text-xl font-semibold">Edit proposal</h1>
+      <h1 className="mb-6 font-heading font-[800] text-xl">Edit proposal</h1>
       <ProposalForm
         mode="edit"
         proposalId={id}

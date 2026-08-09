@@ -14,47 +14,39 @@ export default async function AdminProposalsPage() {
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-xl font-semibold">Proposals</h1>
-        <Link
-          href="/admin/proposals/new"
-          className="rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white"
-        >
+        <h1 className="font-heading font-[800] text-xl">Proposals</h1>
+        <Link href="/admin/proposals/new" className="admin-btn px-4 py-2 text-sm">
           New proposal
         </Link>
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
-        <table className="w-full text-sm">
-          <thead className="bg-gray-50 text-left text-gray-500">
+      <div className="admin-card overflow-hidden">
+        <table className="w-full admin-table">
+          <thead>
             <tr>
-              <th className="px-4 py-2 font-medium">Client</th>
-              <th className="px-4 py-2 font-medium">Status</th>
-              <th className="px-4 py-2 font-medium">Date sent</th>
-              <th className="px-4 py-2 font-medium">Link</th>
-              <th className="px-4 py-2" />
+              <th>Client</th>
+              <th>Status</th>
+              <th>Date sent</th>
+              <th>Link</th>
+              <th />
             </tr>
           </thead>
           <tbody>
             {proposals.map((p) => (
-              <tr key={p.id} className="border-t border-gray-100">
-                <td className="px-4 py-2">
+              <tr key={p.id}>
+                <td>
                   {p.clientName}
                   {p.company ? ` · ${p.company}` : ""}
                 </td>
-                <td className="px-4 py-2">{p.status}</td>
-                <td className="px-4 py-2">{formatDate(p.dateSent)}</td>
-                <td className="px-4 py-2">
-                  <a
-                    href={p.proposalLink}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-blue-700 underline"
-                  >
+                <td>{p.status}</td>
+                <td>{formatDate(p.dateSent)}</td>
+                <td>
+                  <a href={p.proposalLink} target="_blank" rel="noreferrer" className="text-accent underline">
                     view
                   </a>
                 </td>
-                <td className="px-4 py-2 text-right">
-                  <Link href={`/admin/proposals/${p.id}`} className="text-gray-700 underline">
+                <td className="text-right">
+                  <Link href={`/admin/proposals/${p.id}`} className="admin-btn-secondary text-xs px-3 py-1.5">
                     Edit
                   </Link>
                 </td>
@@ -62,7 +54,7 @@ export default async function AdminProposalsPage() {
             ))}
             {proposals.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-6 text-center text-gray-500">
+                <td colSpan={5} className="text-center text-[#0a0608]/50 py-6">
                   No proposals yet.
                 </td>
               </tr>

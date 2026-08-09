@@ -8,31 +8,35 @@ export default async function AdminClientsPage() {
 
   return (
     <div>
-      <h1 className="mb-6 text-xl font-semibold">Clients</h1>
+      <h1 className="mb-6 font-heading font-[800] text-xl">Clients</h1>
 
-      <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
-        <table className="w-full text-sm">
-          <thead className="bg-gray-50 text-left text-gray-500">
+      <div className="admin-card overflow-hidden">
+        <table className="w-full admin-table">
+          <thead>
             <tr>
-              <th className="px-4 py-2 font-medium">Name</th>
-              <th className="px-4 py-2 font-medium">Business</th>
-              <th className="px-4 py-2 font-medium">Status</th>
-              <th className="px-4 py-2 font-medium">Onboarding</th>
-              <th className="px-4 py-2" />
+              <th>Name</th>
+              <th>Business</th>
+              <th>Status</th>
+              <th>Onboarding</th>
+              <th />
             </tr>
           </thead>
           <tbody>
             {clients.map((c) => (
-              <tr key={c.id} className="border-t border-gray-100">
-                <td className="px-4 py-2">
+              <tr key={c.id}>
+                <td>
                   {c.name}
-                  <div className="text-xs text-gray-500">{c.email}</div>
+                  <div className="text-xs text-[#0a0608]/50">{c.email}</div>
                 </td>
-                <td className="px-4 py-2">{c.businessName || "—"}</td>
-                <td className="px-4 py-2">{c.status ?? "—"}</td>
-                <td className="px-4 py-2">{c.onboardingComplete ? "Complete" : "Pending"}</td>
-                <td className="px-4 py-2 text-right">
-                  <Link href={`/admin/clients/${c.id}`} className="text-gray-700 underline">
+                <td>{c.businessName || "—"}</td>
+                <td>{c.status ?? "—"}</td>
+                <td>
+                  <span className={c.onboardingComplete ? "badge badge-pos" : "badge badge-neutral"}>
+                    {c.onboardingComplete ? "Complete" : "Pending"}
+                  </span>
+                </td>
+                <td className="text-right">
+                  <Link href={`/admin/clients/${c.id}`} className="admin-btn-secondary text-xs px-3 py-1.5">
                     View
                   </Link>
                 </td>
@@ -40,7 +44,7 @@ export default async function AdminClientsPage() {
             ))}
             {clients.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-6 text-center text-gray-500">
+                <td colSpan={5} className="text-center text-[#0a0608]/50 py-6">
                   No clients yet.
                 </td>
               </tr>

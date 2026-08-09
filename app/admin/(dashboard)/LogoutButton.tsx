@@ -11,7 +11,7 @@ export default function LogoutButton() {
         router.push("/admin/login");
         router.refresh();
       }}
-      className="text-sm font-medium text-gray-500 hover:text-gray-900"
+      className="admin-btn-secondary text-xs px-3 py-2"
     >
       Log out
     </button>

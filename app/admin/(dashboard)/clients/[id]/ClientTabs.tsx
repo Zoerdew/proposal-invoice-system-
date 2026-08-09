@@ -18,7 +18,7 @@ export default function ClientTabs({ clientId }: { clientId: string }) {
   const base = `/admin/clients/${clientId}`;
 
   return (
-    <nav className="mb-6 flex gap-4 border-b border-gray-200 text-sm">
+    <nav className="mb-6 flex gap-4 border-b-2 border-[#0a0608]/15 text-sm">
       {TABS.map((tab) => {
         const href = tab.segment ? `${base}/${tab.segment}` : base;
         const isActive = pathname === href;
@@ -26,10 +26,10 @@ export default function ClientTabs({ clientId }: { clientId: string }) {
           <Link
             key={tab.label}
             href={href}
-            className={`-mb-px border-b-2 px-1 pb-2 font-medium ${
+            className={`-mb-0.5 border-b-2 px-1 pb-2 font-heading font-[800] ${
               isActive
-                ? "border-gray-900 text-gray-900"
-                : "border-transparent text-gray-500 hover:text-gray-700"
+                ? "border-[#F11787] text-[#0a0608]"
+                : "border-transparent text-[#0a0608]/50 hover:text-[#0a0608]"
             }`}
           >
             {tab.label}
