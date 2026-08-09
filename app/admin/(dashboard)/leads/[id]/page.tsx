@@ -2,9 +2,11 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getLead, listLeadAttachments } from "@/lib/db/leads";
 import { listProducts } from "@/lib/db/products";
+import { listCallProposalsForLead } from "@/lib/db/callProposals";
 import LeadForm from "../LeadForm";
 import LeadAttachments from "./LeadAttachments";
 import ConvertToProposal from "./ConvertToProposal";
+import CallProposalsCard from "./CallProposalsCard";
 
 export const dynamic = "force-dynamic";
 
@@ -22,9 +24,10 @@ export default async function LeadDetailPage({
     notFound();
   }
 
-  const [products, attachments] = await Promise.all([
+  const [products, attachments, callProposals] = await Promise.all([
     listProducts(),
     listLeadAttachments(id),
+    listCallProposalsForLead(id),
   ]);
 
   return (
@@ -68,6 +71,7 @@ export default async function LeadDetailPage({
         <div className="flex flex-col gap-6">
           <LeadAttachments leadId={id} attachments={attachments} />
           <ConvertToProposal leadId={id} />
+          <CallProposalsCard leadId={id} callProposals={callProposals} />
         </div>
       </div>
     </div>

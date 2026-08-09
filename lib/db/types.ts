@@ -143,6 +143,56 @@ export type Database = {
           },
         ]
       }
+      call_proposals: {
+        Row: {
+          call_date: string | null
+          created_at: string
+          currency: string
+          generated_html: string | null
+          id: string
+          lead_id: string
+          prospect_name: string
+          slug: string
+          status: string
+          transcript: string
+          updated_at: string
+        }
+        Insert: {
+          call_date?: string | null
+          created_at?: string
+          currency?: string
+          generated_html?: string | null
+          id?: string
+          lead_id: string
+          prospect_name: string
+          slug: string
+          status?: string
+          transcript: string
+          updated_at?: string
+        }
+        Update: {
+          call_date?: string | null
+          created_at?: string
+          currency?: string
+          generated_html?: string | null
+          id?: string
+          lead_id?: string
+          prospect_name?: string
+          slug?: string
+          status?: string
+          transcript?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "call_proposals_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       check_ins: {
         Row: {
           client_id: string
