@@ -949,6 +949,27 @@ export type Database = {
           },
         ]
       }
+      portal_login_attempts: {
+        Row: {
+          created_at: string
+          id: string
+          portal_token: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          portal_token: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          portal_token?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       products: {
         Row: {
           active: boolean
