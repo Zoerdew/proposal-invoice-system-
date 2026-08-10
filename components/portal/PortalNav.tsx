@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const TABS = [
+const IN_CONTROL_TABS = [
   { label: "Snapshot", segment: "snapshot" },
   { label: "GOLD", segment: "gold" },
   { label: "Evidence", segment: "evidence" },
@@ -13,14 +13,22 @@ const TABS = [
   { label: "To-dos", segment: "todos" },
 ] as const;
 
+// V3 Phase 15: every other Falling Forwards product gets just this —
+// the In Control deliverables (GOLD Report, Evidence Dashboard, Commercial
+// Scorecard) don't exist for them, so there's nothing to link to yet.
+const OTHER_PRODUCT_TABS = [{ label: "To-dos", segment: "todos" }] as const;
+
 export default function PortalNav({
   token,
   clientName,
+  isInControl,
 }: {
   token: string;
   clientName: string;
+  isInControl: boolean;
 }) {
   const pathname = usePathname();
+  const tabs = isInControl ? IN_CONTROL_TABS : OTHER_PRODUCT_TABS;
 
   return (
     <header className="border-b-[3px] border-[#0a0608] bg-cream">
@@ -34,14 +42,14 @@ export default function PortalNav({
             className="h-8 w-8"
           />
           <p className="font-heading font-[800] text-lg leading-none">
-            In Control
+            {isInControl ? "In Control" : "Falling Forwards"}
           </p>
         </div>
         <p className="text-sm text-[#0a0608]/50">{clientName}</p>
       </div>
       <nav className="max-w-5xl mx-auto w-full px-8">
         <ul className="flex gap-3 flex-wrap pb-4">
-          {TABS.map((tab) => {
+          {tabs.map((tab) => {
             const href = `/c/${token}/${tab.segment}`;
             const isActive = pathname?.startsWith(href);
             return (

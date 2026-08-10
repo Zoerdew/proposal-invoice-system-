@@ -1,5 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { getClientByToken } from "@/lib/db/clients";
+import { listProducts } from "@/lib/db/products";
 import PortalNav from "@/components/portal/PortalNav";
 
 /**
@@ -23,9 +24,16 @@ export default async function PortalLayout({
     redirect(`/c/${token}/onboarding`);
   }
 
+  // V3 Phase 15: the full In Control tab set (Snapshot/GOLD/Evidence/
+  // Scorecard/Check-in) only makes sense for In Control clients — every
+  // other product gets a reduced nav rather than pages full of empty
+  // In-Control-shaped data.
+  const products = await listProducts();
+  const isInControl = products.find((p) => p.id === client.productId)?.name === "In Control";
+
   return (
     <>
-      <PortalNav token={token} clientName={client.name} />
+      <PortalNav token={token} clientName={client.name} isInControl={isInControl} />
       <main className="max-w-5xl mx-auto w-full px-8 py-12">{children}</main>
     </>
   );

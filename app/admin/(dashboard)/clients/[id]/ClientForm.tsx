@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { CLIENT_STATUS_OPTIONS, ClientStatus } from "@/lib/db/clientChoices";
 import { ALL_PAYMENT_PLANS, PaymentPlan } from "@/lib/paymentPlans";
+import { Product } from "@/lib/db/products";
 
 interface InitialClient {
   name: string;
@@ -23,13 +24,22 @@ interface InitialClient {
   baselineRepeatBuyerPct: number | null;
   annualTurnover: number | null;
   baselineDate: string | null;
+  productId: string | null;
 }
 
 function dateOnly(iso: string | null): string {
   return iso ? iso.slice(0, 10) : "";
 }
 
-export default function ClientForm({ clientId, initial }: { clientId: string; initial: InitialClient }) {
+export default function ClientForm({
+  clientId,
+  initial,
+  products,
+}: {
+  clientId: string;
+  initial: InitialClient;
+  products: Product[];
+}) {
   const router = useRouter();
   const [name, setName] = useState(initial.name);
   const [firstName, setFirstName] = useState(initial.firstName);
@@ -52,6 +62,7 @@ export default function ClientForm({ clientId, initial }: { clientId: string; in
   );
   const [annualTurnover, setAnnualTurnover] = useState(initial.annualTurnover?.toString() ?? "");
   const [baselineDate, setBaselineDate] = useState(dateOnly(initial.baselineDate));
+  const [productId, setProductId] = useState(initial.productId ?? "");
 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -81,6 +92,7 @@ export default function ClientForm({ clientId, initial }: { clientId: string; in
           baselineRepeatBuyerPct: baselineRepeatBuyerPct.trim() ? Number(baselineRepeatBuyerPct) : null,
           annualTurnover: annualTurnover.trim() ? Number(annualTurnover) : null,
           baselineDate: baselineDate || null,
+          productId: productId || null,
         }),
       });
       if (!res.ok) {
@@ -125,6 +137,20 @@ export default function ClientForm({ clientId, initial }: { clientId: string; in
           <label className={labelClass}>Business name</label>
           <input value={businessName} onChange={(e) => setBusinessName(e.target.value)} className={inputClass} />
         </div>
+      </div>
+
+      <div className="mb-4">
+        <label className={labelClass}>
+          Product <span className="normal-case font-normal text-[#0a0608]/40">(which Falling Forwards programme this relationship is for)</span>
+        </label>
+        <select value={productId} onChange={(e) => setProductId(e.target.value)} className={inputClass}>
+          <option value="">—</option>
+          {products.map((p) => (
+            <option key={p.id} value={p.id}>
+              {p.name}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="mb-4 grid gap-4 sm:grid-cols-3">

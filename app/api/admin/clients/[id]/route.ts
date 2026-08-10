@@ -29,6 +29,7 @@ export async function PATCH(
     baselineRepeatBuyerPct: body.baselineRepeatBuyerPct,
     annualTurnover: body.annualTurnover,
     baselineDate: body.baselineDate,
+    productId: body.productId,
   });
 
   return NextResponse.json({ ok: true, id: client.id });

@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getClientAdmin, getOnboardingByClientId } from "@/lib/db/clients";
 import { listMeetingNotesForClient } from "@/lib/db/meetingNotes";
+import { listProducts } from "@/lib/db/products";
 import ClientTabs from "./ClientTabs";
 import ClientForm from "./ClientForm";
 import ResendOnboarding from "./ResendOnboarding";
@@ -33,10 +34,14 @@ export default async function ClientDetailPage({
     notFound();
   }
 
-  const [onboarding, meetingNotes] = await Promise.all([
+  const [onboarding, meetingNotes, products] = await Promise.all([
     getOnboardingByClientId(id),
     listMeetingNotesForClient(id),
+    listProducts(),
   ]);
+
+  const product = products.find((p) => p.id === client.productId);
+  const isInControl = product?.name === "In Control";
 
   return (
     <div>
@@ -75,12 +80,14 @@ export default async function ClientDetailPage({
               baselineRepeatBuyerPct: client.baselineRepeatBuyerPct,
               annualTurnover: client.annualTurnover,
               baselineDate: client.baselineDate,
+              productId: client.productId,
             }}
+            products={products}
           />
         </div>
 
         <div className="flex flex-col gap-6">
-          <ResendOnboarding clientId={id} portalToken={client.portalToken} />
+          {isInControl && <ResendOnboarding clientId={id} portalToken={client.portalToken} />}
           <MeetingNotesCard meetingNotes={meetingNotes} />
 
           <div className="admin-card p-6">

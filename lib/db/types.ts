@@ -304,6 +304,7 @@ export type Database = {
           package_price: number | null
           payment_plan: string | null
           portal_token: string
+          product_id: string | null
           proposal_id: string | null
           start_date: string | null
           status: string | null
@@ -329,6 +330,7 @@ export type Database = {
           package_price?: number | null
           payment_plan?: string | null
           portal_token: string
+          product_id?: string | null
           proposal_id?: string | null
           start_date?: string | null
           status?: string | null
@@ -354,6 +356,7 @@ export type Database = {
           package_price?: number | null
           payment_plan?: string | null
           portal_token?: string
+          product_id?: string | null
           proposal_id?: string | null
           start_date?: string | null
           status?: string | null
@@ -361,6 +364,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "clients_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "clients_proposal_id_fkey"
             columns: ["proposal_id"]

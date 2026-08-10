@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { getClientByToken } from "@/lib/db/clients";
 import { listTodosForClient } from "@/lib/db/todos";
+import { listProducts } from "@/lib/db/products";
 import TodoList from "@/components/portal/TodoList";
 
 export const dynamic = "force-dynamic";
@@ -14,12 +15,13 @@ export default async function TodosPage({
   const client = await getClientByToken(token);
   if (!client) notFound();
 
-  const todos = await listTodosForClient(client.id);
+  const [todos, products] = await Promise.all([listTodosForClient(client.id), listProducts()]);
+  const productName = products.find((p) => p.id === client.productId)?.name ?? "Falling Forwards";
 
   return (
     <div>
       <div className="flex flex-col items-start gap-4 mb-10">
-        <span className="eyebrow-pill">In Control</span>
+        <span className="eyebrow-pill">{productName}</span>
         <h1 className="font-heading font-[800] text-4xl md:text-5xl leading-[0.98] tracking-[-0.03em]">
           Your <span className="text-accent">to-dos</span>
         </h1>
