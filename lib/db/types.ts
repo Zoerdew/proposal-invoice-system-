@@ -672,6 +672,53 @@ export type Database = {
           },
         ]
       }
+      meeting_notes: {
+        Row: {
+          client_id: string | null
+          created_at: string
+          doc_id: string
+          doc_title: string
+          doc_url: string
+          id: string
+          match_status: string
+          raw_content: string
+          summary: string | null
+          updated_at: string
+        }
+        Insert: {
+          client_id?: string | null
+          created_at?: string
+          doc_id: string
+          doc_title: string
+          doc_url: string
+          id?: string
+          match_status?: string
+          raw_content: string
+          summary?: string | null
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string | null
+          created_at?: string
+          doc_id?: string
+          doc_title?: string
+          doc_url?: string
+          id?: string
+          match_status?: string
+          raw_content?: string
+          summary?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meeting_notes_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       metric_readings: {
         Row: {
           created_at: string
@@ -1184,6 +1231,41 @@ export type Database = {
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      todos: {
+        Row: {
+          created_at: string
+          done: boolean
+          id: string
+          meeting_note_id: string
+          text: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          done?: boolean
+          id?: string
+          meeting_note_id: string
+          text: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          done?: boolean
+          id?: string
+          meeting_note_id?: string
+          text?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "todos_meeting_note_id_fkey"
+            columns: ["meeting_note_id"]
+            isOneToOne: false
+            referencedRelation: "meeting_notes"
             referencedColumns: ["id"]
           },
         ]

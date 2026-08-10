@@ -10,6 +10,7 @@ const TABS = [
   { label: "Evidence", segment: "evidence" },
   { label: "Scorecard", segment: "scorecard" },
   { label: "Check-in", segment: "checkin" },
+  { label: "To-dos", segment: "todos" },
 ] as const;
 
 export default function PortalNav({

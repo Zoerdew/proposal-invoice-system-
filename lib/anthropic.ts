@@ -96,7 +96,7 @@ export interface CallProposalGenerationInput {
 // code fence anyway.
 function stripCodeFence(text: string): string {
   const trimmed = text.trim();
-  const fenced = trimmed.match(/^```(?:html)?\n([\s\S]*)\n```$/);
+  const fenced = trimmed.match(/^```(?:\w+)?\n([\s\S]*)\n```$/);
   return fenced ? fenced[1].trim() : trimmed;
 }
 
@@ -146,4 +146,63 @@ export async function generateCallProposalHtml(
   }
 
   return stripCodeFence(textBlock.text);
+}
+
+// Phase 12: turning a matched meeting-note transcript into a summary +
+// to-do list. Plain structured extraction, not persuasive copy — Sonnet
+// is the right call here over the Opus default used for call proposals.
+const EXTRACTION_MODEL = "claude-sonnet-5";
+const EXTRACTION_MAX_TOKENS = 2000;
+
+const EXTRACTION_SYSTEM_PROMPT = `You are extracting a short summary and a to-do list from the raw text of a client call transcript or meeting notes document, for a business coaching client portal.
+
+Only include to-dos that were actually agreed or committed to in the document — either the client committing to do something, or an action item explicitly assigned to the client. Do not invent to-dos that weren't discussed. If there are none, return an empty list.
+
+Respond with only a JSON object, no other text, in exactly this shape:
+{"summary": "one or two sentence plain-language summary of the call", "todos": ["first to-do", "second to-do"]}`;
+
+export interface MeetingNotesExtraction {
+  summary: string;
+  todos: string[];
+}
+
+export async function extractMeetingNotesSummaryAndTodos(
+  rawContent: string
+): Promise<MeetingNotesExtraction> {
+  const res = await fetch(ANTHROPIC_API_URL, {
+    method: "POST",
+    headers: {
+      "x-api-key": requireEnv("ANTHROPIC_API_KEY"),
+      "anthropic-version": ANTHROPIC_VERSION,
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      model: EXTRACTION_MODEL,
+      max_tokens: EXTRACTION_MAX_TOKENS,
+      system: EXTRACTION_SYSTEM_PROMPT,
+      messages: [{ role: "user", content: rawContent }],
+    }),
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    throw new Error(`Anthropic API ${res.status}: ${await res.text()}`);
+  }
+
+  const data = (await res.json()) as { content: { type: string; text?: string }[] };
+  const textBlock = data.content.find((block) => block.type === "text");
+  if (!textBlock?.text) {
+    throw new Error("Anthropic API returned no text content");
+  }
+
+  const parsed = JSON.parse(stripCodeFence(textBlock.text)) as {
+    summary?: unknown;
+    todos?: unknown;
+  };
+  const summary = typeof parsed.summary === "string" ? parsed.summary : "";
+  const todos = Array.isArray(parsed.todos)
+    ? parsed.todos.filter((t): t is string => typeof t === "string" && t.trim().length > 0)
+    : [];
+
+  return { summary, todos };
 }

@@ -1,9 +1,11 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getClientAdmin, getOnboardingByClientId } from "@/lib/db/clients";
+import { listMeetingNotesForClient } from "@/lib/db/meetingNotes";
 import ClientTabs from "./ClientTabs";
 import ClientForm from "./ClientForm";
 import ResendOnboarding from "./ResendOnboarding";
+import MeetingNotesCard from "./MeetingNotesCard";
 
 export const dynamic = "force-dynamic";
 
@@ -31,7 +33,10 @@ export default async function ClientDetailPage({
     notFound();
   }
 
-  const onboarding = await getOnboardingByClientId(id);
+  const [onboarding, meetingNotes] = await Promise.all([
+    getOnboardingByClientId(id),
+    listMeetingNotesForClient(id),
+  ]);
 
   return (
     <div>
@@ -76,6 +81,7 @@ export default async function ClientDetailPage({
 
         <div className="flex flex-col gap-6">
           <ResendOnboarding clientId={id} portalToken={client.portalToken} />
+          <MeetingNotesCard meetingNotes={meetingNotes} />
 
           <div className="admin-card p-6">
             <h2 className="mb-2 font-heading font-[800] text-lg">Onboarding responses</h2>
