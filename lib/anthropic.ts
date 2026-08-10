@@ -211,18 +211,30 @@ export async function extractMeetingNotesSummaryAndTodos(
 // needs beyond Phase 12's summary/todos — decisions reached and a
 // topic-by-topic breakdown, mirroring the real structure Google's own
 // Gemini notes already produce (Summary/Decisions/Next steps/Details),
-// not inventing a new shape. Deliberately doesn't re-derive summary or
-// next-steps — those already exist from Phase 12's ingestion.
-const RECAP_DETAILS_SYSTEM_PROMPT = `You are extracting structured detail from the raw text of a client call transcript or meeting notes document, for a call-recap page the client will read afterwards.
+// not inventing a new shape. Deliberately doesn't re-derive next-steps —
+// those already exist as real todos from Phase 12's ingestion. Does
+// produce its own short-version summary (shortVersion) rather than
+// reusing meeting_notes.summary — that field is Phase 12's admin-facing
+// extraction, third person for Zoë's own notes, wrong voice for a page
+// the client reads themselves.
+const RECAP_DETAILS_SYSTEM_PROMPT = `You are extracting structured detail from the raw text of a client call transcript or meeting notes document, for a call-recap page the client themselves will read afterwards.
 
-Decisions: only things that were actually agreed or decided on the call, stated plainly in one sentence each. Do not include a decision that wasn't actually reached — if nothing was decided, return an empty list.
+Write everything in second person, addressed directly to the client — "you decided," "we covered," "your next step" — never third person ("the client," their name as a subject repeated throughout). This is a page written to them, not a report about them.
 
-Details: a short, topic-by-topic breakdown of what was substantively discussed, grouped into 2-5 topics. Each needs a short one or two word label (e.g. "PRICING", "SEGMENTS"), a specific title naming the actual topic, and a body paragraph in plain language covering what was actually said, not generic advice. Ground every specific in what's actually in the document — no invented numbers or details.
+Short version: two or three sentences summarising what the call covered and where it landed, in second person.
+
+Focus: a short three-to-six word phrase naming what the call was mainly about (e.g. "Customer segmentation and win-back strategy"). Plain, specific, not a generic label.
+
+Decisions: only things that were actually agreed or decided on the call, stated plainly in one sentence each, second person where it applies ("you'll..." / "we agreed..."). Do not include a decision that wasn't actually reached — if nothing was decided, return an empty list.
+
+Details: a short, topic-by-topic breakdown of what was substantively discussed, grouped into 2-5 topics. Each needs a short one or two word label (e.g. "PRICING", "SEGMENTS"), a specific title naming the actual topic, and a body paragraph in plain language covering what was actually said, second person, not generic advice. Ground every specific in what's actually in the document — no invented numbers or details.
 
 Respond with only a JSON object, no other text, in exactly this shape:
-{"decisions": ["first decision", "second decision"], "details": [{"label": "TOPIC", "title": "Specific title", "body": "Paragraph covering what was discussed."}]}`;
+{"shortVersion": "...", "focus": "...", "decisions": ["first decision", "second decision"], "details": [{"label": "TOPIC", "title": "Specific title", "body": "Paragraph covering what was discussed."}]}`;
 
 export interface CallRecapDetails {
+  shortVersion: string;
+  focus: string;
   decisions: string[];
   details: { label: string; title: string; body: string }[];
 }
@@ -255,9 +267,13 @@ export async function extractCallRecapDetails(rawContent: string): Promise<CallR
   }
 
   const parsed = JSON.parse(stripCodeFence(textBlock.text)) as {
+    shortVersion?: unknown;
+    focus?: unknown;
     decisions?: unknown;
     details?: unknown;
   };
+  const shortVersion = typeof parsed.shortVersion === "string" ? parsed.shortVersion : "";
+  const focus = typeof parsed.focus === "string" ? parsed.focus : "";
   const decisions = Array.isArray(parsed.decisions)
     ? parsed.decisions.filter((d): d is string => typeof d === "string" && d.trim().length > 0)
     : [];
@@ -272,5 +288,5 @@ export async function extractCallRecapDetails(rawContent: string): Promise<CallR
       )
     : [];
 
-  return { decisions, details };
+  return { shortVersion, focus, decisions, details };
 }

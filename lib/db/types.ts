@@ -694,8 +694,10 @@ export type Database = {
           id: string
           match_status: string
           raw_content: string
+          recap_focus: string | null
           recap_published_at: string | null
           recap_slug: string | null
+          recap_summary: string | null
           summary: string | null
           updated_at: string
         }
@@ -710,8 +712,10 @@ export type Database = {
           id?: string
           match_status?: string
           raw_content: string
+          recap_focus?: string | null
           recap_published_at?: string | null
           recap_slug?: string | null
+          recap_summary?: string | null
           summary?: string | null
           updated_at?: string
         }
@@ -726,8 +730,10 @@ export type Database = {
           id?: string
           match_status?: string
           raw_content?: string
+          recap_focus?: string | null
           recap_published_at?: string | null
           recap_slug?: string | null
+          recap_summary?: string | null
           summary?: string | null
           updated_at?: string
         }

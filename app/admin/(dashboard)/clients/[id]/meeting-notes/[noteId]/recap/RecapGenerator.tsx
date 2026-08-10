@@ -8,14 +8,20 @@ export default function RecapGenerator({
   initialDecisions,
   initialDetails,
   initialRecapSlug,
+  initialShortVersion,
+  initialFocus,
 }: {
   meetingNoteId: string;
   initialDecisions: string[] | null;
   initialDetails: RecapDetail[] | null;
   initialRecapSlug: string | null;
+  initialShortVersion: string | null;
+  initialFocus: string | null;
 }) {
   const [decisions, setDecisions] = useState<string[]>(initialDecisions ?? []);
   const [details, setDetails] = useState<RecapDetail[]>(initialDetails ?? []);
+  const [shortVersion, setShortVersion] = useState(initialShortVersion ?? "");
+  const [focus, setFocus] = useState(initialFocus ?? "");
   const [recapSlug, setRecapSlug] = useState<string | null>(initialRecapSlug);
   const [generating, setGenerating] = useState(false);
   const [publishing, setPublishing] = useState(false);
@@ -35,6 +41,8 @@ export default function RecapGenerator({
       }
       setDecisions(data.decisions);
       setDetails(data.details);
+      setShortVersion(data.shortVersion);
+      setFocus(data.focus);
     } finally {
       setGenerating(false);
     }
@@ -47,7 +55,7 @@ export default function RecapGenerator({
       const res = await fetch(`/api/admin/meeting-notes/${meetingNoteId}/publish-recap`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ decisions, details }),
+        body: JSON.stringify({ decisions, details, shortVersion, focus }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -95,6 +103,29 @@ export default function RecapGenerator({
           <a href={`/recap/${recapSlug}`} target="_blank" rel="noreferrer" className="text-accent underline">
             /recap/{recapSlug}
           </a>
+        </div>
+      )}
+
+      {(shortVersion || focus) && (
+        <div className="mb-6 grid gap-4">
+          <div>
+            <label className="admin-label mb-2 block">Focus</label>
+            <input
+              value={focus}
+              onChange={(e) => setFocus(e.target.value)}
+              placeholder="Three-to-six word phrase naming what the call was about"
+              className="admin-input w-full px-3 py-2 text-sm"
+            />
+          </div>
+          <div>
+            <label className="admin-label mb-2 block">Short version</label>
+            <textarea
+              value={shortVersion}
+              onChange={(e) => setShortVersion(e.target.value)}
+              rows={3}
+              className="admin-input w-full px-3 py-2 text-sm"
+            />
+          </div>
         </div>
       )}
 
