@@ -24,19 +24,24 @@ export default function RecapTodoList({ slug, initialTodos }: { slug: string; in
   const progressPct = Math.round((doneCount / todos.length) * 100);
 
   return (
-    <div className="card-brutal p-8">
-      <div className="flex justify-between text-xs uppercase tracking-wide text-[#0a0608]/60 mb-3">
-        <span>Progress</span>
-        <span className="font-heading font-[800] text-[#0a0608]">
-          {doneCount} of {todos.length} done
-        </span>
+    <div>
+      <div className="bg-cream rounded-[20px] border-2 border-[#0a0608] p-6 mb-6">
+        <div className="flex justify-between text-xs uppercase tracking-wide text-[#0a0608]/50 mb-3">
+          <span>Progress</span>
+          <span className="font-heading font-[800] text-[#0a0608]">
+            {doneCount} of {todos.length} done
+          </span>
+        </div>
+        <div className="h-2.5 w-full bg-[#0a0608]/10 rounded-full overflow-hidden">
+          <div className="h-full bg-[#F11787] transition-[width]" style={{ width: `${progressPct}%` }} />
+        </div>
       </div>
-      <div className="h-4 w-full bg-blush rounded-full border-2 border-[#0a0608] overflow-hidden mb-6">
-        <div className="h-full bg-[#F11787] transition-[width]" style={{ width: `${progressPct}%` }} />
-      </div>
-      <ul className="space-y-4">
+      <ul className="space-y-3">
         {todos.map((todo) => (
-          <li key={todo.id} className="flex items-start gap-3">
+          <li
+            key={todo.id}
+            className="flex items-start gap-3 bg-cream rounded-2xl border-2 border-[#0a0608] p-5"
+          >
             <input
               type="checkbox"
               checked={todo.done}
