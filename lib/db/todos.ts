@@ -51,6 +51,18 @@ export async function listTodosForClient(clientId: string): Promise<Todo[]> {
   return data.map(toTodo);
 }
 
+// Distinct from listTodosForClient — a recap page shows only this call's
+// next-steps, not the client's whole history across every call.
+export async function listTodosForMeetingNote(meetingNoteId: string): Promise<Todo[]> {
+  const { data, error } = await db()
+    .from("todos")
+    .select("*")
+    .eq("meeting_note_id", meetingNoteId)
+    .order("created_at", { ascending: true });
+  if (error) throw error;
+  return data.map(toTodo);
+}
+
 export async function toggleTodo(id: string, done: boolean): Promise<Todo> {
   const { data, error } = await db()
     .from("todos")

@@ -686,36 +686,48 @@ export type Database = {
         Row: {
           client_id: string | null
           created_at: string
+          decisions: Json | null
+          details: Json | null
           doc_id: string
           doc_title: string
           doc_url: string
           id: string
           match_status: string
           raw_content: string
+          recap_published_at: string | null
+          recap_slug: string | null
           summary: string | null
           updated_at: string
         }
         Insert: {
           client_id?: string | null
           created_at?: string
+          decisions?: Json | null
+          details?: Json | null
           doc_id: string
           doc_title: string
           doc_url: string
           id?: string
           match_status?: string
           raw_content: string
+          recap_published_at?: string | null
+          recap_slug?: string | null
           summary?: string | null
           updated_at?: string
         }
         Update: {
           client_id?: string | null
           created_at?: string
+          decisions?: Json | null
+          details?: Json | null
           doc_id?: string
           doc_title?: string
           doc_url?: string
           id?: string
           match_status?: string
           raw_content?: string
+          recap_published_at?: string | null
+          recap_slug?: string | null
           summary?: string | null
           updated_at?: string
         }

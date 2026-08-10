@@ -206,3 +206,71 @@ export async function extractMeetingNotesSummaryAndTodos(
 
   return { summary, todos };
 }
+
+// Phase 16 (V3-BUILD-SPEC.md): the richer detail a public call-recap page
+// needs beyond Phase 12's summary/todos — decisions reached and a
+// topic-by-topic breakdown, mirroring the real structure Google's own
+// Gemini notes already produce (Summary/Decisions/Next steps/Details),
+// not inventing a new shape. Deliberately doesn't re-derive summary or
+// next-steps — those already exist from Phase 12's ingestion.
+const RECAP_DETAILS_SYSTEM_PROMPT = `You are extracting structured detail from the raw text of a client call transcript or meeting notes document, for a call-recap page the client will read afterwards.
+
+Decisions: only things that were actually agreed or decided on the call, stated plainly in one sentence each. Do not include a decision that wasn't actually reached — if nothing was decided, return an empty list.
+
+Details: a short, topic-by-topic breakdown of what was substantively discussed, grouped into 2-5 topics. Each needs a short one or two word label (e.g. "PRICING", "SEGMENTS"), a specific title naming the actual topic, and a body paragraph in plain language covering what was actually said, not generic advice. Ground every specific in what's actually in the document — no invented numbers or details.
+
+Respond with only a JSON object, no other text, in exactly this shape:
+{"decisions": ["first decision", "second decision"], "details": [{"label": "TOPIC", "title": "Specific title", "body": "Paragraph covering what was discussed."}]}`;
+
+export interface CallRecapDetails {
+  decisions: string[];
+  details: { label: string; title: string; body: string }[];
+}
+
+export async function extractCallRecapDetails(rawContent: string): Promise<CallRecapDetails> {
+  const res = await fetch(ANTHROPIC_API_URL, {
+    method: "POST",
+    headers: {
+      "x-api-key": requireEnv("ANTHROPIC_API_KEY"),
+      "anthropic-version": ANTHROPIC_VERSION,
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      model: EXTRACTION_MODEL,
+      max_tokens: 4000,
+      system: RECAP_DETAILS_SYSTEM_PROMPT,
+      messages: [{ role: "user", content: rawContent }],
+    }),
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    throw new Error(`Anthropic API ${res.status}: ${await res.text()}`);
+  }
+
+  const data = (await res.json()) as { content: { type: string; text?: string }[] };
+  const textBlock = data.content.find((block) => block.type === "text");
+  if (!textBlock?.text) {
+    throw new Error("Anthropic API returned no text content");
+  }
+
+  const parsed = JSON.parse(stripCodeFence(textBlock.text)) as {
+    decisions?: unknown;
+    details?: unknown;
+  };
+  const decisions = Array.isArray(parsed.decisions)
+    ? parsed.decisions.filter((d): d is string => typeof d === "string" && d.trim().length > 0)
+    : [];
+  const details = Array.isArray(parsed.details)
+    ? parsed.details.filter(
+        (d): d is { label: string; title: string; body: string } =>
+          typeof d === "object" &&
+          d !== null &&
+          typeof (d as { label?: unknown }).label === "string" &&
+          typeof (d as { title?: unknown }).title === "string" &&
+          typeof (d as { body?: unknown }).body === "string"
+      )
+    : [];
+
+  return { decisions, details };
+}

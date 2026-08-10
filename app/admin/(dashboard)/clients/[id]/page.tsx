@@ -88,7 +88,7 @@ export default async function ClientDetailPage({
 
         <div className="flex flex-col gap-6">
           {isInControl && <ResendOnboarding clientId={id} portalToken={client.portalToken} />}
-          <MeetingNotesCard meetingNotes={meetingNotes} />
+          <MeetingNotesCard clientId={id} meetingNotes={meetingNotes} />
 
           <div className="admin-card p-6">
             <h2 className="mb-2 font-heading font-[800] text-lg">Onboarding responses</h2>
