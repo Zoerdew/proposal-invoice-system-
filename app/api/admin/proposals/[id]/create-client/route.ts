@@ -3,6 +3,7 @@ import { getProposal } from "@/lib/db/proposals";
 import { getLineItemsForProposal, getIncludedLineItems } from "@/lib/db/lineItems";
 import { createClientFromProposal, getClientByProposalId } from "@/lib/db/clients";
 import { sendOnboardingEmail } from "@/lib/email";
+import { createSignedToken, MAGIC_LINK_TTL_SECONDS } from "@/lib/portalAuth";
 
 const ELIGIBLE_STATUSES = ["Signed", "Invoiced", "Paid"];
 
@@ -40,7 +41,15 @@ export async function POST(
     });
   }
 
-  const onboardingUrl = new URL(`/c/${client.portalToken}/onboarding`, request.nextUrl.origin).toString();
+  // The link itself is a magic link (Phase 14) — without this, a brand-new
+  // client's first-ever visit would hit the new login wall immediately
+  // after this invite, forcing them to request a second email before they
+  // could do anything.
+  const magicToken = createSignedToken(client.portalToken, MAGIC_LINK_TTL_SECONDS);
+  const onboardingUrl = new URL(
+    `/api/portal/${client.portalToken}/login/verify?t=${magicToken}`,
+    request.nextUrl.origin
+  ).toString();
   await sendOnboardingEmail({
     to: client.email,
     firstName: client.firstName,

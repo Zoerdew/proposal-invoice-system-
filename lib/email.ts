@@ -53,3 +53,36 @@ Zoë`;
   });
   if (error) throw new Error(`Resend error: ${error.message}`);
 }
+
+export interface PortalLoginEmailInput {
+  to: string;
+  loginUrl: string;
+}
+
+// Phase 14: the magic-link login email. Deliberately short — a link and
+// nothing else to explain, unlike the onboarding email.
+export async function sendPortalLoginEmail(input: PortalLoginEmailInput): Promise<void> {
+  const resend = requireResend();
+
+  const text = `Here's your link into your In Control portal.
+
+${input.loginUrl}
+
+It expires in 15 minutes. If you didn't request this, you can ignore it.
+
+Zoë`;
+
+  const html = `<p>Here's your link into your In Control portal.</p>
+<p><a href="${input.loginUrl}">${input.loginUrl}</a></p>
+<p>It expires in 15 minutes. If you didn't request this, you can ignore it.</p>
+<p>Zoë</p>`;
+
+  const { error } = await resend.emails.send({
+    from: FROM,
+    to: input.to,
+    subject: "Your In Control portal link",
+    text,
+    html,
+  });
+  if (error) throw new Error(`Resend error: ${error.message}`);
+}

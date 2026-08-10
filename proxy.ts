@@ -1,5 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
 import { isAdminAuthed } from "@/lib/adminAuth";
+import { verifySignedToken, PORTAL_SESSION_COOKIE } from "@/lib/portalAuth";
+
+const PORTAL_API_PREFIXES = ["checkins", "client", "findings", "onboarding", "portal", "proof"];
+
+// Extracts the client's portal token from any of the token-scoped route
+// shapes found in this codebase: /c/[token]/... (token at index 1) and
+// /api/{checkins,client,findings,onboarding,portal,proof}/[token]/...
+// (token at index 2). Returns null for anything else.
+function extractPortalToken(pathname: string): string | null {
+  const parts = pathname.split("/").filter(Boolean);
+  if (parts[0] === "c") return parts[1] ?? null;
+  if (parts[0] === "api" && PORTAL_API_PREFIXES.includes(parts[1])) return parts[2] ?? null;
+  return null;
+}
+
+// The login flow itself has to stay reachable without a session — same
+// spirit as the /admin/login exclusion below.
+function isPortalLoginPath(pathname: string): boolean {
+  const parts = pathname.split("/").filter(Boolean);
+  if (parts[0] === "c" && parts[2] === "login") return true; // /c/[token]/login
+  if (parts[0] === "api" && parts[1] === "portal" && parts[3] === "login") return true; // /api/portal/[token]/login(/verify)
+  return false;
+}
 
 // Next.js 16 renamed Middleware to Proxy — same mechanism, new filename.
 export default async function proxy(request: NextRequest) {
@@ -22,9 +45,39 @@ export default async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL("/admin/login", request.url));
   }
 
+  // Phase 14: magic-link login layered in front of the existing
+  // token-based portal access — the token in the URL stays the source of
+  // truth for *which* client, this just also requires a verified session
+  // cookie scoped to that same token before rendering or accepting writes.
+  if (!isPortalLoginPath(pathname)) {
+    const portalToken = extractPortalToken(pathname);
+    if (portalToken) {
+      const cookie = request.cookies.get(PORTAL_SESSION_COOKIE)?.value;
+      const verified = cookie ? verifySignedToken(cookie) : null;
+      const sessionValid = verified?.portalToken === portalToken;
+
+      if (!sessionValid) {
+        if (pathname.startsWith("/api/")) {
+          return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+        return NextResponse.redirect(new URL(`/c/${portalToken}/login`, request.url));
+      }
+    }
+  }
+
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/api/admin/:path*"],
+  matcher: [
+    "/admin/:path*",
+    "/api/admin/:path*",
+    "/c/:path*",
+    "/api/checkins/:path*",
+    "/api/client/:path*",
+    "/api/findings/:path*",
+    "/api/onboarding/:path*",
+    "/api/portal/:path*",
+    "/api/proof/:path*",
+  ],
 };

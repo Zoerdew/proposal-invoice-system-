@@ -19,6 +19,7 @@ export interface Client {
   onboardingComplete: boolean;
   businessName: string;
   bestEmail: string;
+  email: string;
 }
 
 // First word / rest split — a heuristic, not a real first/last name input.
@@ -179,6 +180,7 @@ export async function getClientByToken(token: string): Promise<Client | null> {
     // treating them as the same field, since nothing flagged a deliberate
     // split.
     bestEmail: data.email ?? "",
+    email: data.email ?? "",
   };
 }
 
