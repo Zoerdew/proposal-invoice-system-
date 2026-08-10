@@ -20,6 +20,7 @@ export interface Client {
   businessName: string;
   bestEmail: string;
   email: string;
+  productId: string | null;
 }
 
 // First word / rest split — a heuristic, not a real first/last name input.
@@ -52,6 +53,7 @@ function toClientWithContact(row: {
   business_name: string | null;
   email: string | null;
   first_name: string | null;
+  product_id: string | null;
 }): ClientWithContact {
   return {
     id: row.id,
@@ -65,6 +67,7 @@ function toClientWithContact(row: {
     businessName: row.business_name ?? "",
     bestEmail: row.email ?? "",
     email: row.email ?? "",
+    productId: row.product_id,
     firstName: row.first_name ?? splitFullName(row.name).firstName,
   };
 }
@@ -87,6 +90,15 @@ export async function createClientFromProposal(
   const { firstName, lastName } = splitFullName(input.clientName);
   const portalToken = randomBytes(16).toString("hex");
 
+  // Every proposal signed through this app is an In Control proposal —
+  // link product_id the same way the Phase 15 migration backfilled
+  // existing rows, so a client created here is never left unlinked.
+  const { data: inControlProduct } = await db()
+    .from("products")
+    .select("id")
+    .eq("name", "In Control")
+    .maybeSingle();
+
   const { data, error } = await db()
     .from("clients")
     .insert({
@@ -99,6 +111,7 @@ export async function createClientFromProposal(
       payment_plan: input.paymentPlan ?? null,
       portal_token: portalToken,
       proposal_id: input.proposalId,
+      product_id: inControlProduct?.id ?? null,
       // Real choice set is Onboarding/Active/Wrapping up/Complete/Paused —
       // a freshly-signed client hasn't done onboarding yet.
       status: "Onboarding",
@@ -107,6 +120,48 @@ export async function createClientFromProposal(
     .single();
   if (error) throw error;
   return toClientWithContact(data);
+}
+
+export interface CreateClientManuallyInput {
+  name: string;
+  email: string;
+  businessName?: string | null;
+  productId: string;
+}
+
+// Bypasses proposals/signing entirely — for relationships (any Falling
+// Forwards product) that never went through this app's sale pipeline.
+export async function createClientManually(input: CreateClientManuallyInput): Promise<AdminClient> {
+  const { firstName, lastName } = splitFullName(input.name);
+  const portalToken = randomBytes(16).toString("hex");
+
+  const { data: product, error: productError } = await db()
+    .from("products")
+    .select("name")
+    .eq("id", input.productId)
+    .single();
+  if (productError) throw productError;
+
+  const { data, error } = await db()
+    .from("clients")
+    .insert({
+      name: input.name,
+      first_name: firstName,
+      last_name: lastName,
+      email: input.email,
+      business_name: input.businessName ?? null,
+      portal_token: portalToken,
+      product_id: input.productId,
+      // The onboarding questionnaire is In-Control-specific qualitative
+      // intake — irrelevant for any other product, so this skips the
+      // portal's onboarding gate entirely rather than force a client
+      // through questions that don't apply to them.
+      onboarding_complete: product.name !== "In Control",
+    })
+    .select()
+    .single();
+  if (error) throw error;
+  return toAdminClient(data);
 }
 
 export interface OnboardingData {
@@ -181,6 +236,7 @@ export async function getClientByToken(token: string): Promise<Client | null> {
     // split.
     bestEmail: data.email ?? "",
     email: data.email ?? "",
+    productId: data.product_id,
   };
 }
 
@@ -302,6 +358,7 @@ export interface AdminClient {
   baselineDate: string | null;
   onboardingComplete: boolean;
   proposalId: string | null;
+  productId: string | null;
 }
 
 type AdminClientRow = {
@@ -326,6 +383,7 @@ type AdminClientRow = {
   baseline_date: string | null;
   onboarding_complete: boolean;
   proposal_id: string | null;
+  product_id: string | null;
 };
 
 function toAdminClient(row: AdminClientRow): AdminClient {
@@ -351,6 +409,7 @@ function toAdminClient(row: AdminClientRow): AdminClient {
     baselineDate: row.baseline_date,
     onboardingComplete: row.onboarding_complete,
     proposalId: row.proposal_id,
+    productId: row.product_id,
   };
 }
 
@@ -387,6 +446,7 @@ export interface AdminClientInput {
   baselineRepeatBuyerPct?: number | null;
   annualTurnover?: number | null;
   baselineDate?: string | null;
+  productId?: string | null;
 }
 
 export async function updateClientAdmin(id: string, input: AdminClientInput): Promise<AdminClient> {
@@ -408,6 +468,7 @@ export async function updateClientAdmin(id: string, input: AdminClientInput): Pr
   if (input.baselineRepeatBuyerPct !== undefined) patch.baseline_repeat_buyer_pct = input.baselineRepeatBuyerPct;
   if (input.annualTurnover !== undefined) patch.annual_turnover = input.annualTurnover;
   if (input.baselineDate !== undefined) patch.baseline_date = input.baselineDate;
+  if (input.productId !== undefined) patch.product_id = input.productId;
 
   const { data, error } = await db().from("clients").update(patch).eq("id", id).select().single();
   if (error) throw error;

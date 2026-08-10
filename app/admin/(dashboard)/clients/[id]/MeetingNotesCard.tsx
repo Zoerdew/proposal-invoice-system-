@@ -1,10 +1,17 @@
+import Link from "next/link";
 import { MeetingNote } from "@/lib/db/meetingNotes";
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
 }
 
-export default function MeetingNotesCard({ meetingNotes }: { meetingNotes: MeetingNote[] }) {
+export default function MeetingNotesCard({
+  clientId,
+  meetingNotes,
+}: {
+  clientId: string;
+  meetingNotes: MeetingNote[];
+}) {
   return (
     <div className="admin-card p-6">
       <h2 className="mb-2 font-heading font-[800] text-lg">Meeting notes</h2>
@@ -22,6 +29,12 @@ export default function MeetingNotesCard({ meetingNotes }: { meetingNotes: Meeti
                 {formatDate(note.createdAt)}
               </a>
               {note.summary && <p className="mt-0.5 text-[#0a0608]/60">{note.summary}</p>}
+              <Link
+                href={`/admin/clients/${clientId}/meeting-notes/${note.id}/recap`}
+                className="mt-1 inline-block text-xs text-[#0a0608]/50 underline"
+              >
+                {note.recapSlug ? "Edit recap" : "Generate recap"}
+              </Link>
             </li>
           ))}
         </ul>

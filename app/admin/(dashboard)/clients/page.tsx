@@ -1,14 +1,21 @@
 import Link from "next/link";
 import { listClientsAdmin } from "@/lib/db/clients";
+import { listProducts } from "@/lib/db/products";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminClientsPage() {
-  const clients = await listClientsAdmin();
+  const [clients, products] = await Promise.all([listClientsAdmin(), listProducts()]);
+  const productNameById = new Map(products.map((p) => [p.id, p.name]));
 
   return (
     <div>
-      <h1 className="mb-6 font-heading font-[800] text-xl">Clients</h1>
+      <div className="mb-6 flex items-center justify-between">
+        <h1 className="font-heading font-[800] text-xl">Clients</h1>
+        <Link href="/admin/clients/new" className="admin-btn px-4 py-2 text-sm">
+          New client
+        </Link>
+      </div>
 
       <div className="admin-card overflow-hidden">
         <table className="w-full admin-table">
@@ -16,6 +23,7 @@ export default async function AdminClientsPage() {
             <tr>
               <th>Name</th>
               <th>Business</th>
+              <th>Product</th>
               <th>Status</th>
               <th>Onboarding</th>
               <th />
@@ -29,6 +37,7 @@ export default async function AdminClientsPage() {
                   <div className="text-xs text-[#0a0608]/50">{c.email}</div>
                 </td>
                 <td>{c.businessName || "—"}</td>
+                <td>{c.productId ? productNameById.get(c.productId) ?? "—" : "—"}</td>
                 <td>{c.status ?? "—"}</td>
                 <td>
                   <span className={c.onboardingComplete ? "badge badge-pos" : "badge badge-neutral"}>
@@ -44,7 +53,7 @@ export default async function AdminClientsPage() {
             ))}
             {clients.length === 0 && (
               <tr>
-                <td colSpan={5} className="text-center text-[#0a0608]/50 py-6">
+                <td colSpan={6} className="text-center text-[#0a0608]/50 py-6">
                   No clients yet.
                 </td>
               </tr>

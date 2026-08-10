@@ -1,5 +1,13 @@
 import { db } from "./client";
 import { listClientsAdmin, AdminClient } from "./clients";
+import { slugify } from "../slug";
+import type { Database } from "./types";
+
+export interface RecapDetail {
+  label: string;
+  title: string;
+  body: string;
+}
 
 export interface MeetingNote {
   id: string;
@@ -10,6 +18,10 @@ export interface MeetingNote {
   rawContent: string;
   summary: string | null;
   matchStatus: string;
+  decisions: string[] | null;
+  details: RecapDetail[] | null;
+  recapSlug: string | null;
+  recapPublishedAt: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -33,6 +45,10 @@ type MeetingNoteRow = {
   raw_content: string;
   summary: string | null;
   match_status: string;
+  decisions: unknown;
+  details: unknown;
+  recap_slug: string | null;
+  recap_published_at: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -47,6 +63,10 @@ function toMeetingNote(row: MeetingNoteRow): MeetingNote {
     rawContent: row.raw_content,
     summary: row.summary,
     matchStatus: row.match_status,
+    decisions: Array.isArray(row.decisions) ? (row.decisions as string[]) : null,
+    details: Array.isArray(row.details) ? (row.details as RecapDetail[]) : null,
+    recapSlug: row.recap_slug,
+    recapPublishedAt: row.recap_published_at,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -123,4 +143,74 @@ export async function matchClientForTitle(
   if (matches.length === 1) return { client: matches[0], ambiguous: false };
   if (matches.length > 1) return { client: null, ambiguous: true };
   return { client: null, ambiguous: false };
+}
+
+async function recapSlugExists(slug: string): Promise<boolean> {
+  const { data, error } = await db()
+    .from("meeting_notes")
+    .select("id")
+    .eq("recap_slug", slug)
+    .maybeSingle();
+  if (error) throw error;
+  return data != null;
+}
+
+// Not reusing lib/slug.ts's ensureUniqueSlug (hardcoded to proposals) or
+// callProposals.ts's local equivalent (hardcoded to call_proposals) — same
+// reasoning as Phase 11, not worth generalising a shared util for one more
+// caller.
+async function ensureUniqueRecapSlug(base: string): Promise<string> {
+  let candidate = base;
+  let n = 2;
+  while (await recapSlugExists(candidate)) {
+    candidate = `${base}-${n}`;
+    n++;
+  }
+  return candidate;
+}
+
+export async function getMeetingNote(id: string): Promise<MeetingNote> {
+  const { data, error } = await db().from("meeting_notes").select("*").eq("id", id).single();
+  if (error) throw error;
+  return toMeetingNote(data);
+}
+
+export async function getMeetingNoteByRecapSlug(slug: string): Promise<MeetingNote | null> {
+  const { data, error } = await db()
+    .from("meeting_notes")
+    .select("*")
+    .eq("recap_slug", slug)
+    .maybeSingle();
+  if (error) throw error;
+  return data ? toMeetingNote(data) : null;
+}
+
+// Publishing enriches and exposes the existing row rather than creating a
+// parallel entity — next-steps are already the todos tied to this note's
+// id (Phase 12), so all a recap adds is decisions/details plus the slug
+// that makes it publicly reachable.
+export async function publishRecap(
+  id: string,
+  input: { decisions: string[]; details: RecapDetail[] }
+): Promise<MeetingNote> {
+  const note = await getMeetingNote(id);
+  const baseSlug = slugify(note.docTitle.replace(/-\s*Notes by Gemini$/i, "").trim());
+  const slug = note.recapSlug ?? (await ensureUniqueRecapSlug(baseSlug));
+
+  const { data, error } = await db()
+    .from("meeting_notes")
+    .update({
+      decisions: input.decisions,
+      // RecapDetail[] isn't structurally a Json[] to TS (no index
+      // signature) even though it serialises fine — same shape mismatch
+      // as any plain interface stored in a jsonb column.
+      details: input.details as unknown as Database["public"]["Tables"]["meeting_notes"]["Update"]["details"],
+      recap_slug: slug,
+      recap_published_at: new Date().toISOString(),
+    })
+    .eq("id", id)
+    .select()
+    .single();
+  if (error) throw error;
+  return toMeetingNote(data);
 }
