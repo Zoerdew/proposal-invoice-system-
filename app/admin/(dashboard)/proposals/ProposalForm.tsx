@@ -156,7 +156,7 @@ export default function ProposalForm({
       )}
 
       {locked && (
-        <p className="mb-6 card-brutal-yellow p-4 text-sm">
+        <p className="mb-6 admin-card-blush p-4 text-sm">
           This proposal has already been signed and can no longer be edited.
         </p>
       )}

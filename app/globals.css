@@ -40,33 +40,32 @@ body {
   color: var(--foreground);
 }
 
-/* Brutalist card/button primitives for the client portal. */
+/* Calm/premium card primitives — thin border, flat (no hard offset
+   shadow), no tilt. Formerly a "brutalist" hard-shadow/tilt treatment;
+   retired in favour of the register proven on the recap page. Names kept
+   as-is (avoids touching classNames in ~20 consuming files). */
 .card-brutal {
   background: var(--color-cream);
-  border: 3px solid var(--color-ink);
+  border: 2px solid var(--color-ink);
   border-radius: 20px;
-  box-shadow: 6px 6px 0 var(--color-ink);
 }
 
 .card-brutal-pink {
   background: var(--color-cream);
-  border: 3px solid var(--color-ink);
+  border: 2px solid var(--color-ink);
   border-radius: 20px;
-  box-shadow: 6px 6px 0 var(--color-accent);
 }
 
 .card-brutal-blush {
   background: var(--color-blush);
-  border: 3px solid var(--color-ink);
+  border: 2px solid var(--color-ink);
   border-radius: 20px;
-  box-shadow: 6px 6px 0 var(--color-ink);
 }
 
 .card-brutal-yellow {
   background: var(--color-yellow);
-  border: 3px solid var(--color-ink);
+  border: 2px solid var(--color-ink);
   border-radius: 20px;
-  box-shadow: 6px 6px 0 var(--color-ink);
 }
 
 /* Dark hero band — the one place ink goes big instead of just borders,
@@ -75,37 +74,32 @@ body {
   background: var(--color-ink);
   color: var(--color-cream);
   border-radius: 20px;
-  box-shadow: 6px 6px 0 var(--color-accent);
 }
 
 .input-brutal {
   background: var(--color-cream);
-  border: 3px solid var(--color-ink);
+  border: 2px solid var(--color-ink);
   border-radius: 14px;
 }
 
 .btn-pill {
   display: inline-block;
-  border: 3px solid var(--color-ink);
+  border: 2px solid var(--color-ink);
   border-radius: 9999px;
-  background: var(--color-accent);
+  background: var(--color-ink);
   color: var(--color-cream);
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  box-shadow: 4px 4px 0 var(--color-ink);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: opacity 0.15s ease;
 }
 
 .btn-pill:hover:not(:disabled) {
-  transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0 var(--color-ink);
+  opacity: 0.85;
 }
 
 .btn-pill:disabled {
   opacity: 0.4;
-  box-shadow: none;
-  transform: none;
 }
 
 .pill-toggle {
@@ -113,26 +107,25 @@ body {
   border: 2px solid var(--color-ink);
   text-transform: uppercase;
   letter-spacing: 0.02em;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: background 0.15s ease, color 0.15s ease;
 }
 
 .pill-toggle[data-active="true"] {
   background: var(--color-ink);
   color: var(--color-cream);
-  box-shadow: 3px 3px 0 var(--color-accent);
 }
 
-/* Sticker-pop primitives from the Claude Design brand kit (v2 Phase 13),
-   ported onto this app's existing --color-* tokens rather than the kit's
-   own --pink/--ink names, so there's one token system, not two. */
+/* Calm-register primitives — same colour/type system as the brand kit,
+   sticker-pop pulled back app-wide (was previously scoped to
+   "document-style" pages only; now the single default). */
 
 .eyebrow-pill {
   display: inline-flex;
   align-self: flex-start;
-  background: var(--color-yellow);
+  background: transparent;
   color: var(--color-ink);
-  border: 3px solid var(--color-ink);
-  border-radius: 8px;
+  border: 2px solid var(--color-ink);
+  border-radius: 9999px;
   padding: 6px 14px;
   font-family: var(--font-heading);
   font-weight: 800;
@@ -141,12 +134,15 @@ body {
   text-transform: uppercase;
 }
 
-/* Card tab — overhangs the top-left corner of a .card-brutal*. */
+/* Card tab — overhangs the top-left corner of a .card-brutal*. Retired
+   from active use in favour of an inline label row (see recap page /
+   snapshot page "what we covered" pattern) since the overhang itself is
+   a sticker-pop motif; kept defined in case something still uses it. */
 .card-tab {
   position: absolute;
   top: -16px;
   left: 24px;
-  border: 3px solid var(--color-ink);
+  border: 2px solid var(--color-ink);
   border-radius: 8px;
   padding: 5px 12px;
   font-family: var(--font-heading);
@@ -159,9 +155,10 @@ body {
 .card-tab-pink   { background: var(--color-accent); color: var(--color-cream); }
 .card-tab-ink    { background: var(--color-ink); color: var(--color-cream); }
 
-.tilt-l { transform: rotate(-1deg); }
-.tilt-r { transform: rotate(1deg); }
-/* Buttons, inputs, logos and anything with a card-tab stay upright. */
+/* Tilt retired — was a sticker-pop motif, no longer part of the calm
+   register. Kept as no-ops rather than removed so existing tilt-l/tilt-r
+   classNames don't need touching across consuming files. */
+.tilt-l, .tilt-r { transform: none; }
 .card-tab, .btn-pill, .input-brutal, .logo-lockup, .logo-lockup img { transform: none; }
 
 /* Status badges — pos/neutral/neg, small inline markers for things like
@@ -205,7 +202,7 @@ body {
   flex-shrink: 0;
 }
 .step-badge-done    { background: var(--color-ink);    color: var(--color-cream); }
-.step-badge-current { background: var(--color-accent); color: var(--color-cream); box-shadow: 3px 3px 0 var(--color-ink); }
+.step-badge-current { background: var(--color-accent); color: var(--color-cream); }
 .step-badge-upcoming { background: var(--color-cream); color: color-mix(in srgb, var(--color-ink) 40%, transparent); border-color: color-mix(in srgb, var(--color-ink) 25%, transparent); }
 
 .step-line {

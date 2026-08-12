@@ -43,13 +43,13 @@ export default async function SnapshotPage({
       </div>
 
       <div className="grid grid-cols-2 gap-6">
-        <div className="card-brutal tilt-l p-6">
+        <div className="card-brutal p-6">
           <p className="text-sm text-[#0a0608]/60 mb-1">Identified</p>
           <p className="font-heading font-[800] text-4xl leading-none tracking-[-0.03em]">
             {formatCurrency(client.totalIdentified)}
           </p>
         </div>
-        <div className="card-brutal-pink tilt-r p-6">
+        <div className="card-brutal-pink p-6">
           <p className="text-sm text-[#0a0608]/60 mb-1">Banked</p>
           <p className="font-heading font-[800] text-4xl leading-none tracking-[-0.03em]">
             {formatCurrency(client.totalBanked)}
@@ -58,11 +58,14 @@ export default async function SnapshotPage({
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10 items-stretch">
-        <div className="card-brutal-blush relative p-6 md:col-span-2">
-          <span className="card-tab card-tab-yellow">
-            Target {formatCurrency(client.targetFigure)}
-          </span>
-          <div className="flex justify-between text-sm text-[#0a0608]/60 mb-3 mt-2">
+        <div className="card-brutal-blush p-6 md:col-span-2">
+          <div className="flex items-center justify-between mb-4 pb-3 border-b border-[#0a0608]/15">
+            <span className="text-xs uppercase tracking-wide text-[#0a0608]/50 font-heading font-[800]">
+              Target
+            </span>
+            <span className="font-heading font-[800] text-sm">{formatCurrency(client.targetFigure)}</span>
+          </div>
+          <div className="flex justify-between text-sm text-[#0a0608]/60 mb-3">
             <span>Progress against target</span>
             <span className="font-heading font-[800] text-[#0a0608]">{progressPct}%</span>
           </div>
