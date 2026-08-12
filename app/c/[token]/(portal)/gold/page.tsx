@@ -63,14 +63,16 @@ export default async function GoldPage({
         {groups.map((group, i) => (
           <section
             key={group.type}
-            className={`relative p-6 ${i % 2 === 0 ? "card-brutal" : "card-brutal-blush"}`}
+            className={`p-6 ${i % 2 === 0 ? "card-brutal" : "card-brutal-blush"}`}
           >
-            <span className="card-tab card-tab-pink">
-              {group.findings.length} {group.findings.length === 1 ? "finding" : "findings"}
-            </span>
-            <h2 className="font-heading font-[800] text-2xl mb-4 mt-2 tracking-[-0.03em]">
-              {group.type}
-            </h2>
+            <div className="flex items-center justify-between mb-4 pb-3 border-b border-[#0a0608]/15">
+              <h2 className="font-heading font-[800] text-2xl tracking-[-0.03em]">
+                {group.type}
+              </h2>
+              <span className="text-xs uppercase tracking-wide text-[#0a0608]/50 font-heading font-[800]">
+                {group.findings.length} {group.findings.length === 1 ? "finding" : "findings"}
+              </span>
+            </div>
             <ul>
               {group.findings.map((finding: Finding, j) => (
                 <li
