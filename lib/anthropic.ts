@@ -37,7 +37,7 @@ Every specific in the page has to trace back to something the prospect or Zoë a
 
 Page structure, in order
 
-Hero. Addressed to the prospect by name. One line naming what the page is and why it exists (built from the call, not a template). A one-line summary of what was actually discussed. The call date.
+Hero. Addressed to the prospect by name. A one-line summary of what was actually discussed. The call date. Do not include a line describing what the page itself is or why it exists — go straight into the substance.
 
 What I heard. Three short blocks, each one thing recapped from the transcript in plain language, in Zoë's voice, not the prospect's own words quoted back. This is the situation appraisal. No advice yet, just an accurate recap that shows she was listening.
 
@@ -45,13 +45,13 @@ The next ninety days. What working together would build, framed as things within
 
 How we'll know it's working. Concrete, checkable markers, not vague reassurance. Tie these to the actual deliverables (GOLD Report, Evidence Dashboard, Commercial Scorecard, Decision Log) and to something specific and true about this prospect's situation right now, not a generic KPI list.
 
-How it works. The standard structure: a 90 minute kickoff, five 60 minute calls one every other week, then a final call mapping the next six to twelve months. The kickoff is not a joint discovery session: it is where Zoe walks the prospect through the reports she has already prepared for them. The five 60 minute calls follow Zoe's five-stage method, in this order, and should be named and framed accordingly:
+How it works. The standard structure is exactly six calls total, never seven: a 90 minute kickoff, then five 60 minute calls one every other week. Do not add any further call, session, or "final call" beyond these six — the fifth and last of the five 60 minute calls (Future, below) is itself the final call and is where the next six to twelve months gets mapped. The kickoff is not a joint discovery session: it is where Zoe walks the prospect through the reports she has already prepared for them. The five 60 minute calls follow Zoe's five-stage method, in this order, and should be named and framed accordingly:
 
 - Find. Identify where untapped revenue and opportunities already exist.
 - Focus. Prioritise by return and decide what deserves attention first.
 - Fix. Remove bottlenecks and implement the highest-impact improvements.
 - Fortify. Embed the changes so they are repeatable without constant intervention.
-- Future. Plan the next phase and decide where to focus next.
+- Future. Plan the next phase, mapping the next six to twelve months — this is the final call, not a lead-in to a further one.
 
 Describe each step in terms of what it means for this specific prospect's problem, not in the abstract. If there is a genuine, sourced proof point relevant to this prospect's industry or situation, include it here as a short paragraph. If there isn't one that actually fits, leave the section without one rather than forcing an unrelated story in.
 
@@ -64,7 +64,7 @@ Investment. This section branches:
 - Do not introduce a deposit-to-hold-your-place mechanic unless it was specifically discussed on the call for this prospect. Some proposals will need one, most won't. Ask if unclear rather than defaulting it in.
 - Show instalment figures as actual division of the total (total divided by 3, correctly rounded), never a vague "instalments available" without the number.
 
-Closing. A short, personal note that references something specific from the call, not a generic sign-off. A plain reply prompt. Sign off "Zx".
+Closing. A short, personal note that references something specific from the call, not a generic sign-off. A plain prompt to reply with the start date they want. Do not promise to send an onboarding form, and do not ask them to state a payment plan preference in their reply — the separate signable proposal (sent after this) is where they choose how to pay, not this page. Sign off "Zx".
 
 Copy rules, always
 
@@ -72,7 +72,7 @@ No em dashes. No smart quotes or curly apostrophes. No false-contrast constructi
 
 Design, always the same system
 
-Single self-contained HTML file, inline CSS and JS, no external dependencies beyond the Bricolage Grotesque Google Font. Colour tokens: paper #FAF3E9 background, ink #0A0608 text, hot pink #F11787 as the single accent colour, blush #FFE2F4 and yellow #FDE047 as secondary accents. Hard offset shadows (solid colour, no blur) on cards, the CTA button, and price cards. Rotated pink pill tags as section eyebrow labels. A small rotated yellow corner sticker reading "Just for you" near the top. Numbered circular badges only where the content is genuinely sequential (the call structure, a step-by-step). \`noindex, nofollow\` meta tag, since every one of these pages is private and unlisted.
+Single self-contained HTML file, inline CSS and JS, no external dependencies beyond the Bricolage Grotesque Google Font. Colour tokens: paper #FAF3E9 background, ink #0A0608 text, hot pink #F11787 as the single accent colour, blush #FFE2F4 and yellow #FDE047 as secondary accents. Hard offset shadows (solid colour, no blur) on cards, the CTA button, and price cards. Rotated pink pill tags as section eyebrow labels. A small rotated yellow corner sticker reading "Just for you" near the top. Numbered circular badges only where the content is genuinely sequential (the call structure, a step-by-step). \`noindex, nofollow\` meta tag, since every one of these pages is private and unlisted — this is a meta tag only, not visible copy. Do not add a visible footer or disclaimer line stating that the page is private, unlisted, or prepared for the prospect. The page ends after the closing note and sign-off.
 
 Output
 
@@ -129,6 +129,11 @@ export async function generateCallProposalHtml(
     body: JSON.stringify({
       model: MODEL,
       max_tokens: MAX_TOKENS,
+      // Low, not zero — this still writes bespoke prose per prospect, so
+      // some variation in phrasing is intended. Mainly buys closer
+      // adherence to the structural rules above (call count, no stray
+      // disclaimer copy) rather than word-for-word repeatability.
+      temperature: 0.2,
       system: SYSTEM_PROMPT,
       messages: [{ role: "user", content: userMessage }],
     }),
@@ -211,18 +216,30 @@ export async function extractMeetingNotesSummaryAndTodos(
 // needs beyond Phase 12's summary/todos — decisions reached and a
 // topic-by-topic breakdown, mirroring the real structure Google's own
 // Gemini notes already produce (Summary/Decisions/Next steps/Details),
-// not inventing a new shape. Deliberately doesn't re-derive summary or
-// next-steps — those already exist from Phase 12's ingestion.
-const RECAP_DETAILS_SYSTEM_PROMPT = `You are extracting structured detail from the raw text of a client call transcript or meeting notes document, for a call-recap page the client will read afterwards.
+// not inventing a new shape. Deliberately doesn't re-derive next-steps —
+// those already exist as real todos from Phase 12's ingestion. Does
+// produce its own short-version summary (shortVersion) rather than
+// reusing meeting_notes.summary — that field is Phase 12's admin-facing
+// extraction, third person for Zoë's own notes, wrong voice for a page
+// the client reads themselves.
+const RECAP_DETAILS_SYSTEM_PROMPT = `You are extracting structured detail from the raw text of a client call transcript or meeting notes document, for a call-recap page the client themselves will read afterwards.
 
-Decisions: only things that were actually agreed or decided on the call, stated plainly in one sentence each. Do not include a decision that wasn't actually reached — if nothing was decided, return an empty list.
+Write everything in second person, addressed directly to the client — "you decided," "we covered," "your next step" — never third person ("the client," their name as a subject repeated throughout). This is a page written to them, not a report about them.
 
-Details: a short, topic-by-topic breakdown of what was substantively discussed, grouped into 2-5 topics. Each needs a short one or two word label (e.g. "PRICING", "SEGMENTS"), a specific title naming the actual topic, and a body paragraph in plain language covering what was actually said, not generic advice. Ground every specific in what's actually in the document — no invented numbers or details.
+Short version: two or three sentences summarising what the call covered and where it landed, in second person.
+
+Focus: a short three-to-six word phrase naming what the call was mainly about (e.g. "Customer segmentation and win-back strategy"). Plain, specific, not a generic label.
+
+Decisions: only things that were actually agreed or decided on the call, stated plainly in one sentence each, second person where it applies ("you'll..." / "we agreed..."). Do not include a decision that wasn't actually reached — if nothing was decided, return an empty list.
+
+Details: a short, topic-by-topic breakdown of what was substantively discussed, grouped into 2-5 topics. Each needs a short one or two word label (e.g. "PRICING", "SEGMENTS"), a specific title naming the actual topic, and a body paragraph in plain language covering what was actually said, second person, not generic advice. Ground every specific in what's actually in the document — no invented numbers or details.
 
 Respond with only a JSON object, no other text, in exactly this shape:
-{"decisions": ["first decision", "second decision"], "details": [{"label": "TOPIC", "title": "Specific title", "body": "Paragraph covering what was discussed."}]}`;
+{"shortVersion": "...", "focus": "...", "decisions": ["first decision", "second decision"], "details": [{"label": "TOPIC", "title": "Specific title", "body": "Paragraph covering what was discussed."}]}`;
 
 export interface CallRecapDetails {
+  shortVersion: string;
+  focus: string;
   decisions: string[];
   details: { label: string; title: string; body: string }[];
 }
@@ -255,9 +272,13 @@ export async function extractCallRecapDetails(rawContent: string): Promise<CallR
   }
 
   const parsed = JSON.parse(stripCodeFence(textBlock.text)) as {
+    shortVersion?: unknown;
+    focus?: unknown;
     decisions?: unknown;
     details?: unknown;
   };
+  const shortVersion = typeof parsed.shortVersion === "string" ? parsed.shortVersion : "";
+  const focus = typeof parsed.focus === "string" ? parsed.focus : "";
   const decisions = Array.isArray(parsed.decisions)
     ? parsed.decisions.filter((d): d is string => typeof d === "string" && d.trim().length > 0)
     : [];
@@ -272,5 +293,5 @@ export async function extractCallRecapDetails(rawContent: string): Promise<CallR
       )
     : [];
 
-  return { decisions, details };
+  return { shortVersion, focus, decisions, details };
 }

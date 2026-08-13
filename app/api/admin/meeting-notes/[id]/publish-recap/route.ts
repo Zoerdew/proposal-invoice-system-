@@ -21,7 +21,9 @@ export async function POST(
           typeof (d as { body?: unknown }).body === "string"
       )
     : [];
+  const shortVersion = typeof body?.shortVersion === "string" ? body.shortVersion : "";
+  const focus = typeof body?.focus === "string" ? body.focus : "";
 
-  const note = await publishRecap(id, { decisions, details });
+  const note = await publishRecap(id, { decisions, details, shortVersion, focus });
   return NextResponse.json({ recapSlug: note.recapSlug });
 }
