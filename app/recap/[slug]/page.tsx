@@ -205,7 +205,7 @@ export default async function RecapPage({
 
       <section id="confirm" className="px-8 py-16">
         <div className="max-w-3xl mx-auto w-full">
-          <RecapConfirmCta slug={slug} initialConfirmed={Boolean(note.confirmedAt)} />
+          <RecapConfirmCta clientName={displayName} />
         </div>
       </section>
 

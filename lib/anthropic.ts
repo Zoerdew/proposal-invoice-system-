@@ -37,7 +37,7 @@ Every specific in the page has to trace back to something the prospect or Zoë a
 
 Page structure, in order
 
-Hero. Addressed to the prospect by name. One line naming what the page is and why it exists (built from the call, not a template). A one-line summary of what was actually discussed. The call date.
+Hero. Addressed to the prospect by name. A one-line summary of what was actually discussed. The call date. Do not include a line describing what the page itself is or why it exists — go straight into the substance.
 
 What I heard. Three short blocks, each one thing recapped from the transcript in plain language, in Zoë's voice, not the prospect's own words quoted back. This is the situation appraisal. No advice yet, just an accurate recap that shows she was listening.
 
@@ -45,13 +45,13 @@ The next ninety days. What working together would build, framed as things within
 
 How we'll know it's working. Concrete, checkable markers, not vague reassurance. Tie these to the actual deliverables (GOLD Report, Evidence Dashboard, Commercial Scorecard, Decision Log) and to something specific and true about this prospect's situation right now, not a generic KPI list.
 
-How it works. The standard structure: a 90 minute kickoff, five 60 minute calls one every other week, then a final call mapping the next six to twelve months. The kickoff is not a joint discovery session: it is where Zoe walks the prospect through the reports she has already prepared for them. The five 60 minute calls follow Zoe's five-stage method, in this order, and should be named and framed accordingly:
+How it works. The standard structure is exactly six calls total, never seven: a 90 minute kickoff, then five 60 minute calls one every other week. Do not add any further call, session, or "final call" beyond these six — the fifth and last of the five 60 minute calls (Future, below) is itself the final call and is where the next six to twelve months gets mapped. The kickoff is not a joint discovery session: it is where Zoe walks the prospect through the reports she has already prepared for them. The five 60 minute calls follow Zoe's five-stage method, in this order, and should be named and framed accordingly:
 
 - Find. Identify where untapped revenue and opportunities already exist.
 - Focus. Prioritise by return and decide what deserves attention first.
 - Fix. Remove bottlenecks and implement the highest-impact improvements.
 - Fortify. Embed the changes so they are repeatable without constant intervention.
-- Future. Plan the next phase and decide where to focus next.
+- Future. Plan the next phase, mapping the next six to twelve months — this is the final call, not a lead-in to a further one.
 
 Describe each step in terms of what it means for this specific prospect's problem, not in the abstract. If there is a genuine, sourced proof point relevant to this prospect's industry or situation, include it here as a short paragraph. If there isn't one that actually fits, leave the section without one rather than forcing an unrelated story in.
 
@@ -64,7 +64,7 @@ Investment. This section branches:
 - Do not introduce a deposit-to-hold-your-place mechanic unless it was specifically discussed on the call for this prospect. Some proposals will need one, most won't. Ask if unclear rather than defaulting it in.
 - Show instalment figures as actual division of the total (total divided by 3, correctly rounded), never a vague "instalments available" without the number.
 
-Closing. A short, personal note that references something specific from the call, not a generic sign-off. A plain reply prompt. Sign off "Zx".
+Closing. A short, personal note that references something specific from the call, not a generic sign-off. A plain prompt to reply with the start date they want. Do not promise to send an onboarding form, and do not ask them to state a payment plan preference in their reply — the separate signable proposal (sent after this) is where they choose how to pay, not this page. Sign off "Zx".
 
 Copy rules, always
 
@@ -72,7 +72,7 @@ No em dashes. No smart quotes or curly apostrophes. No false-contrast constructi
 
 Design, always the same system
 
-Single self-contained HTML file, inline CSS and JS, no external dependencies beyond the Bricolage Grotesque Google Font. Colour tokens: paper #FAF3E9 background, ink #0A0608 text, hot pink #F11787 as the single accent colour, blush #FFE2F4 and yellow #FDE047 as secondary accents. Hard offset shadows (solid colour, no blur) on cards, the CTA button, and price cards. Rotated pink pill tags as section eyebrow labels. A small rotated yellow corner sticker reading "Just for you" near the top. Numbered circular badges only where the content is genuinely sequential (the call structure, a step-by-step). \`noindex, nofollow\` meta tag, since every one of these pages is private and unlisted.
+Single self-contained HTML file, inline CSS and JS, no external dependencies beyond the Bricolage Grotesque Google Font. Colour tokens: paper #FAF3E9 background, ink #0A0608 text, hot pink #F11787 as the single accent colour, blush #FFE2F4 and yellow #FDE047 as secondary accents. Hard offset shadows (solid colour, no blur) on cards, the CTA button, and price cards. Rotated pink pill tags as section eyebrow labels. A small rotated yellow corner sticker reading "Just for you" near the top. Numbered circular badges only where the content is genuinely sequential (the call structure, a step-by-step). \`noindex, nofollow\` meta tag, since every one of these pages is private and unlisted — this is a meta tag only, not visible copy. Do not add a visible footer or disclaimer line stating that the page is private, unlisted, or prepared for the prospect. The page ends after the closing note and sign-off.
 
 Output
 
