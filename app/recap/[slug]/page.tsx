@@ -3,6 +3,7 @@ import { getMeetingNoteByRecapSlug } from "@/lib/db/meetingNotes";
 import { listTodosForMeetingNote } from "@/lib/db/todos";
 import { getClientAdmin } from "@/lib/db/clients";
 import RecapTodoList from "@/components/recap/RecapTodoList";
+import RecapConfirmCta from "@/components/recap/RecapConfirmCta";
 
 export const metadata = {
   robots: { index: false, follow: false },
@@ -65,6 +66,7 @@ export default async function RecapPage({
     hasDetails && { id: "covered", label: "What we covered" },
     hasDecisions && { id: "decisions", label: "Decisions" },
     todos.length > 0 && { id: "next-steps", label: "Next steps" },
+    { id: "confirm", label: "Go ahead" },
   ].filter((s): s is { id: string; label: string } => Boolean(s));
 
   return (
@@ -200,6 +202,12 @@ export default async function RecapPage({
           </div>
         </section>
       )}
+
+      <section id="confirm" className="px-8 py-16">
+        <div className="max-w-3xl mx-auto w-full">
+          <RecapConfirmCta slug={slug} initialConfirmed={Boolean(note.confirmedAt)} />
+        </div>
+      </section>
 
       <section className="px-8 py-16">
         <div className="max-w-5xl mx-auto w-full">

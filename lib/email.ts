@@ -1,6 +1,7 @@
 import { Resend } from "resend";
 
 const FROM = "Zoë <hello@zoedew.com>";
+const NOTIFY_TO = "zoe@zoedew.com";
 
 function requireResend(): Resend {
   const apiKey = process.env.RESEND_API_KEY;
@@ -81,6 +82,36 @@ Zoë`;
     from: FROM,
     to: input.to,
     subject: "Your In Control portal link",
+    text,
+    html,
+  });
+  if (error) throw new Error(`Resend error: ${error.message}`);
+}
+
+export interface ConfirmedEmailInput {
+  clientName: string;
+  pageUrl: string;
+}
+
+// The "confirm you want to go ahead" CTA, shared by both the recap page
+// and the call-proposal page — sent to Zoë, not the client, so this
+// always goes to NOTIFY_TO regardless of who clicked.
+export async function sendConfirmedEmail(input: ConfirmedEmailInput): Promise<void> {
+  const resend = requireResend();
+
+  const text = `${input.clientName} confirmed they want to go ahead.
+
+${input.pageUrl}
+
+Zoë`;
+
+  const html = `<p><strong>${input.clientName}</strong> confirmed they want to go ahead.</p>
+<p><a href="${input.pageUrl}">${input.pageUrl}</a></p>`;
+
+  const { error } = await resend.emails.send({
+    from: FROM,
+    to: NOTIFY_TO,
+    subject: `${input.clientName} confirmed — ready to go ahead`,
     text,
     html,
   });

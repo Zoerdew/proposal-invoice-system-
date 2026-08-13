@@ -11,6 +11,7 @@ export interface CallProposal {
   generatedHtml: string;
   slug: string;
   status: string;
+  confirmedAt: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -34,6 +35,7 @@ type CallProposalRow = {
   generated_html: string | null;
   slug: string;
   status: string;
+  confirmed_at: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -49,6 +51,7 @@ function toCallProposal(row: CallProposalRow): CallProposal {
     generatedHtml: row.generated_html ?? "",
     slug: row.slug,
     status: row.status,
+    confirmedAt: row.confirmed_at,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -116,6 +119,20 @@ export async function createCallProposal(input: CallProposalInput): Promise<Call
       generated_html: input.generatedHtml,
       slug,
     })
+    .select()
+    .single();
+  if (error) throw error;
+  return toCallProposal(data);
+}
+
+// Sets confirmed_at unconditionally — callers check confirmedAt first so
+// a second click doesn't overwrite the original time or re-send Zoë's
+// notification email. Mirrors meetingNotes.ts's confirmRecap.
+export async function confirmCallProposal(id: string): Promise<CallProposal> {
+  const { data, error } = await db()
+    .from("call_proposals")
+    .update({ confirmed_at: new Date().toISOString() })
+    .eq("id", id)
     .select()
     .single();
   if (error) throw error;

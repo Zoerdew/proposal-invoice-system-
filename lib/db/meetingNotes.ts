@@ -24,6 +24,7 @@ export interface MeetingNote {
   recapPublishedAt: string | null;
   recapSummary: string | null;
   recapFocus: string | null;
+  confirmedAt: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -53,6 +54,7 @@ type MeetingNoteRow = {
   recap_published_at: string | null;
   recap_summary: string | null;
   recap_focus: string | null;
+  confirmed_at: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -73,6 +75,7 @@ function toMeetingNote(row: MeetingNoteRow): MeetingNote {
     recapPublishedAt: row.recap_published_at,
     recapSummary: row.recap_summary,
     recapFocus: row.recap_focus,
+    confirmedAt: row.confirmed_at,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -216,6 +219,20 @@ export async function publishRecap(
       recap_summary: input.shortVersion,
       recap_focus: input.focus,
     })
+    .eq("id", id)
+    .select()
+    .single();
+  if (error) throw error;
+  return toMeetingNote(data);
+}
+
+// Sets confirmed_at unconditionally — callers check note.confirmedAt first
+// so a second click doesn't overwrite the original confirmation time or
+// re-send Zoë's notification email.
+export async function confirmRecap(id: string): Promise<MeetingNote> {
+  const { data, error } = await db()
+    .from("meeting_notes")
+    .update({ confirmed_at: new Date().toISOString() })
     .eq("id", id)
     .select()
     .single();

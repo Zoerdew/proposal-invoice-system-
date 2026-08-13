@@ -146,6 +146,7 @@ export type Database = {
       call_proposals: {
         Row: {
           call_date: string | null
+          confirmed_at: string | null
           created_at: string
           currency: string
           generated_html: string | null
@@ -159,6 +160,7 @@ export type Database = {
         }
         Insert: {
           call_date?: string | null
+          confirmed_at?: string | null
           created_at?: string
           currency?: string
           generated_html?: string | null
@@ -172,6 +174,7 @@ export type Database = {
         }
         Update: {
           call_date?: string | null
+          confirmed_at?: string | null
           created_at?: string
           currency?: string
           generated_html?: string | null
@@ -685,6 +688,7 @@ export type Database = {
       meeting_notes: {
         Row: {
           client_id: string | null
+          confirmed_at: string | null
           created_at: string
           decisions: Json | null
           details: Json | null
@@ -703,6 +707,7 @@ export type Database = {
         }
         Insert: {
           client_id?: string | null
+          confirmed_at?: string | null
           created_at?: string
           decisions?: Json | null
           details?: Json | null
@@ -721,6 +726,7 @@ export type Database = {
         }
         Update: {
           client_id?: string | null
+          confirmed_at?: string | null
           created_at?: string
           decisions?: Json | null
           details?: Json | null
