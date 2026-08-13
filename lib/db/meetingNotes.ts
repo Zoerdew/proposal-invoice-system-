@@ -22,6 +22,8 @@ export interface MeetingNote {
   details: RecapDetail[] | null;
   recapSlug: string | null;
   recapPublishedAt: string | null;
+  recapSummary: string | null;
+  recapFocus: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -49,6 +51,8 @@ type MeetingNoteRow = {
   details: unknown;
   recap_slug: string | null;
   recap_published_at: string | null;
+  recap_summary: string | null;
+  recap_focus: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -67,6 +71,8 @@ function toMeetingNote(row: MeetingNoteRow): MeetingNote {
     details: Array.isArray(row.details) ? (row.details as RecapDetail[]) : null,
     recapSlug: row.recap_slug,
     recapPublishedAt: row.recap_published_at,
+    recapSummary: row.recap_summary,
+    recapFocus: row.recap_focus,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -191,7 +197,7 @@ export async function getMeetingNoteByRecapSlug(slug: string): Promise<MeetingNo
 // that makes it publicly reachable.
 export async function publishRecap(
   id: string,
-  input: { decisions: string[]; details: RecapDetail[] }
+  input: { decisions: string[]; details: RecapDetail[]; shortVersion: string; focus: string }
 ): Promise<MeetingNote> {
   const note = await getMeetingNote(id);
   const baseSlug = slugify(note.docTitle.replace(/-\s*Notes by Gemini$/i, "").trim());
@@ -207,6 +213,8 @@ export async function publishRecap(
       details: input.details as unknown as Database["public"]["Tables"]["meeting_notes"]["Update"]["details"],
       recap_slug: slug,
       recap_published_at: new Date().toISOString(),
+      recap_summary: input.shortVersion,
+      recap_focus: input.focus,
     })
     .eq("id", id)
     .select()

@@ -32,6 +32,8 @@ export default async function MeetingNoteRecapPage({
         initialDecisions={note.decisions}
         initialDetails={note.details}
         initialRecapSlug={note.recapSlug}
+        initialShortVersion={note.recapSummary}
+        initialFocus={note.recapFocus}
       />
     </div>
   );
