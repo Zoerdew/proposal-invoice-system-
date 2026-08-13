@@ -129,6 +129,11 @@ export async function generateCallProposalHtml(
     body: JSON.stringify({
       model: MODEL,
       max_tokens: MAX_TOKENS,
+      // Low, not zero — this still writes bespoke prose per prospect, so
+      // some variation in phrasing is intended. Mainly buys closer
+      // adherence to the structural rules above (call count, no stray
+      // disclaimer copy) rather than word-for-word repeatability.
+      temperature: 0.2,
       system: SYSTEM_PROMPT,
       messages: [{ role: "user", content: userMessage }],
     }),
