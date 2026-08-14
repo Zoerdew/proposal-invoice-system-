@@ -75,6 +75,7 @@ export async function POST(
   const whyNow = body?.whyNow;
   const definitionOfSuccess = body?.definitionOfSuccess;
   const anythingElse = body?.anythingElse;
+  const postalAddress = body?.postalAddress;
 
   const paymentProcessors = body?.paymentProcessors;
   const emailPlatform = body?.emailPlatform;
@@ -104,6 +105,7 @@ export async function POST(
     !whyNow.trim() ||
     (definitionOfSuccess !== undefined && typeof definitionOfSuccess !== "string") ||
     (anythingElse !== undefined && typeof anythingElse !== "string") ||
+    (postalAddress !== undefined && typeof postalAddress !== "string") ||
     (paymentProcessors !== undefined && typeof paymentProcessors !== "string") ||
     (emailPlatform !== undefined && typeof emailPlatform !== "string") ||
     (subscriberCount !== undefined && typeof subscriberCount !== "number") ||
@@ -129,6 +131,7 @@ export async function POST(
     whyNow,
     definitionOfSuccess: definitionOfSuccess?.trim() || undefined,
     anythingElse: anythingElse?.trim() || undefined,
+    postalAddress: postalAddress?.trim() || undefined,
     paymentProcessors: paymentProcessors?.trim() || undefined,
     emailPlatform: emailPlatform?.trim() || undefined,
     subscriberCount: subscriberCount ?? undefined,

@@ -918,6 +918,7 @@ export type Database = {
           off_the_table: string | null
           own_theory: string | null
           payment_processors: string | null
+          postal_address: string | null
           six_month_risk: string | null
           subscriber_count: number | null
           updated_at: string
@@ -941,6 +942,7 @@ export type Database = {
           off_the_table?: string | null
           own_theory?: string | null
           payment_processors?: string | null
+          postal_address?: string | null
           six_month_risk?: string | null
           subscriber_count?: number | null
           updated_at?: string
@@ -964,6 +966,7 @@ export type Database = {
           off_the_table?: string | null
           own_theory?: string | null
           payment_processors?: string | null
+          postal_address?: string | null
           six_month_risk?: string | null
           subscriber_count?: number | null
           updated_at?: string

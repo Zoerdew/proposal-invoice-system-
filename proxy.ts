@@ -56,7 +56,15 @@ export default async function proxy(request: NextRequest) {
       const verified = cookie ? verifySignedToken(cookie) : null;
       const sessionValid = verified?.portalToken === portalToken;
 
-      if (!sessionValid) {
+      // "View as client" (admin panel): a logged-in admin can browse any
+      // /c/[token] page without the client's own session, so Zoë can see
+      // exactly what a given client sees. Deliberately doesn't extend to
+      // the portal's own API routes below — an admin session alone can't
+      // toggle a to-do or submit a form as the client, so browsing a
+      // client's portal never risks writing to their real record.
+      const viewingAsAdmin = authed && !pathname.startsWith("/api/");
+
+      if (!sessionValid && !viewingAsAdmin) {
         if (pathname.startsWith("/api/")) {
           return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
