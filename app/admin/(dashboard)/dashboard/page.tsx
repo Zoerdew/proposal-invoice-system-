@@ -77,7 +77,7 @@ export default async function AdminDashboardPage() {
 
   const leadFunnel = computeLeadFunnel(leads);
   const proposalFunnel = computeProposalFunnel(proposals);
-  const revenue = computeRevenueByMonth(clients, products);
+  const revenue = computeRevenueByMonth(clients, products, proposals);
   const sourcePerformance = computeLeadSourcePerformance(leads);
   const pipeline = computePipelineSnapshot(leads, proposals, invoicedTotals, new Date());
 
@@ -140,9 +140,10 @@ export default async function AdminDashboardPage() {
       <section className="mb-10 admin-card p-6">
         <h2 className="mb-1 font-heading font-[800] text-lg">Revenue by month</h2>
         <p className="mb-4 text-sm text-[#0a0608]/50">
-          By client package price against their start date, not invoiced or collected amounts.
+          By client package price against when their proposal was signed, not invoiced or
+          collected amounts.
           {revenue.excludedCount > 0 &&
-            ` ${revenue.excludedCount} client${revenue.excludedCount === 1 ? "" : "s"} excluded — missing a start date or package price.`}
+            ` ${revenue.excludedCount} client${revenue.excludedCount === 1 ? "" : "s"} excluded — missing a signed proposal or package price.`}
         </p>
         {revenue.months.length === 0 ? (
           <p className="text-sm text-[#0a0608]/50">No billable clients yet.</p>

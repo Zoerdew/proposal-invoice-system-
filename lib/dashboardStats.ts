@@ -74,23 +74,29 @@ export interface RevenueOverTime {
   excludedCount: number; // clients with no start date and/or no package price
 }
 
-// Uses each client's own package price against their start date, not
-// proposal or invoice totals — the simplest available signal for "revenue
-// this client represents," and the only one that doesn't require pulling
-// every proposal's line items just to build a chart.
+// Uses each client's own package price against when their proposal was
+// signed — not their programme start date (a scheduling detail, not a
+// sales one) and not proposal/invoice totals, which would mean pulling
+// every proposal's line items just to build a chart. Signed date also
+// lines up with the Closed - Won lead automation, which fires off the
+// same signing event.
 export function computeRevenueByMonth(
   clients: AdminClient[],
-  products: Product[]
+  products: Product[],
+  proposals: Proposal[]
 ): RevenueOverTime {
   const productNameById = new Map(products.map((p) => [p.id, p.name]));
-  const billable = clients.filter(
-    (c): c is AdminClient & { startDate: string; packagePrice: number } =>
-      Boolean(c.startDate) && c.packagePrice != null
-  );
+  const dateSignedByProposalId = new Map(proposals.map((p) => [p.id, p.dateSigned]));
+
+  const billable = clients.flatMap((c) => {
+    const dateSigned = c.proposalId ? dateSignedByProposalId.get(c.proposalId) : null;
+    if (!dateSigned || c.packagePrice == null) return [];
+    return [{ ...c, dateSigned, packagePrice: c.packagePrice }];
+  });
 
   const byMonth = new Map<string, Map<string, number>>();
   for (const client of billable) {
-    const month = client.startDate.slice(0, 7);
+    const month = client.dateSigned.slice(0, 7);
     const productName = productNameById.get(client.productId ?? "") ?? "Unknown product";
     const monthMap = byMonth.get(month) ?? new Map<string, number>();
     monthMap.set(productName, (monthMap.get(productName) ?? 0) + client.packagePrice);
