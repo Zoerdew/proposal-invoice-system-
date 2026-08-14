@@ -5,6 +5,7 @@ import { listOffers } from "@/lib/db/offers";
 import { getClientByProposalId } from "@/lib/db/clients";
 import ProposalForm from "../ProposalForm";
 import ClientProvisioning from "./ClientProvisioning";
+import DeleteProposal from "./DeleteProposal";
 
 export const dynamic = "force-dynamic";
 
@@ -60,6 +61,7 @@ export default async function EditProposalPage({
           <ClientProvisioning proposalId={id} existingPortalToken={client?.portalToken ?? null} />
         </div>
       )}
+      {!SIGNED_STATUSES.includes(proposal.status) && <DeleteProposal proposalId={id} />}
     </div>
   );
 }
