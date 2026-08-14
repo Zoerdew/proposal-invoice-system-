@@ -90,6 +90,14 @@ export async function getProposalBySlug(slug: string): Promise<Proposal | null> 
   return data ? toProposal(data) : null;
 }
 
+// Cascades to line_items, signatures, and proposal_invoices — safe only
+// while nothing real has happened yet (no client, no Xero invoice), which
+// is why the API route only allows this for un-signed proposals.
+export async function deleteProposal(id: string): Promise<void> {
+  const { error } = await db().from("proposals").delete().eq("id", id);
+  if (error) throw error;
+}
+
 export async function createProposal(
   input: ProposalInput & { clientName: string; slug: string }
 ): Promise<Proposal> {

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { LineItemKind, ProposalStatus } from "@/lib/db/shared";
-import { getProposal, updateProposal } from "@/lib/db/proposals";
+import { deleteProposal, getProposal, updateProposal } from "@/lib/db/proposals";
 import { replaceLineItems } from "@/lib/db/lineItems";
 
 interface LineItemInput {
@@ -68,4 +68,28 @@ export async function PATCH(
   return NextResponse.json({
     proposalLink: updated.proposalLink,
   });
+}
+
+export async function DELETE(
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+
+  const proposal = await getProposal(id).catch(() => null);
+  if (!proposal) {
+    return NextResponse.json({ error: "Proposal not found." }, { status: 404 });
+  }
+  // Once signed there's a real signature, and often a real Xero invoice and
+  // client record — never deletable via this route, only unsigned drafts
+  // and sent-but-not-yet-signed proposals.
+  if (LOCKED_STATUSES.includes(proposal.status)) {
+    return NextResponse.json(
+      { error: "This proposal has already been signed and can no longer be deleted." },
+      { status: 409 }
+    );
+  }
+
+  await deleteProposal(id);
+  return NextResponse.json({ ok: true });
 }
