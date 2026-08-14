@@ -132,6 +132,14 @@ export async function getLead(id: string): Promise<Lead> {
   return toLead(data);
 }
 
+// Attachments cascade; a linked proposal (proposals.lead_id) has no ON
+// DELETE clause, so Postgres rejects the delete rather than orphaning it —
+// the caller is expected to surface that as "this lead has a proposal."
+export async function deleteLead(id: string): Promise<void> {
+  const { error } = await db().from("leads").delete().eq("id", id);
+  if (error) throw error;
+}
+
 export async function createLead(input: LeadInput): Promise<Lead> {
   const { data, error } = await db()
     .from("leads")
@@ -155,6 +163,14 @@ export async function createLead(input: LeadInput): Promise<Lead> {
     .single();
   if (error) throw error;
   return toLead(data);
+}
+
+// Partial update, unlike updateLead below which overwrites every field —
+// safe to call from places (like the proposal sign flow) that only know
+// about the stage and shouldn't clobber everything else on the lead.
+export async function setLeadStage(id: string, stage: LeadStage): Promise<void> {
+  const { error } = await db().from("leads").update({ lead_stage: stage }).eq("id", id);
+  if (error) throw error;
 }
 
 export async function updateLead(id: string, input: LeadInput): Promise<Lead> {

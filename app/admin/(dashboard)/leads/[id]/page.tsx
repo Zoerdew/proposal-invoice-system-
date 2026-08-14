@@ -7,6 +7,7 @@ import LeadForm from "../LeadForm";
 import LeadAttachments from "./LeadAttachments";
 import ConvertToProposal from "./ConvertToProposal";
 import CallProposalsCard from "./CallProposalsCard";
+import DeleteLead from "./DeleteLead";
 
 export const dynamic = "force-dynamic";
 
@@ -72,6 +73,7 @@ export default async function LeadDetailPage({
           <LeadAttachments leadId={id} attachments={attachments} />
           <ConvertToProposal leadId={id} />
           <CallProposalsCard leadId={id} callProposals={callProposals} />
+          <DeleteLead leadId={id} />
         </div>
       </div>
     </div>

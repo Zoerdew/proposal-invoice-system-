@@ -20,6 +20,7 @@ export interface Proposal {
   depositAmount: number | null;
   notes: string;
   proposalLink: string;
+  leadId: string | null;
 }
 
 export interface ProposalInput {
@@ -45,6 +46,7 @@ type ProposalRow = {
   payment_plan: string | null;
   deposit_amount: number | null;
   notes: string | null;
+  lead_id: string | null;
 };
 
 function toProposal(row: ProposalRow): Proposal {
@@ -63,6 +65,7 @@ function toProposal(row: ProposalRow): Proposal {
     depositAmount: row.deposit_amount,
     notes: row.notes ?? "",
     proposalLink: `/proposal/${row.slug}`,
+    leadId: row.lead_id,
   };
 }
 

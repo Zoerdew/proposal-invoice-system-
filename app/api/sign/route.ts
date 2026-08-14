@@ -11,6 +11,7 @@ import { computeInstallments, getFirstDueDate } from "@/lib/paymentPlans";
 import { XeroLineItem, createXeroInvoice, getSalesAccountCode } from "@/lib/xero";
 import { createClientFromProposal, getClientByProposalId } from "@/lib/db/clients";
 import { sendOnboardingEmail } from "@/lib/email";
+import { setLeadStage } from "@/lib/db/leads";
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
@@ -153,6 +154,18 @@ export async function POST(request: NextRequest) {
     });
   } catch (err) {
     console.error("Client creation or onboarding email failed after signing:", err);
+  }
+
+  // Best-effort, isolated from everything above: a signed proposal is a
+  // won deal, so its lead (if this proposal came from one) moves to
+  // Closed - Won. Never touches the signature or invoice outcome either
+  // way.
+  if (proposal.leadId) {
+    try {
+      await setLeadStage(proposal.leadId, "Closed - Won");
+    } catch (err) {
+      console.error("Failed to mark lead Closed - Won after signing:", err);
+    }
   }
 
   return NextResponse.json({ ok: true });
