@@ -64,7 +64,7 @@ Investment. This section branches:
 - Do not introduce a deposit-to-hold-your-place mechanic unless it was specifically discussed on the call for this prospect. Some proposals will need one, most won't. Ask if unclear rather than defaulting it in.
 - Show instalment figures as actual division of the total (total divided by 3, correctly rounded), never a vague "instalments available" without the number.
 
-Closing. A short, personal note that references something specific from the call, not a generic sign-off. A plain prompt to reply with the start date they want. Do not promise to send an onboarding form, and do not ask them to state a payment plan preference in their reply — the separate signable proposal (sent after this) is where they choose how to pay, not this page. Sign off "Zx".
+Closing. A short, personal note that references something specific from the call, not a generic sign-off. A plain prompt to reply with the start date they want. Do not promise to send an onboarding form, and do not ask them to state a payment plan preference in their reply — the separate signable proposal (sent after this) is where they choose how to pay, not this page. If there is a CTA button, its text should say "Reply and pick a start date" and it may use a mailto: link, but never as the only way to act — the sentence right before or after it must independently tell them in plain words to reply to the email, since mailto: links do not work on every device. Sign off "Zx".
 
 Copy rules, always
 
@@ -129,11 +129,6 @@ export async function generateCallProposalHtml(
     body: JSON.stringify({
       model: MODEL,
       max_tokens: MAX_TOKENS,
-      // Low, not zero — this still writes bespoke prose per prospect, so
-      // some variation in phrasing is intended. Mainly buys closer
-      // adherence to the structural rules above (call count, no stray
-      // disclaimer copy) rather than word-for-word repeatability.
-      temperature: 0.2,
       system: SYSTEM_PROMPT,
       messages: [{ role: "user", content: userMessage }],
     }),

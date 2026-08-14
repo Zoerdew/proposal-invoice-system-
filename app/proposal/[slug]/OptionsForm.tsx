@@ -140,23 +140,31 @@ export default function OptionsForm({
               return (
                 <label
                   key={plan}
-                  className="flex cursor-pointer items-center justify-between rounded-xl border-2 border-[#0a0608]/15 px-4 py-3 has-[:checked]:border-[#0a0608] has-[:checked]:shadow-[3px_3px_0_#F11787]"
+                  className="flex cursor-pointer flex-col gap-1 rounded-xl border-2 border-[#0a0608]/15 px-4 py-3 has-[:checked]:border-[#0a0608] has-[:checked]:shadow-[3px_3px_0_#F11787]"
                 >
-                  <span className="flex items-center gap-3">
-                    <input
-                      type="radio"
-                      name="payment-plan"
-                      checked={paymentPlan === plan}
-                      onChange={() => setPaymentPlan(plan)}
-                      className="accent-[#F11787]"
-                    />
-                    {plan}
+                  <span className="flex cursor-pointer items-center justify-between">
+                    <span className="flex items-center gap-3">
+                      <input
+                        type="radio"
+                        name="payment-plan"
+                        checked={paymentPlan === plan}
+                        onChange={() => setPaymentPlan(plan)}
+                        className="accent-[#F11787]"
+                      />
+                      {plan}
+                    </span>
+                    <span className="font-heading font-[800]">
+                      {installments.length === 1
+                        ? currency.format(installments[0].amount)
+                        : `${installments.length} × ${currency.format(installments[0].amount)}`}
+                    </span>
                   </span>
-                  <span className="font-heading font-[800]">
-                    {installments.length === 1
-                      ? currency.format(installments[0].amount)
-                      : `${installments.length} × ${currency.format(installments[0].amount)}`}
-                  </span>
+                  {plan === "Pay in 6" && (
+                    <span className="pl-7 text-xs text-[#0a0608]/60">
+                      Start date is once your first 3 payments are made — 3 months from your first
+                      payment.
+                    </span>
+                  )}
                 </label>
               );
             })}
