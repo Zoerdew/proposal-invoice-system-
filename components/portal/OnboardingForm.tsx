@@ -127,6 +127,7 @@ export default function OnboardingForm({ token }: { token: string }) {
   const [whyNow, setWhyNow] = useState("");
   const [definitionOfSuccess, setDefinitionOfSuccess] = useState("");
   const [anythingElse, setAnythingElse] = useState("");
+  const [postalAddress, setPostalAddress] = useState("");
 
   const [offers, setOffers] = useState<OfferRow[]>([emptyOfferRow()]);
   const [timeline, setTimeline] = useState<TimelineRow[]>([emptyTimelineRow()]);
@@ -175,6 +176,7 @@ export default function OnboardingForm({ token }: { token: string }) {
         whyNow,
         definitionOfSuccess,
         anythingElse,
+        postalAddress,
         paymentProcessors,
         emailPlatform,
         subscriberCount: subscriberCount.trim() ? Number(subscriberCount) : undefined,
@@ -587,6 +589,23 @@ export default function OnboardingForm({ token }: { token: string }) {
             options={REVENUE_SOURCES}
             value={whereRevenueDataLives}
             onChange={setWhereRevenueDataLives}
+          />
+        </div>
+
+        <div className="mb-8">
+          <QuestionLabel htmlFor="postalAddress">
+            Postal address
+            <OptionalTag />
+          </QuestionLabel>
+          <p className="text-sm text-[#0a0608]/50 max-w-sm mb-3">
+            So I can send you something when you get started.
+          </p>
+          <textarea
+            id="postalAddress"
+            rows={3}
+            value={postalAddress}
+            onChange={(e) => setPostalAddress(e.target.value)}
+            className={textareaClass}
           />
         </div>
 

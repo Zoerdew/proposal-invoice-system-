@@ -11,12 +11,16 @@ const IN_CONTROL_TABS = [
   { label: "Scorecard", segment: "scorecard" },
   { label: "Check-in", segment: "checkin" },
   { label: "To-dos", segment: "todos" },
+  { label: "Onboarding", segment: "onboarding-summary" },
 ] as const;
 
 // V3 Phase 15: every other Falling Forwards product gets just this —
 // the In Control deliverables (GOLD Report, Evidence Dashboard, Commercial
 // Scorecard) don't exist for them, so there's nothing to link to yet.
-const OTHER_PRODUCT_TABS = [{ label: "To-dos", segment: "todos" }] as const;
+const OTHER_PRODUCT_TABS = [
+  { label: "To-dos", segment: "todos" },
+  { label: "Onboarding", segment: "onboarding-summary" },
+] as const;
 
 export default function PortalNav({
   token,

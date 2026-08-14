@@ -175,6 +175,7 @@ export interface OnboardingData {
   whyNow: string;
   definitionOfSuccess?: string;
   anythingElse?: string;
+  postalAddress?: string;
   // Phase 7 additions
   paymentProcessors?: string;
   emailPlatform?: string;
@@ -271,6 +272,7 @@ export async function updateClientOnboarding(clientId: string, data: OnboardingD
       why_now: data.whyNow,
       ...(data.definitionOfSuccess ? { definition_of_success: data.definitionOfSuccess } : {}),
       ...(data.anythingElse ? { anything_else: data.anythingElse } : {}),
+      ...(data.postalAddress ? { postal_address: data.postalAddress } : {}),
       ...(data.paymentProcessors ? { payment_processors: data.paymentProcessors } : {}),
       ...(data.emailPlatform ? { email_platform: data.emailPlatform } : {}),
       ...(data.subscriberCount !== undefined ? { subscriber_count: data.subscriberCount } : {}),
@@ -296,6 +298,7 @@ export interface OnboardingResponses {
   whyNow: string;
   definitionOfSuccess: string;
   anythingElse: string;
+  postalAddress: string;
   paymentProcessors: string;
   emailPlatform: string;
   subscriberCount: number | null;
@@ -323,6 +326,7 @@ export async function getOnboardingByClientId(clientId: string): Promise<Onboard
     whyNow: data.why_now ?? "",
     definitionOfSuccess: data.definition_of_success ?? "",
     anythingElse: data.anything_else ?? "",
+    postalAddress: data.postal_address ?? "",
     paymentProcessors: data.payment_processors ?? "",
     emailPlatform: data.email_platform ?? "",
     subscriberCount: data.subscriber_count,

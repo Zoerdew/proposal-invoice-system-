@@ -1,13 +1,17 @@
 import { notFound, redirect } from "next/navigation";
 import { getClientByToken } from "@/lib/db/clients";
 import { listProducts } from "@/lib/db/products";
+import { isAdminAuthed } from "@/lib/adminAuth";
 import PortalNav from "@/components/portal/PortalNav";
 
 /**
  * Shared gate for every page in the portal proper (Snapshot, GOLD,
  * Evidence, Check-in). Onboarding must be complete before any of these
  * render — this is the one place that's enforced, so it never has to be
- * repeated per page.
+ * repeated per page. Waived for an admin session ("view as client" from
+ * the admin panel): Zoë previewing a client's dashboard shouldn't be
+ * bounced back to their onboarding form just because they haven't
+ * finished it yet.
  */
 export default async function PortalLayout({
   children,
@@ -20,7 +24,7 @@ export default async function PortalLayout({
   const client = await getClientByToken(token);
   if (!client) notFound();
 
-  if (!client.onboardingComplete) {
+  if (!client.onboardingComplete && !(await isAdminAuthed())) {
     redirect(`/c/${token}/onboarding`);
   }
 

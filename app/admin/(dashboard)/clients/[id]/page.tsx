@@ -49,13 +49,21 @@ export default async function ClientDetailPage({
         {client.name}
         {client.businessName ? ` · ${client.businessName}` : ""}
       </h1>
-      {client.proposalId && (
-        <p className="mb-4 text-sm text-[#0a0608]/50">
+      <p className="mb-4 flex gap-4 text-sm text-[#0a0608]/50">
+        {client.proposalId && (
           <Link href={`/admin/proposals/${client.proposalId}`} className="underline">
             Linked proposal
           </Link>
-        </p>
-      )}
+        )}
+        <Link
+          href={`/c/${client.portalToken}/${isInControl ? "snapshot" : "todos"}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline"
+        >
+          View as client ↗
+        </Link>
+      </p>
       <ClientTabs clientId={id} />
 
       <div className="grid gap-6 sm:grid-cols-3">
@@ -96,6 +104,7 @@ export default async function ClientDetailPage({
               <p className="text-sm text-[#0a0608]/50">Not submitted yet.</p>
             ) : (
               <dl>
+                <Field label="Postal address (gift)" value={onboarding.postalAddress} />
                 <Field label="Best day for check-in" value={onboarding.bestDayForCheckin} />
                 <Field label="Where revenue data lives" value={onboarding.whereRevenueDataLives} />
                 <Field label="Biggest challenge right now" value={onboarding.biggestChallengeRightNow} />
