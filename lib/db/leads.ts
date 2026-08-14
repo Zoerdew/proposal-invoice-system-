@@ -132,6 +132,17 @@ export async function getLead(id: string): Promise<Lead> {
   return toLead(data);
 }
 
+// Case-insensitive — booking tools and manual entry are inconsistent about
+// casing, and two leads for the same person differing only in case is the
+// kind of duplicate this exists to prevent.
+export async function getLeadByEmail(email: string): Promise<Lead | null> {
+  // limit(1) rather than maybeSingle() — this only needs to know "does one
+  // exist", and maybeSingle() throws if more than one row happens to match.
+  const { data, error } = await db().from("leads").select("*").ilike("email", email).limit(1);
+  if (error) throw error;
+  return data && data.length > 0 ? toLead(data[0]) : null;
+}
+
 // Attachments cascade; a linked proposal (proposals.lead_id) has no ON
 // DELETE clause, so Postgres rejects the delete rather than orphaning it —
 // the caller is expected to surface that as "this lead has a proposal."
