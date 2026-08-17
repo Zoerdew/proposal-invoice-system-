@@ -417,7 +417,7 @@ export default function OnboardingForm({ token }: { token: string }) {
         </SectionHeading>
 
         {timeline.map((row, i) => (
-          <div key={row.key} className="mb-4 flex gap-3">
+          <div key={row.key} className="mb-4 flex gap-3 items-start">
             <input
               type="month"
               value={row.month ? row.month.slice(0, 7) : ""}
@@ -426,11 +426,12 @@ export default function OnboardingForm({ token }: { token: string }) {
               }
               className="input-brutal w-40 shrink-0 p-2 text-sm outline-none focus:shadow-[3px_3px_0_#F11787] transition-shadow bg-cream"
             />
-            <input
+            <textarea
               value={row.whatHappened}
               onChange={(e) => updateTimelineRow(row.key, { whatHappened: e.target.value })}
               placeholder="What happened"
-              className={inputClass}
+              rows={2}
+              className={`${inputClass} resize-y`}
             />
             {timeline.length > 1 && (
               <button
