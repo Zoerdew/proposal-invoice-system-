@@ -69,10 +69,11 @@ export default function TimelineTable({ clientId, initialRows }: { clientId: str
                 />
               </td>
               <td className="py-2 pr-2">
-                <input
+                <textarea
                   value={row.whatHappened}
                   onChange={(e) => updateRow(row.key, { whatHappened: e.target.value })}
-                  className="w-full admin-input px-2 py-1"
+                  className="w-full admin-input px-2 py-1 resize-y"
+                  rows={2}
                   placeholder="e.g. Launched, ads on, price change, holiday..."
                 />
               </td>
