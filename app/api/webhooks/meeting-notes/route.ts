@@ -40,20 +40,29 @@ export async function POST(request: NextRequest) {
   // for the same Doc.
   const knownDocIds = await listKnownDocIds();
   if (knownDocIds.has(docId)) {
+    console.log("[meeting-notes] skipped duplicate", { docId, docTitle });
     return NextResponse.json({ ok: true, skipped: "already processed" });
   }
 
   const { client, ambiguous } = await matchClientForTitle(docTitle);
 
-  // Most of the shared Meet Recordings folder isn't an In Control call at
-  // all (100 Minute Bet, general intro calls, etc.) — zero matches is the
-  // normal case, not an error, so it's skipped silently rather than
-  // creating a "Needs matching" row for every unrelated call.
-  if (!client && !ambiguous) {
-    return NextResponse.json({ ok: true, skipped: "no matching client" });
-  }
-
-  const extraction = await extractMeetingNotesSummaryAndTodos(content).catch(() => null);
+  // Zero matches used to return early and drop the Doc. That silently lost
+  // every real call whose title didn't contain a client's full name as a
+  // substring — Meet names the Doc after the calendar event, so "Zoë x Ellie"
+  // never matched "Eloise Elford". Unmatched Docs now land in the same
+  // "Needs matching" queue as ambiguous ones. The folder does carry calls that
+  // aren't In Control work, so expect some noise to dismiss there; that is the
+  // deliberate trade for never losing a transcript again.
+  const extraction = await extractMeetingNotesSummaryAndTodos(content).catch((err) => {
+    // Deliberately non-fatal: a failed summary should not cost us the
+    // transcript. Logged rather than swallowed so it stops being invisible.
+    console.error("[meeting-notes] summary extraction failed", {
+      docId,
+      docTitle,
+      error: err instanceof Error ? err.message : String(err),
+    });
+    return null;
+  });
 
   const note = await createMeetingNote({
     clientId: client?.id ?? null,
@@ -70,6 +79,16 @@ export async function POST(request: NextRequest) {
       await createTodo(note.id, text);
     }
   }
+
+  console.log("[meeting-notes] stored", {
+    docId,
+    docTitle,
+    meetingNoteId: note.id,
+    matchStatus: client ? "Matched" : "Needs matching",
+    reason: client ? "matched by title" : ambiguous ? "title matched several clients" : "title matched no client",
+    todos: extraction?.todos.length ?? 0,
+    summarised: Boolean(extraction),
+  });
 
   return NextResponse.json({ ok: true, meetingNoteId: note.id, matched: Boolean(client) });
 }
