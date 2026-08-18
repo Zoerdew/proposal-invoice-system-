@@ -48,7 +48,7 @@ export default function NewClientForm({ products }: { products: Product[] }) {
 
       <div className="mb-4">
         <label className="admin-label mb-1 block">
-          Business name <span className="normal-case font-normal text-[#0a0608]/40">(optional)</span>
+          Business name <span className="normal-case font-medium text-[#0a0608]/40">(optional)</span>
         </label>
         <input
           value={businessName}

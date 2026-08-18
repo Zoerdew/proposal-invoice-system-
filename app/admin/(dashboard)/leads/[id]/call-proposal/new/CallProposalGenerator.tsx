@@ -120,7 +120,7 @@ export default function CallProposalGenerator({ leadId }: { leadId: string }) {
       <div className="mb-6">
         <label className="admin-label mb-1 block">
           Current offer terms / discount / capacity{" "}
-          <span className="normal-case font-normal text-[#0a0608]/40">(only used if pricing wasn&apos;t discussed live on the call)</span>
+          <span className="normal-case font-medium text-[#0a0608]/40">(only used if pricing wasn&apos;t discussed live on the call)</span>
         </label>
         <textarea
           value={pricingContext}
@@ -168,7 +168,7 @@ export default function CallProposalGenerator({ leadId }: { leadId: string }) {
 
           <div className="mb-6">
             <label className="admin-label mb-1 block">
-              Generated HTML <span className="normal-case font-normal text-[#0a0608]/40">(editable before saving)</span>
+              Generated HTML <span className="normal-case font-medium text-[#0a0608]/40">(editable before saving)</span>
             </label>
             <textarea
               value={html}

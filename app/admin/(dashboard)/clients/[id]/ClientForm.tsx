@@ -141,7 +141,7 @@ export default function ClientForm({
 
       <div className="mb-4">
         <label className={labelClass}>
-          Product <span className="normal-case font-normal text-[#0a0608]/40">(which Falling Forwards programme this relationship is for)</span>
+          Product <span className="normal-case font-medium text-[#0a0608]/40">(which Falling Forwards programme this relationship is for)</span>
         </label>
         <select value={productId} onChange={(e) => setProductId(e.target.value)} className={inputClass}>
           <option value="">—</option>

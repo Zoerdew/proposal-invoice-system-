@@ -38,6 +38,11 @@
 body {
   background: var(--background);
   color: var(--foreground);
+  /* Brand type scale is two weights only: 500 body, 800 headings/CTAs.
+     Stated here rather than left to the browser's 400 default — Bricolage
+     is only loaded at 500/800, so 400 happens to resolve to the 500 face,
+     but the fallback stack renders a genuine 400 while the webfont loads. */
+  font-weight: 500;
 }
 
 /* Calm/premium card primitives — thin border, flat (no hard offset
