@@ -15,7 +15,10 @@ const ANTHROPIC_VERSION = "2023-06-01";
 // to buy. Worth the better model over Sonnet — swap the constant below if
 // cost becomes a concern.
 const MODEL = "claude-opus-5";
-const MAX_TOKENS = 8000;
+// Covers thinking AND the response together. Opus 5 has thinking on by default
+// (Opus 4.8 did not), so 8000 left too little for the JSON and it truncated
+// mid-string — surfacing as a JSON.parse SyntaxError rather than a limit error.
+const MAX_TOKENS = 32000;
 
 // Verbatim content/copy rules supplied by Zoë for the call-transcript
 // proposal generator (V2-BUILD-SPEC.md Phase 11), adapted to a structured
@@ -175,7 +178,19 @@ export async function generateCallProposalHtml(
     throw new Error(`Anthropic API ${res.status}: ${await res.text()}`);
   }
 
-  const data = (await res.json()) as { content: { type: string; text?: string }[] };
+  const data = (await res.json()) as {
+    content: { type: string; text?: string }[];
+    stop_reason?: string;
+  };
+
+  // Truncation arrives as valid JSON-shaped-but-cut-off text, so without this
+  // check it reads as a parsing bug instead of a budget one.
+  if (data.stop_reason === "max_tokens") {
+    throw new Error(
+      "The AI ran out of output budget before finishing the proposal. Try a shorter transcript, or raise MAX_TOKENS in lib/anthropic.ts."
+    );
+  }
+
   const textBlock = data.content.find((block) => block.type === "text");
   if (!textBlock?.text) {
     throw new Error("Anthropic API returned no text content");
