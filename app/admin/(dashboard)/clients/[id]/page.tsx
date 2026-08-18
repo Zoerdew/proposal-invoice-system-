@@ -7,6 +7,7 @@ import ClientTabs from "./ClientTabs";
 import ClientForm from "./ClientForm";
 import ResendOnboarding from "./ResendOnboarding";
 import MeetingNotesCard from "./MeetingNotesCard";
+import ExportClient from "./ExportClient";
 
 export const dynamic = "force-dynamic";
 
@@ -63,6 +64,7 @@ export default async function ClientDetailPage({
         >
           View as client ↗
         </Link>
+        <ExportClient clientId={id} />
       </p>
       <ClientTabs clientId={id} />
 
