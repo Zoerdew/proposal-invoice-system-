@@ -374,7 +374,7 @@ export function assembleCallProposalHtml(
   --font-body: 'Bricolage Grotesque', system-ui, sans-serif;
   --font-accent: 'Bricolage Grotesque', system-ui, sans-serif;
 
-  --fw-regular: 500; --fw-medium: 500; --fw-semibold: 500; --fw-bold: 800; --fw-extrabold: 800;
+  --fw-regular: 500; --fw-medium: 500; --fw-semibold: 800; --fw-bold: 800; --fw-extrabold: 800;
 
   --tracking-display: 0.5px; --tracking-sub: 0.3px; --tracking-wide: 2px; --tracking-wider: 2.5px;
 
@@ -453,6 +453,7 @@ export function assembleCallProposalHtml(
 html { scroll-behavior: smooth; }
 body {
   font-family: var(--font-body);
+  font-weight: var(--fw-medium);
   background: var(--surface-primary);
   color: var(--text-primary);
   line-height: 1.6;
@@ -478,7 +479,7 @@ body {
 
 .em {
   font-family: var(--font-accent);
-  font-style: normal; font-weight: var(--fw-regular);
+  font-style: normal; font-weight: var(--fw-extrabold);
   text-transform: none;
   font-size: 1.15em;
   line-height: 0.75;
@@ -890,7 +891,7 @@ body {
   margin-bottom: var(--space-3);
 }
 .cadence-card h4 span {
-  font-family: var(--font-accent); font-weight: var(--fw-regular);
+  font-family: var(--font-accent); font-weight: var(--fw-extrabold);
   font-size: 1.15em; line-height: 0.75; letter-spacing: 0;
   text-transform: none;
 }
@@ -953,7 +954,7 @@ body {
   cursor: pointer; list-style: none;
   display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-6);
   padding: var(--space-5) 0;
-  font-family: var(--font-display); font-weight: var(--fw-medium);
+  font-family: var(--font-display); font-weight: var(--fw-extrabold);
   font-size: 20px; letter-spacing: var(--tracking-sub); text-transform: uppercase;
 }
 .faq-item summary::-webkit-details-marker { display: none; }
