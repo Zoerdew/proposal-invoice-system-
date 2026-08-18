@@ -98,7 +98,7 @@ export default function OfferForm({
 
         <div>
           <label className="admin-label mb-1 block">
-            Tagline <span className="normal-case font-normal text-[#0a0608]/40">(shown on the proposal page)</span>
+            Tagline <span className="normal-case font-medium text-[#0a0608]/40">(shown on the proposal page)</span>
           </label>
           <input
             type="text"
@@ -112,7 +112,7 @@ export default function OfferForm({
 
       <div className="mb-6">
         <label className="admin-label mb-1 block">
-          Description <span className="normal-case font-normal text-[#0a0608]/40">(what's included)</span>
+          Description <span className="normal-case font-medium text-[#0a0608]/40">(what's included)</span>
         </label>
         <textarea
           value={description}

@@ -43,7 +43,7 @@ function SectionHeading({
 // grey form-field label, since they're the actual prompt being answered.
 function QuestionLabel({ htmlFor, children }: { htmlFor: string; children: React.ReactNode }) {
   return (
-    <label className="block font-heading font-[600] text-lg leading-snug mb-3" htmlFor={htmlFor}>
+    <label className="block font-heading font-[800] text-lg leading-snug mb-3" htmlFor={htmlFor}>
       {children}
     </label>
   );
@@ -59,7 +59,7 @@ function FieldLabel({ htmlFor, children }: { htmlFor: string; children: React.Re
 }
 
 function OptionalTag() {
-  return <span className="normal-case text-[#0a0608]/35 font-heading font-[400]"> (optional)</span>;
+  return <span className="normal-case text-[#0a0608]/35 font-heading font-medium"> (optional)</span>;
 }
 
 function PillGroup<T extends string>({
