@@ -8,10 +8,12 @@ function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
 }
 
-// No nav entry — this should almost always be empty. A meeting note only
-// lands here when its Doc title genuinely matches more than one real
-// client by name; most of the shared Meet Recordings folder isn't an In
-// Control call at all and is skipped without ever reaching this table.
+// No nav entry. Every meeting note whose Doc title doesn't resolve to exactly
+// one client lands here — no match as well as several. Unmatched Docs used to
+// be dropped at the webhook, which lost real calls whose title didn't happen
+// to contain a client's full name. The shared Meet Recordings folder does
+// carry calls that aren't In Control work, so this table is expected to hold
+// some rows worth ignoring rather than being empty.
 export default async function NeedsMatchingPage() {
   const [notes, clients] = await Promise.all([listNeedsMatching(), listClientsAdmin()]);
 
@@ -19,7 +21,9 @@ export default async function NeedsMatchingPage() {
     <div>
       <h1 className="mb-2 font-heading font-[800] text-xl">Meeting notes needing a match</h1>
       <p className="mb-6 text-sm text-[#0a0608]/60">
-        A Doc title matched more than one real client by name — pick the right one.
+        A Doc title didn&apos;t resolve to one client, either because nothing
+        matched or because several did. Pick the right client, or leave anything
+        that isn&apos;t an In Control call.
       </p>
 
       <div className="admin-card overflow-hidden">
