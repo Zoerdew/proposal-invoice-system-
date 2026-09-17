@@ -21,6 +21,9 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  // Must stay equal to XERO_INVOICE_DUE_DAYS (lib/paymentPlans.ts) — see the
+  // comment on getFirstDueDate() for why a mismatch drifts every
+  // installment's actual creation date later than intended.
   const leadDays = Number(process.env.XERO_INVOICE_LEAD_DAYS) || 3;
   const cutoff = new Date(Date.now() + leadDays * 24 * 60 * 60 * 1000);
 
