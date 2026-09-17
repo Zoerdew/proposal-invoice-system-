@@ -16,10 +16,15 @@ export interface Installment {
   dueDate: string; // YYYY-MM-DD
 }
 
-// Matches the grace period in the Payment clause (7 days) — overridable via
-// the same env var the original single-invoice flow used.
+// Matches the grace period in the Payment clause (3 days) — overridable via
+// the same env var the original single-invoice flow used. This must stay
+// equal to XERO_INVOICE_LEAD_DAYS in the cron job (also 3): later
+// installments are due N months after this date, then created N months
+// minus the lead time later — if the two constants differ, that gap
+// silently drifts every installment's actual creation date later than
+// "signing date + N months," which is what caught this out originally.
 export function getFirstDueDate(): Date {
-  const days = Number(process.env.XERO_INVOICE_DUE_DAYS) || 7;
+  const days = Number(process.env.XERO_INVOICE_DUE_DAYS) || 3;
   return new Date(Date.now() + days * 24 * 60 * 60 * 1000);
 }
 
@@ -31,7 +36,7 @@ function addMonths(date: Date, months: number): Date {
 
 // Splits total evenly across N installments, folding the rounding remainder
 // into the last one so they sum exactly to total. firstDueDate is the grace
-// period Zoë's contract already promises (7 days, per the Payment clause);
+// period Zoë's contract already promises (3 days, per the Payment clause);
 // later installments are then a month apart from that, not from today.
 //
 // depositOverride is a one-off, per-proposal exception (set via the admin
